@@ -1,0 +1,378 @@
+@use "sass:color";
+// Variables
+$primary-green: #00c853;
+$primary-green-dark: #00a847;
+$primary-green-light: #00e676;
+$white: #ffffff;
+$text-dark: #333333;
+$text-light: #666666;
+$border-color: #e0e0e0;
+
+.topbar {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  // Top Header Section
+  .topbar-header {
+    background: linear-gradient(135deg, $primary-green 0%, $primary-green-light 100%);
+    padding: 12px 0;
+
+    .topbar-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+  }
+
+  // Logo Section
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+
+    .logo-icon {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;        // 🔥 QUAN TRỌNG
+      flex-shrink: 0;
+      cursor: pointer;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;   // giữ tỉ lệ
+        display: block;
+      }
+    }
+  }
+
+  // Search Section
+  .topbar-search {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 700px;
+
+    .points-btn {
+      align-self: flex-end;
+      background: $white;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: $primary-green;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        // background: lighten($white, 2%);
+        background: color.adjust($white, $lightness: 2%);
+      }
+    }
+
+    .search-input {
+      background: $white;
+      border: none;
+      border-radius: 25px;
+      height: 48px;
+      padding: 0 20px;
+      font-size: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+
+      &:hover,
+      &:focus {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .ant-input {
+        font-size: 15px;
+        
+        &::placeholder {
+          // color: lighten($text-light, 10%);
+          color: color.adjust($text-light, $lightness: 10%);
+        }
+      }
+
+      .anticon-search {
+        color: $text-light;
+        font-size: 18px;
+      }
+
+      .search-btn {
+        background: linear-gradient(135deg, $primary-green 0%, $primary-green-light 100%);
+        border: none;
+        padding: 8px 24px;
+        border-radius: 20px;
+        color: $white;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 200, 83, 0.3);
+
+        &:hover {
+          transform: scale(1.05);
+          box-shadow: 0 4px 12px rgba(0, 200, 83, 0.4);
+        }
+
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+    }
+  }
+
+  // Right Actions
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-shrink: 0;
+
+    .action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 8px 12px;
+      border-radius: 12px;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+
+        .action-icon {
+          transform: scale(1.1);
+        }
+      }
+
+      .action-icon {
+        font-size: 24px;
+        color: $white;
+        transition: all 0.3s ease;
+      }
+
+      .action-text {
+        font-size: 13px;
+        color: $white;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      .ant-badge {
+        .ant-badge-count {
+          background: #ff4444;
+          box-shadow: 0 2px 6px rgba(255, 68, 68, 0.4);
+        }
+      }
+    }
+  }
+
+  // Navigation Menu
+  .topbar-nav {
+    // background: darken($primary-green, 5%);
+    background: color.adjust($primary-green, $lightness: -5%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .topbar-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      .nav-item {
+        color: $white;
+        padding: 14px 20px;
+        font-size: 15px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border-radius: 4px;
+        white-space: nowrap;
+        position: relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 8px;
+          left: 20px;
+          right: 20px;
+          height: 2px;
+          background: $white;
+          transform: scaleX(0);
+          transition: transform 0.3s ease;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.15);
+          
+          &::after {
+            transform: scaleX(1);
+          }
+        }
+
+        &.nav-dropdown {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+
+          .anticon-down {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+          }
+
+          &:hover .anticon-down {
+            transform: translateY(2px);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+// Responsive Design
+@media (max-width: 1200px) {
+  .topbar {
+    .topbar-header {
+      .topbar-container {
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+    }
+
+    .topbar-search {
+      max-width: 100%;
+      order: 3;
+      flex-basis: 100%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    .topbar-header {
+      .topbar-container {
+        padding: 0 16px;
+      }
+    }
+
+    .topbar-logo {
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+      }
+
+      .logo-text {
+        .logo-brand {
+          font-size: 16px;
+        }
+
+        .logo-subtitle {
+          font-size: 9px;
+        }
+      }
+
+      .logo-mascot {
+        font-size: 20px;
+      }
+    }
+
+    .topbar-actions {
+      gap: 12px;
+
+      .action-item {
+        padding: 4px 8px;
+
+        .action-text {
+          display: none;
+        }
+
+        .action-icon {
+          font-size: 20px;
+        }
+      }
+    }
+
+    .topbar-nav {
+      .nav-menu {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        .nav-item {
+          padding: 12px 16px;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+// Ant Design Dropdown Customization
+.ant-dropdown-menu {
+  background: $white;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  min-width: 200px;
+
+  .ant-dropdown-menu-item {
+    padding: 10px 16px;
+    font-size: 14px;
+    color: $text-dark;
+    transition: all 0.3s ease;
+
+    &:hover {
+      // background: lighten($primary-green, 45%);
+      background: color.adjust($primary-green, $lightness: 45%);
+      color: $primary-green;
+    }
+  }
+}

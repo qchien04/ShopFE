@@ -1,0 +1,15 @@
+@use './variables' as var;
+
+/* Light theme */
+:root {
+  --bg-color: #{var.$color-light-bg};
+  --text-color: #{var.$color-light-text};
+  --primary-color: #{var.$color-light-primary};
+}
+
+/* Dark theme */
+[data-theme='dark'] {
+  --bg-color: #{var.$color-dark-bg};
+  --text-color: #{var.$color-dark-text};
+  --primary-color: #{var.$color-dark-primary};
+}

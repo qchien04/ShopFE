@@ -1,0 +1,77 @@
+@use './variables' as var;
+
+// Global table styles - áp dụng cho tất cả bảng Ant Design
+.ant-table-wrapper {
+  .ant-table {
+    // Light mode variables
+    --zebra-even: #{var.$color-light-zebra-even};
+    --zebra-odd: #{var.$color-light-zebra-odd};
+    --zebra-hover: #{var.$color-light-zebra-hover};
+    --border-color: #{var.$color-light-border};
+    --border-light: #{var.$color-light-border-light};
+    --header-bg: #{var.$color-light-zebra-even};
+    --table-text: #{var.$color-light-text};
+
+    // Zebra striping
+    .ant-table-tbody > tr {
+      &:nth-child(even) {
+        background-color: var(--zebra-even);
+      }
+
+      &:nth-child(odd) {
+        background-color: var(--zebra-odd);
+      }
+
+      &:hover > td {
+        background-color: var(--zebra-hover) !important;
+      }
+
+      td {
+        color: var(--table-text);
+      }
+    }
+
+    // Bordered table
+    &.ant-table-bordered {
+      border: 1px solid var(--border-color);
+
+      .ant-table-thead > tr > th,
+      .ant-table-tbody > tr > td {
+        border-right: 1px solid var(--border-light);
+      }
+    }
+
+    // Header styling
+    .ant-table-thead > tr > th {
+      background-color: var(--header-bg);
+      font-weight: 600;
+      border-bottom: 2px solid var(--border-color);
+      color: var(--table-text);
+    }
+  }
+}
+
+// Dark mode
+[data-theme='dark'] {
+  .ant-table-wrapper {
+    .ant-table {
+      --zebra-even: #{var.$color-dark-zebra-even};
+      --zebra-odd: #{var.$color-dark-zebra-odd};
+      --zebra-hover: #{var.$color-dark-zebra-hover};
+      --border-color: #{var.$color-dark-border};
+      --border-light: #{var.$color-dark-border-light};
+      --header-bg: #{var.$color-dark-zebra-even};
+      --table-text: #{var.$color-dark-text};
+    }
+  }
+}
+
+// Optional: Class để tắt zebra cho một số bảng cụ thể
+.ant-table-wrapper.no-zebra {
+  .ant-table-tbody > tr {
+    &:nth-child(even),
+    &:nth-child(odd) {
+      background-color: transparent !important;
+    }
+  }
+}

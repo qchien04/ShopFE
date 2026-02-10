@@ -1,0 +1,7 @@
+@use "../../styles/theme.scss";
+@use "../../styles/mixins" as m;
+
+.center-container{
+  @include m.flex-center;
+  margin-bottom: 10px;
+}

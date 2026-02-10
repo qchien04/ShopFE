@@ -1,0 +1,75 @@
+// ProductSelectorModal.scss
+.product-selector-modal {
+  .ant-modal-body {
+    padding: 24px;
+  }
+
+  .selector-header {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f5f5f5;
+    border-radius: 8px;
+
+    .selection-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .ant-table {
+    .ant-table-cell {
+      vertical-align: middle;
+    }
+
+    .ant-table-row {
+      &:hover {
+        background: #f0f9f5;
+      }
+
+      &.ant-table-row-selected {
+        background: #e8f5e9;
+
+        &:hover {
+          background: #e8f5e9;
+        }
+      }
+    }
+  }
+
+  .selected-products-preview {
+    margin-top: 20px;
+    padding: 16px;
+    background: #f0f9f5;
+    border-radius: 8px;
+    border: 2px solid #00c853;
+
+    h4 {
+      margin: 0 0 12px 0;
+      color: #00c853;
+      font-weight: 600;
+    }
+
+    .selected-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .ant-tag {
+        background: white;
+        border-color: #00c853;
+        color: #00c853;
+        font-size: 13px;
+
+        .anticon-close {
+          color: #ff4444;
+
+          &:hover {
+            color: #ff0000;
+          }
+        }
+      }
+    }
+  }
+}

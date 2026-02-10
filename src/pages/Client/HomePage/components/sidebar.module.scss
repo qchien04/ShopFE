@@ -1,0 +1,136 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* MENU */
+.sidebarMenu {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.menuHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+
+  .anticon {
+    font-size: 18px;
+    color: #00c853;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+/* ANT MENU CUSTOM */
+.categoryMenu {
+  border: none;
+
+  .ant-menu-item,
+  .ant-menu-submenu-title {
+    padding: 14px 20px !important;
+    margin: 0 !important;
+    height: auto !important;
+    line-height: 1.4;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #f0f9ff !important;
+    }
+  }
+
+  .ant-menu-item-selected {
+    background: #e8f5e9 !important;
+    color: #00c853 !important;
+    font-weight: 600;
+  }
+
+  .ant-menu-sub {
+    background: #fafafa;
+
+    .ant-menu-item {
+      padding-left: 44px !important;
+      font-size: 13px;
+    }
+  }
+}
+
+/* TRENDING SEARCH */
+.trendingSearch {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.searchHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  .anticon {
+    color: #00c853;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+.searchTags {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .searchTag {
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+
+    &:hover {
+      background: #e8f5e9;
+      color: #00c853;
+    }
+  }
+}
+
+/* SOCIAL CONTACT */
+.socialContacts {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 100;
+
+  .ant-btn {
+    width: 56px;
+    height: 56px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  }
+
+  .zalo-btn {
+    background: #0068ff;
+  }
+
+  .messenger-btn {
+    background: #006aff;
+  }
+}
