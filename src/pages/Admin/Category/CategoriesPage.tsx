@@ -20,6 +20,15 @@ const CategoriesPage = () => {
   const { mutate: createCategory, isPending: creating } = useCreateCategory();
   const { mutate: updateCategory, isPending: updating } = useUpdateCategory();
 
+  const fr=data?.map((p)=>{
+    return {
+      id:p.id,
+      slug: p.slug,
+      name:p.name
+    }
+  })
+  console.log({fr})
+  
   const handleSubmit = (values: any) => {
     const payload = {
       ...values,

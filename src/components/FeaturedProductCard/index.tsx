@@ -39,7 +39,7 @@ const FeaturedProductCard = ({product}:Props) => {
 
         <div className={styles['price-row']}>
           <span className={styles['price-new']}>
-            {product.price.toLocaleString()}đ
+            {product.salePrice.toLocaleString()}đ
           </span>
           <span className={styles['price-old']}>
             {product.price.toLocaleString()}đ

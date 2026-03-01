@@ -286,6 +286,12 @@
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
 
+      > *:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+        max-width: 70%;
+        margin: 0 auto;
+      }
+
       .product-card {
         .product-image-wrapper {
           height: 180px;

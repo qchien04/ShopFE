@@ -6,4 +6,6 @@ export interface Category {
   slug: string;
   image: string;
   active: boolean;
+  parentId?: number;
+  children?: Category[];
 }

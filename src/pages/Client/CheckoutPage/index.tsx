@@ -56,7 +56,7 @@ const CheckoutPage = () => {
     const payload: CreateOrderRequest = {
       addressId: currentAddress.id || 0,
       items: state.orderItems,
-      paymentMethod: PaymentMethod.MOMO
+      paymentMethod: PaymentMethod.BANK_TRANSFER
     };
     console.log("CREATE ORDER", payload);
     orderApi.createOrder(payload);
@@ -75,7 +75,7 @@ const CheckoutPage = () => {
   return (
     <div style={{ background: "#f5f5f5", minHeight: "100vh", padding: "0 0" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 16px" }}>
-        <CTitle level={2} style={{ marginTop: 0, color: "#1890ff" }}>
+        <CTitle level={2} style={{ marginTop: 10, color: "#1890ff" }}>
           <ShoppingOutlined /> Thanh toán
         </CTitle>
 

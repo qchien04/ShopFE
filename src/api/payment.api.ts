@@ -13,5 +13,8 @@ export const paymentApi = {
 
   payOSOder: (id:string): Promise<CreatePaymentLinkResponse> =>
     getData<CreatePaymentLinkResponse>(`/payments/${id}`),
+
+  // paymentStatus: (id:string): Promise<any> =>
+  //   getData<any>(`/payments/${id}`),
 }
 

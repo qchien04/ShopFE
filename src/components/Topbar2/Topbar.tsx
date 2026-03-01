@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Input, Badge, Dropdown, type MenuProps } from 'antd';
 import logo from '../../assets/logo.png';
+import logoShort from '../../assets/logoshort.png';
 import { 
   SearchOutlined, 
   HeartOutlined, 
@@ -13,16 +14,23 @@ import { queryClient } from '../../app/queryClient';
 import { logout } from '../../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector, type RootState } from '../../app/store';
-import { useCategoryList } from '../../hooks/Category/useCategotyList';
+import { useCategoryParentList } from '../../hooks/Category/useCategotyList';
 
 const TopBar = () => {
   const [cartCount, setCartCount] = useState(0);
-  const {data:categories} = useCategoryList();
+  const {data:categories} = useCategoryParentList();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
+  
   const {userAccount,isAuthenticated} = useAppSelector((state:RootState)=>state.auth);
 
+  const [keyword, setKeyword] = useState("");
+  const handleSearch = () => {
+    const trimmed = keyword.trim();
+    if (!trimmed) return;
+
+    navigate(`/search?keyword=${encodeURIComponent(trimmed)}`);
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -30,12 +38,16 @@ const TopBar = () => {
     navigate("/login");
   };
 
+  const handlePosts = () => {
+    navigate("/post");
+  };
+
   
   const handleDashboard = () => {
     console.log(userAccount)
     console.log(userAccount?.roles?.length)
     if(!isAuthenticated) navigate("/login");
-    if(userAccount?.roles?.length == 0) navigate("/user/address");
+    if(userAccount?.roles?.length == 0) navigate("/user/profile");
     if(userAccount?.roles?.length &&
       userAccount?.roles?.length>0 &&
       userAccount?.roles[0]=='ADMIN'
@@ -46,22 +58,26 @@ const TopBar = () => {
     navigate("/cart");
   };
 
-  // // Menu cho dropdown Sản Phẩm
-  // const productItems: MenuProps['items'] = [
-  //   { key: '1', label: 'Adapter - Bộ Sạc - Nguồn' },
-  //   { key: '2', label: 'Biến Áp' },
-  //   { key: '3', label: 'Boar Mạch' },
-  //   { key: '4', label: 'Các Loại Tụ' },
-  // ];
-
   // Menu cho dropdown Sản Phẩm
-  const productItems: MenuProps['items'] = categories?categories.map((category)=>{
-    return {
-      key:category.id,
-      label:category.name,
-      onClick:() => navigate(`/category/${category.id}`),
-    }
-  }):[]
+  const productItems: MenuProps['items'] = categories
+  ? categories.map((category) => ({
+      key: `parent-${category.id}`,
+      label: (
+        <span
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/category/${category.id}`);
+          }}
+        >
+          {category.name}
+        </span>
+      ),
+      children: category.children?.map((c) => ({
+        key: `child-${c.id}`,
+        label: c.name,
+      })),
+    }))
+  : [];
 
   const marketplaceItems: MenuProps['items'] = [
     { key: '1', label: 'Shopee' },
@@ -88,7 +104,8 @@ const TopBar = () => {
           {/* Logo */}
           <div className="topbar-logo">
             <div className="logo-icon" onClick={()=>navigate("/")}>
-                <img src={logo}></img>
+                <img src={logo} className="logo-full" />
+                <img src={logoShort} className="logo-short" />
             </div>
           </div>
 
@@ -97,9 +114,15 @@ const TopBar = () => {
             <Input
               className="search-input"
               placeholder="Tìm kiếm sản phẩm..."
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              onPressEnter={handleSearch}
               prefix={<SearchOutlined />}
               suffix={
-                <button className="search-btn">
+                <button 
+                  className="search-btn"
+                  onClick={handleSearch}
+                >
                   Tìm kiếm
                 </button>
               }
@@ -138,6 +161,10 @@ const TopBar = () => {
               trigger={['hover']}
               menu={{
                 items: productItems,
+                onClick: ({ key }) => {
+                  const id = key.split('-')[1];
+                  navigate(`/category/${id}`);
+                },
                 style: {
                   maxHeight: "300px",
                   overflowY: "auto",
@@ -164,7 +191,7 @@ const TopBar = () => {
             </Dropdown>
             
             <Dropdown menu={{items:blogItems}} trigger={['hover']}>
-              <a href="#" className="nav-item nav-dropdown">
+              <a href="#" onClick={handlePosts} className="nav-item nav-dropdown">
                 Bài Viết <DownOutlined />
               </a>
             </Dropdown>

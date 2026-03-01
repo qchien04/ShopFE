@@ -134,3 +134,9 @@
     background: #006aff;
   }
 }
+
+@media (max-width: 480px) {
+  .sidebar {
+    display: none;
+  }
+}

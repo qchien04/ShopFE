@@ -1,11 +1,30 @@
 export const productsQueryKeys = {
   all: ["products"] as const,
 
-  lists: () => [...productsQueryKeys.all, "list"] as const,
-
-  list: (type: string, params?: any) =>
-    [...productsQueryKeys.lists(), type, params] as const,
+  list: (
+    type: string,
+    brandId?: number,
+    categoryId?: number,
+    subCategoryIds?: string,
+    brandIds?: string,
+    sort?: string,
+    minPrice?: number,
+    maxPrice?: number
+  ) =>
+    [
+      "products",
+      "list",
+      type,
+      brandId ?? "",
+      categoryId ?? "",
+      subCategoryIds ?? "",
+      brandIds ?? "",
+      sort ?? "",
+      minPrice ?? 0,
+      maxPrice ?? 0,
+      
+    ] as const,
 
   detail: (id: number) =>
-    [...productsQueryKeys.all, "detail", id] as const,
-}
+    ["products", "detail", id] as const,
+};

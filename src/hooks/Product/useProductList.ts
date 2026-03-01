@@ -23,14 +23,37 @@ export const useProductList = <T = Product[]>({
   params,
 }: UseProductListOptions = {}) => {
   return useQuery<T>({
-    queryKey: productsQueryKeys.list(type, params),
+    queryKey: productsQueryKeys.list(
+      type,
+      params?.brandId,
+      params?.categoryId,
+      params?.subCategoryIds,
+      params?.brandIds,
+      params?.sort,
+      params?.minPrice,
+      params?.maxPrice
+    ),
     queryFn: () => {
       switch (type) {
         case "category":
-          return productApi.getByCategory(params?.category) as T
+          return productApi.getByCategory({
+            categoryId: params?.categoryId,
+            subCategoryIds: params?.subCategoryIds,
+            brandIds: params?.brandIds,
+            sort: params?.sort,
+            maxPrice:params?.maxPrice,
+            minPrice:params?.minPrice,
+
+          }) as T
 
         case "brand":
-          return productApi.getByBrand(params?.brand) as T
+          return productApi.getByBrand({
+            brandId: params?.brandId,
+            subCategoryIds: params?.subCategoryIds,
+            sort: params?.sort,
+            maxPrice:params?.maxPrice,
+            minPrice:params?.minPrice,
+          }) as T
 
         case "featured":
           return productApi.getFeaturedProducts() as T
@@ -39,7 +62,11 @@ export const useProductList = <T = Product[]>({
           return productApi.getNew(params?.categoryId) as T
 
         case "search":
-          return productApi.getByKeyword(params?.keyword) as T
+          return productApi.getByKeyword(
+            params?.keyword,
+            params?.page ?? 0,
+            params?.size ?? 8
+          ) as T
 
         default:
           return productApi.getAll() as T
@@ -53,10 +80,10 @@ export const useProductList = <T = Product[]>({
           return true
 
         case "category":
-          return Boolean(params?.category)
+          return Boolean(params?.categoryId)
 
         case "brand":
-          return Boolean(params?.brand)
+          return Boolean(params?.brandId)
 
         case "search":
           return Boolean(params?.keyword)

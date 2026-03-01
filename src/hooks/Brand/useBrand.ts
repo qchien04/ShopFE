@@ -3,11 +3,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { brandApi } from "../../api/brand.api"
 import { antdMessage } from "../../utils/antdMessage"
 import type { Brand } from "../../types/entity.type"
+import type { BrandFilterResponse } from "../../types/response.type"
 
 export const brandQueryKeys = {
   all: ["brand"] as const,
 
   lists: () => [...brandQueryKeys.all, "list"] as const,
+
+  listFilter: (id: number) => [...brandQueryKeys.all, "list","filter",id] as const,
 
   detail: (id: number) =>
     [...brandQueryKeys.all, "detail", id] as const,
@@ -82,3 +85,13 @@ export const useUpdateBrand = () => {
     }
   );
 };
+
+
+export const useBrandFilter = <T = BrandFilterResponse>(id:number) => {
+  return useQuery<T>({
+    queryKey: brandQueryKeys.listFilter(id),
+    queryFn: () => { 
+      return brandApi.getFilter(id) as T
+    }
+  })
+}

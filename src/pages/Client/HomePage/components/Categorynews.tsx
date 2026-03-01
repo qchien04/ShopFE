@@ -2,82 +2,28 @@ import { Card } from 'antd';
 import './CategoryNews.scss';
 import { useCategoryList } from '../../../../hooks/Category/useCategotyList';
 import { useNavigate } from 'react-router-dom';
-
-
-interface News {
-  id: number;
-  title: string;
-  excerpt: string;
-  image: string;
-  date: string;
-}
+import { useEffect, useState } from 'react';
+import { postApi } from '../../../../api/post.api';
+import type { Post } from '../../../../types/entity.type';
 
 const CategoryNews = () => {
   const {data:categories} = useCategoryList();
+  
+  const [posts,setPosts]=useState<Post[]>([])
+  const [popularNews,setPopularNews]=useState<Post[]>([])
   const nav=useNavigate()
-  const newsArticles: News[] = [
-    {
-      id: 1,
-      title: 'Tết Nguyên Đán 2026 – Nét Đẹp Văn Hóa Truyền Thống Của Người Việt',
-      excerpt: 'Có những khoảnh khắc thông thường, dù đi đâu hay làm gì, có những ngày tự ...',
-      image: 'https://images.unsplash.com/photo-1482685945432-29a7abf2f466?w=300',
-      date: '2026-01-15'
-    },
-    {
-      id: 2,
-      title: 'Xu hướng mua sắm Tết 2026: Thiết thực – ưu tiên hàng chất lượng không gian đóng',
-      excerpt: 'Có những khoảnh khắc thông thường, dù đi đâu hay làm gì, có những ngày tự ...',
-      image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=300',
-      date: '2026-01-10'
-    },
-    {
-      id: 3,
-      title: '11 Tiêu Chuẩn Ổ Cắm Điện Việt Nam Chọn Đúng Để Dùng An Toàn',
-      excerpt: 'Có những khoảnh khắc thông thường, dù đi đâu hay làm gì, có những ngày tự ...',
-      image: 'https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=300',
-      date: '2026-01-05'
-    },
-    {
-      id: 4,
-      title: 'Công Tắc 2 Cực Là Gì? Cấu Tạo, Nguyên Lý Hoạt Động Của Công Tắc 2 Cực',
-      excerpt: 'Có những khoảnh khắc thông thường, dù đi đâu hay làm gì, có những ngày tự ...',
-      image: 'https://images.unsplash.com/photo-1614963326505-842a3e0c6cff?w=300',
-      date: '2025-12-28'
-    }
-  ];
 
-  const popularNews = [
-    {
-      id: 5,
-      title: 'Mua thiết bị điện tử Tết 2026: Những sai lầm nhiều...',
-      image: 'https://images.unsplash.com/photo-1482685945432-29a7abf2f466?w=100'
-    },
-    {
-      id: 6,
-      title: 'Thiết bị điện nào cần kiểm tra trước Tết 2026?',
-      image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=100'
-    },
-    {
-      id: 7,
-      title: 'Chất Tẩy Sơn Kim Loại, Nhựa, Tường Hiệu Quả Sau ...',
-      image: 'https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=100'
-    },
-    {
-      id: 8,
-      title: 'Nhôm Tản Nhiệt Là Gì?- Ưu Điểm Và Nhược Điểm Khi...',
-      image: 'https://images.unsplash.com/photo-1614963326505-842a3e0c6cff?w=100'
-    },
-    {
-      id: 9,
-      title: 'Vi Sao Nhôm Lại Được Chọn Làm Vật Liệu Tản Nhiệt Số...',
-      image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=100'
-    },
-    {
-      id: 10,
-      title: 'D718 transistor hàng KEC - tương đương ma NM hoặc 450 Cái',
-      image: 'https://images.unsplash.com/photo-1614963326505-842a3e0c6cff?w=100'
-    }
-  ];
+
+  const getPost=async()=>{
+    const s=await postApi.getPre();
+    const s2=await postApi.getPopular();
+    setPosts(s);
+    setPopularNews(s2);
+  }
+
+  useEffect(()=>{
+    getPost();
+  },[])
 
   return (
     <div className="category-news-section">
@@ -115,19 +61,20 @@ const CategoryNews = () => {
         <div className="news-container">
           {/* Main News Grid */}
           <div className="news-grid">
-            {newsArticles.map((news) => (
+            {posts.map((news) => (
               <Card
+                onClick={()=>nav(`/post/${news.id}`)}
                 key={news.id}
                 className="news-card"
                 cover={
                   <div className="news-image-wrapper">
-                    <img src={news.image} alt={news.title} />
+                    <img src={news.thumbnail} alt={news.title} />
                   </div>
                 }
                 hoverable
               >
                 <h3 className="news-title">{news.title}</h3>
-                <p className="news-excerpt">{news.excerpt}</p>
+                <p className="news-excerpt">{news.description}</p>
               </Card>
             ))}
           </div>
@@ -140,8 +87,8 @@ const CategoryNews = () => {
             </div>
             <div className="popular-list">
               {popularNews.map((news) => (
-                <div key={news.id} className="popular-item">
-                  <img src={news.image} alt={news.title} />
+                <div key={news.id} onClick={()=>nav(`/post/${news.id}`)} className="popular-item">
+                  <img src={news.thumbnail} alt={news.title} />
                   <span className="popular-title">{news.title}</span>
                 </div>
               ))}

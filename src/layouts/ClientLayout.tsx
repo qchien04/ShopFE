@@ -1,53 +1,82 @@
-import { Layout, Menu } from "antd";
-import {
-  HomeOutlined,
-} from "@ant-design/icons";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Tabs, Avatar, Typography } from "antd";
+import { HomeOutlined, ShoppingOutlined, UserOutlined } from "@ant-design/icons";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
-const { Sider, Content } = Layout;
+const { Text } = Typography;
+
+const NAV_ITEMS = [
+  { key: "profile", icon: <UserOutlined />, label: "Hồ sơ" },
+  { key: "address", icon: <HomeOutlined />, label: "Địa chỉ" },
+  { key: "orders", icon: <ShoppingOutlined />, label: "Đơn hàng" },
+];
 
 const ClientLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const selectedKey = location.pathname.split("/")[2] || "address";
 
   return (
-    <Layout style={{ minHeight: "100vh" , width:"100%"}}>
-      <Sider collapsible trigger={null} theme="light">
-        <div style={{textAlign: "center", padding: 16 }}>
-          🏠 Người dùng
-        </div>
-
-        <Menu
-          mode="inline"
-          defaultSelectedKeys={["address"]}
-          items={[
-            {
-              key: "address",
-              icon: <HomeOutlined />,
-              label: "Address",
-              onClick: () => navigate("/user/address"),
-            },
-            {
-              key: "orders",
-              icon: <HomeOutlined />,
-              label: "Orders",
-              onClick: () => navigate("/user/orders"),
-            }, 
-            {
-              key: "test",
-              icon: <HomeOutlined />,
-              label: "Test",
-              onClick: () => navigate("/user/test"),
-            },
-          ]}
+    <div
+      style={{
+        maxWidth: 900,
+        margin: "0 auto",
+        padding: "24px 16px 60px",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* User info */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          marginBottom: 20,
+          padding: "16px",
+          background: "#fff",
+          borderRadius: 10,
+          boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+        }}
+      >
+        <Avatar
+          size={48}
+          icon={<UserOutlined />}
+          style={{ background: "#00b96b", flexShrink: 0 }}
         />
-      </Sider>
+        <div>
+          <Text strong style={{ display: "block" }}>
+            Nguyễn Văn A
+          </Text>
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            Thành viên
+          </Text>
+        </div>
+      </div>
 
-      <Layout style={{ width: "100%" }}>
-        <Content style={{ paddingLeft: 16 }}>
-          <Outlet />
-        </Content>
-      </Layout>
-    </Layout>
+      {/* Tabs */}
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: 10,
+          padding: "0 16px 16px",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+        }}
+      >
+        <Tabs
+          activeKey={selectedKey}
+          onChange={(key) => navigate(`/user/${key}`)}
+          items={NAV_ITEMS.map((item) => ({
+            key: item.key,
+            label: (
+              <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                {item.icon}
+                {item.label}
+              </span>
+            ),
+            children: <Outlet />,
+          }))}
+        />
+      </div>
+    </div>
   );
 };
 

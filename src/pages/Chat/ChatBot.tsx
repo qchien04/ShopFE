@@ -45,7 +45,7 @@ const ChatBot = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [isMinimized, setIsMinimized] = useState(false);
 
-  const [isClosed, setIsClosed] = useState(false);
+  const [isClosed, setIsClosed] = useState(true);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<any>(null);

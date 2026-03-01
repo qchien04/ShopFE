@@ -10,6 +10,9 @@ export interface ProductSpecification{
   specName:string;
   specValue:string;
 }
+export type ProductStatus =
+  | "DRAFT" | "PUBLISHED" | "OUT_OF_STOCK" | "DISCONTINUED";
+
 
 export interface Product {
   id: number;
@@ -20,7 +23,7 @@ export interface Product {
   salePrice: number;
   stockQuantity: number;
   mainImage: string;
-  status: "DRAFT" | "PUBLISHED" | "OUT_OF_STOCK" | "DISCONTINUED";
+  status: ProductStatus;
   category?: Category;
   brand?:Brand;
   brandName: string;

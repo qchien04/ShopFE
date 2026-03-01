@@ -7,3 +7,10 @@ export const useMyOrders = () => {
     queryFn: orderApi.getUserOrder,
   });
 };
+
+export const useAdminOrders = () => {
+  return useQuery({
+    queryKey: ["admin-orders"],
+    queryFn: orderApi.getAllOrder,
+  });
+};

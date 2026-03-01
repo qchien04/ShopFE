@@ -13,10 +13,10 @@ import logo from '../../assets/logo.png'
 import visa from '../../assets/visa.png'
 import banking from '../../assets/banking.png'
 import "./Footer.scss";
-import { useCategoryList } from '../../hooks/Category/useCategotyList';
+import { useCategoryList, useCategoryParentList } from '../../hooks/Category/useCategotyList';
 
 const Footer: React.FC = () => {
-  const {data:categories} = useCategoryList();
+  const {data:categories} = useCategoryParentList();
   return (
     <footer className="footer">
       {/* Main Footer Content */}
@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
             <h3 className="column-title">Sản Phẩm</h3>
             <ul className="footer-links">
               {categories?.slice(0,6).map((cat)=>{
-                return <li><a href={`/category/${cat.id}`}>{cat.name}</a></li>
+                return <li key={cat.id}><a href={`/category/${cat.id}`}>{cat.name}</a></li>
               })}
               <li><a href={`/category/`}>Xem tất cả sản phẩm</a></li>
             </ul>

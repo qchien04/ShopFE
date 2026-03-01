@@ -1,33 +1,39 @@
-// MainContent.scss
-
 .main-content {
+  padding-top: 20px;
   background: #f5f5f5;
-  padding: 0;
-  width: 1500px;
-  padding-right:10px;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  .content-container {
-    width:100%;
-    margin: 0 auto;
-    padding: 0 24px;
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 24px;
-  }
 }
 
-// ==================== SIDEBAR ====================
+/* Container chuẩn */
+.content-container {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 0px;
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  gap: 24px;
+}
+
+/* Bottom sections */
+.section-wrapper {
+  width: 100%;
+  max-width: 1500px;
+  margin: 40px auto;
+  padding: 0 24px;
+}
+
+/* ==================== SIDEBAR ==================== */
 .sidebar {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-
-// ==================== MAIN AREA ====================
+/* ==================== MAIN AREA ==================== */
 .main-area {
   display: flex;
   flex-direction: column;
@@ -35,51 +41,39 @@
   width: 100%;
 }
 
-.banner2 {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 24px;
-    display: grid;
-  }
+/* ==================== RESPONSIVE ==================== */
 
-// Responsive Design
 @media (max-width: 1200px) {
-  .main-content {
-    .content-container {
-      grid-template-columns: 280px 1fr;
-      gap: 16px;
-    }
+  .content-container {
+    grid-template-columns: 260px 1fr;
+    gap: 16px;
   }
 }
 
 @media (max-width: 992px) {
-  .main-content {
-    .content-container {
-      grid-template-columns: 1fr;
-    }
+  .content-container {
+    grid-template-columns: 1fr;
   }
 
   .sidebar {
     order: 2;
-
-    .social-contacts {
-      position: fixed;
-      left: auto;
-      right: 24px;
-      flex-direction: row;
-      bottom: 24px;
-    }
   }
 
   .main-area {
     order: 1;
-
-    .quick-actions {
-      grid-template-columns: repeat(3, 1fr);
-    }
   }
 }
 
 @media (max-width: 768px) {
+  .content-container,
+  .section-wrapper {
+    padding: 0 16px;
+  }
+}
 
+@media (max-width: 480px) {
+  .content-container,
+  .section-wrapper {
+    padding: 0 10px;
+  }
 }

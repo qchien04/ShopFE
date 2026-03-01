@@ -22,7 +22,16 @@ import CategoryPage from "../pages/Client/CategoryPage";
 import AboutShop from "../pages/Client/AboutShop/AboutShop";
 import OrdersPage from "../pages/Admin/Order";
 import ClientLayout from "../layouts/ClientLayout";
-import BrandPage from "../pages/Client/CategoryPage copy";
+import BrandPage from "../pages/Client/BrandPage";
+import CreatePostPage from "../pages/Admin/SEO/CreatePost";
+import SearchPage from "../pages/Client/SearchPage";
+import PostDetailPage from "../pages/Client/PostDetail/PostPage";
+import PostsPage from "../pages/Client/Post";
+import Dashboard from "../pages/Admin/Dashboard/Dashboard";
+import BannerManager from "../pages/Admin/Banner";
+import SupportWidget from "../components/Support";
+import ChatManagePage from "../pages/Admin/ChatManager";
+import ProfilePage from "../pages/Client/Dashboard/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +40,7 @@ export const router = createBrowserRouter([
       <AuthProvider>
         <MainLayout />
         <ChatBot></ChatBot>
+        <SupportWidget></SupportWidget>
       </AuthProvider>
     ),
     children: [
@@ -63,9 +73,25 @@ export const router = createBrowserRouter([
         path: "/product/:id",
         element: <ProductDetail />,
       },
+       {
+        path: "/post/:id",
+        element: <PostDetailPage />,
+      },
       {
         path: "/cart",
         element: <CartPage />,
+      },
+      {
+        path: "/search",
+        element: <SearchPage />,
+      },
+      {
+        path: "/post",
+        element: <PostsPage />,
+      },
+      {
+        path: "checkout",
+        element: <CheckoutPage />,
       },
       {
         path: "/user",
@@ -73,6 +99,11 @@ export const router = createBrowserRouter([
                     <ClientLayout/>
                   </PrivateRoute>,
         children: [
+          {
+            path: "profile",
+            element: <ProfilePage />,
+            index: true,
+          },
           {
             path: "address",
             element: <CustomerAddressPage />,
@@ -83,46 +114,6 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: "/admin",
-        element: <PrivateRoute>
-                    <OwnerLayout/>
-                  </PrivateRoute>,
-        children: [
-          {
-            path: "products",
-            element: <ProductsPage />,
-          },
-          {
-            path: "categories",
-            element: <CategoriesPage />,
-          },
-          {
-            path: "brands",
-            element: <BrandsPage />,
-          },
-          {
-            path: "address",
-            element: <CustomerAddressPage />,
-          },
-          {
-            path: "orders",
-            element: <OrdersPage />,
-          },
-          {
-            path: "checkout",
-            element: <CheckoutPage />,
-          },
-          {
-            path: "configs",
-            element: <HomepageConfigPage />,
-          },
-          {
-            path: "test",
-            element: <Test />,
-          }
-        ],
-      },
       // Catch all
       {
         path: "*",
@@ -130,4 +121,58 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/admin",
+    element: (
+      <AuthProvider>
+        <OwnerLayout></OwnerLayout>
+      </AuthProvider>
+    ),
+    children: [
+      {
+        path: "dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "products",
+        element: <ProductsPage />,
+      },
+      {
+        path: "categories",
+        element: <CategoriesPage />,
+      },
+      {
+        path: "brands",
+        element: <BrandsPage />,
+      },
+      {
+        path: "address",
+        element: <CustomerAddressPage />,
+      },
+      {
+        path: "orders",
+        element: <OrdersPage />,
+      },
+      {
+        path: "banner",
+        element: <BannerManager />,
+      },
+      {
+        path: "chat-manager",
+        element: <ChatManagePage />,
+      },
+      {
+        path: "configs",
+        element: <HomepageConfigPage />,
+      },
+      {
+        path: "post",
+        element: <CreatePostPage />,
+      },
+      {
+        path: "test",
+        element: <Test />,
+      }
+    ],
+  }
 ]);
