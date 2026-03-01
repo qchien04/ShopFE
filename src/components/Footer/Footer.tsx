@@ -89,7 +89,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <ClockCircleOutlined className="contact-icon" />
-                <span>Thứ 2 - Thứ 7: 8:00 - 20:00</span>
+                <span>Thứ 2 - Thứ 7: 8:00 - 19:00</span>
               </li>
             </ul>
 
