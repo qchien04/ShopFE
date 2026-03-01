@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Modal,
   Descriptions,
@@ -9,7 +9,6 @@ import {
   Space,
   Tag,
   Input,
-  Select,
   message,
   Divider,
   Image
@@ -266,7 +265,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
           columns={itemColumns}
           dataSource={order.items}
           pagination={false}
-          summary={(pageData) => (
+          summary={() => (
             <Table.Summary fixed>
               <Table.Summary.Row>
                 <Table.Summary.Cell index={0} colSpan={3} align="right">

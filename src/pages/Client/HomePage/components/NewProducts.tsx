@@ -1,5 +1,4 @@
-import { Card, Tag, Button } from 'antd';
-import { ShoppingCartOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import './NewProducts.scss';
 import { useProductList } from '../../../../hooks/Product/useProductList';
 import { useCategoryList } from '../../../../hooks/Category/useCategotyList';

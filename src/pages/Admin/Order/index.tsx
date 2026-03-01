@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Table, 
   Tag, 
@@ -7,10 +7,6 @@ import {
   Input, 
   Select, 
   Modal,
-  Descriptions,
-  Steps,
-  Timeline,
-  Badge,
   Dropdown,
   message,
   DatePicker,
@@ -163,9 +159,7 @@ const OrdersPage = () => {
 
   const paymentMethodText: Record<PaymentMethod, string> = {
     BANK_TRANSFER: 'Chuyển khoản',
-    MOMO: 'MoMo',
-    VNPAY: 'VNPay',
-    ZALOPAY: 'ZaloPay'
+    COD: 'Thanh toán khi nhận hàng'
   };
 
   const paymentStatusColors: Record<PaymentStatus, string> = {

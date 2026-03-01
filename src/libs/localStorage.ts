@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
 
 const JWT = 'jwtToken'
 
@@ -9,7 +9,7 @@ export function getStoredAuth(): string | null {
 }
 
 export function checkAuth(): string {
-  const now: number = dayjs().unix()
+  // const now: number = dayjs().unix()
   const accessToken: string | null = getStoredAuth()
   if (!!accessToken) return accessToken
   return ''

@@ -1,6 +1,6 @@
 // SearchPage.tsx
-import { Breadcrumb, Card, Col, Layout, Row, Pagination, Typography, Slider, Checkbox, Radio, Button, InputNumber, Divider, Tag, Collapse } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Breadcrumb, Card, Col, Layout, Row, Pagination, Typography, Checkbox, Radio, Button, InputNumber, Divider, Tag } from "antd";
+import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useProductList } from "../../../hooks/Product/useProductList";
 import FeaturedProductCard from "../../../components/FeaturedProductCard";
@@ -9,7 +9,6 @@ import type { PageResponse } from "../../../api/product.api";
 import type { Product } from "../../../types/product.type";
 import {
   FilterOutlined,
-  CloseOutlined,
   ReloadOutlined,
   SwapOutlined,
 } from "@ant-design/icons";

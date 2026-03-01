@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Input, Button, Avatar, Tooltip, Spin, Upload, message } from 'antd';
+import { Input, Button, Avatar, Tooltip, Upload, message } from 'antd';
 import {
   SendOutlined,
   PaperClipOutlined,

@@ -16,7 +16,7 @@ import MainContent from "../pages/Client/HomePage";
 import ProductDetail from "../pages/Client/ProductDetailPage/ProductDetailPage";
 import Test from "../pages/Admin/test";
 import BrandsPage from "../pages/Admin/Brand/BrandsPage";
-import HomepageConfigPage from "../pages/Admin/Config/Homepageconfigpage";
+// import HomepageConfigPage from "../pages/Admin/Config/Homepageconfigpage";
 import ChatBot from "../pages/Chat/ChatBot";
 import CategoryPage from "../pages/Client/CategoryPage";
 import AboutShop from "../pages/Client/AboutShop/AboutShop";
@@ -160,10 +160,6 @@ export const router = createBrowserRouter([
       {
         path: "chat-manager",
         element: <ChatManagePage />,
-      },
-      {
-        path: "configs",
-        element: <HomepageConfigPage />,
       },
       {
         path: "post",

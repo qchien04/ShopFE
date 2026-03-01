@@ -4,7 +4,7 @@ import type { LoginPayload } from "../../types";
 import welcome from '../../assets/welcome.png';
 import { GoogleOutlined } from "@ant-design/icons";
 import './Signin.scss';
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { antdMessage } from "../../utils/antdMessage";
 import { useLogin } from "../../hooks/Auth/useLogin";
 import { useGoogleOAuth } from "../../hooks/Auth/useGoogleOAuth";
@@ -24,7 +24,6 @@ const LoginPage: React.FC = () => {
     }
   },[])
   
-  const [loading, setLoading] =useState(false);
 
   const rules = [
     {

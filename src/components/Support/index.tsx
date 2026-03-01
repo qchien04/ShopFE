@@ -9,7 +9,7 @@ export default function SupportWidget() {
   const [open, setOpen] = useState(false);
 
   const fetchChat=async()=>{
-    const ok=await axiosClient.post("/chat/start",{ customerId: user!.id })
+    const ok:any=await axiosClient.post("/chat/start",{ customerId: user!.id })
     setRoomId(ok.id)
   }
   useEffect(() => {

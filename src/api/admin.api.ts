@@ -1,5 +1,5 @@
-import { deleteData, getData, postData, putData } from "../app/axiosClient"
-import type { BannerConfig, BannerSlot, Cart, CartItem, DashboardDTO, Order } from "../types/entity.type"
+import {  getData, postData } from "../app/axiosClient"
+import type { BannerConfig, BannerSlot, DashboardDTO } from "../types/entity.type"
 
 export const adminApi = {
   // pay: (): Promise<Order[]> =>

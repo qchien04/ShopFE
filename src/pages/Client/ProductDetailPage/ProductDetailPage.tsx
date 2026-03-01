@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Breadcrumb, 
   Rate, 
@@ -6,7 +6,6 @@ import {
   Button, 
   Image, 
   Tabs,
-  Tag
 } from 'antd';
 import {
   HeartOutlined,
@@ -31,7 +30,7 @@ import { useAddToCart } from '../../../hooks/Cart/useAddToCart';
 // }
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const {data:product, isLoading} =useProductDetail(Number(id));
+  const {data:product} =useProductDetail(Number(id));
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState('3 Lỗ Chéo');

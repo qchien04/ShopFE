@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, Tag, Button } from 'antd';
 import { ShoppingCartOutlined, FireOutlined } from '@ant-design/icons';
 import './HotDeals.scss';

@@ -1,8 +1,7 @@
 
 import { postApi } from '../../../api/post.api';
-import type { Post, PostPayload } from '../../../types/entity.type';
+import type { PostPayload } from '../../../types/entity.type';
 import SalePostEditor from './SalePostEditor';
-import axios from 'axios';
 
 const CreatePostPage: React.FC = () => {
   const handleSave = async (data: PostPayload): Promise<void> => {

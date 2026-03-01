@@ -19,12 +19,12 @@ export default function ChatManagePage() {
 
   // Lấy danh sách room đang chờ + active
   const fetchRoom=async()=>{
-    const ok= await axiosClient.get("/chat/rooms?status=WAITING");
+    const ok:Room[]= await axiosClient.get("/chat/rooms?status=WAITING");
     setRooms(ok);
   }
 
   const acceptRoom=async(room:Room)=>{
-    const ok=await axiosClient.post("/chat/rooms/accept",{ roomId: room.id, staffId: user!.id });
+    await axiosClient.post("/chat/rooms/accept",{ roomId: room.id, staffId: user!.id });
   }
 
 

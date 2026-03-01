@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Input, Badge, Dropdown, type MenuProps } from 'antd';
 import logo from '../../assets/logo.png';
 import logoShort from '../../assets/logoshort.png';
@@ -52,6 +52,7 @@ const TopBar = () => {
       userAccount?.roles?.length>0 &&
       userAccount?.roles[0]=='ADMIN'
     ) navigate("/admin/address");
+    setCartCount(0);
   };
 
   const handleCart = () => {
@@ -96,6 +97,38 @@ const TopBar = () => {
     { key: '3', label: 'Tin tức' },
   ];
 
+
+  const accountItems: MenuProps['items'] = isAuthenticated
+  ? [
+      {
+        key: 'profile',
+        label: (
+          <span onClick={handleDashboard}>
+            Hồ sơ
+          </span>
+        ),
+      },
+      {
+        key: 'logout',
+        label: (
+          <span onClick={handleLogout}>
+            Đăng xuất
+          </span>
+        ),
+      },
+    ]
+  : [
+      {
+        key: 'login',
+        label: (
+          <span onClick={() => navigate('/login')}>
+            Đăng nhập
+          </span>
+        ),
+      },
+    ];
+
+
   return (
     <div className="topbar">
       {/* Top Header - Nền xanh lá */}
@@ -136,10 +169,15 @@ const TopBar = () => {
               <span className="action-text">Yêu thích</span>
             </div>
             
-            <div className="action-item" onClick={handleDashboard}>
-              <UserOutlined className="action-icon" />
-              <span className="action-text">Tài khoản</span>
-            </div>
+            <Dropdown
+              menu={{ items: accountItems }}
+              trigger={['hover']}
+            >
+              <div className="action-item" style={{ cursor: 'pointer' }}>
+                <UserOutlined className="action-icon" />
+                <span className="action-text">Tài khoản</span>
+              </div>
+            </Dropdown>
             
             <div className="action-item" onClick={handleCart}>
               <Badge count={cartCount} showZero>

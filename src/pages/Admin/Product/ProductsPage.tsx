@@ -2,7 +2,6 @@
 import { Table, Button, Space, Popconfirm, Tag, Image, Input } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useProductList } from "../../../hooks/Product/useProductList";
 import { useDeleteProduct } from "../../../hooks/Product/useDeleteProduct";
 import type { Product } from "../../../types/product.type";
@@ -14,7 +13,6 @@ import { useUpdateProduct } from "../../../hooks/Product/useUpdateProduct";
 import { useProductDetail } from "../../../hooks/Product/useProduct";
 
 const ProductsPage = () => {
-  const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   
   const { data, isLoading } = useProductList();

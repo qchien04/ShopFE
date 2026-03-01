@@ -13,7 +13,7 @@ import logo from '../../assets/logo.png'
 import visa from '../../assets/visa.png'
 import banking from '../../assets/banking.png'
 import "./Footer.scss";
-import { useCategoryList, useCategoryParentList } from '../../hooks/Category/useCategotyList';
+import { useCategoryParentList } from '../../hooks/Category/useCategotyList';
 
 const Footer: React.FC = () => {
   const {data:categories} = useCategoryParentList();

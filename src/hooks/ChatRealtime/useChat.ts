@@ -17,7 +17,7 @@ export function useChat(roomId: number, userId: number) {
   const [connected, setConnected] = useState(false);
   const clientRef = useRef<Client | null>(null);
   const fetchHistory=async()=>{
-    const mes=await axiosClient.get(`/chat/rooms/${roomId}/messages`)
+    const mes:Message[]=await axiosClient.get(`/chat/rooms/${roomId}/messages`)
     setMessages(mes);
   }
   useEffect(() => {

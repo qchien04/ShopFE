@@ -1,7 +1,5 @@
-import { deleteData, getData, postData, putData } from "../app/axiosClient"
-import type { ApiResponse } from "../types"
-import type { Cart, CartItem, Order } from "../types/entity.type"
-import type { AddToCartRequest, CreateOrderRequest, CreatePaymentRequest, UpdateCartItemQuantityRequest } from "../types/request.type"
+import { getData, postData } from "../app/axiosClient"
+import type {  CreatePaymentRequest } from "../types/request.type"
 import type { CreatePaymentLinkResponse } from "../types/response.type"
 
 export const paymentApi = {

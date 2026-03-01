@@ -1,4 +1,4 @@
-import { deleteData, deleteDataNoBody, getData, postData, putData } from "../app/axiosClient"
+import { deleteDataNoBody, getData, postData, putData } from "../app/axiosClient"
 import type { Post, PostPayload, PostStatus } from "../types/entity.type";
 export interface PageResponse<T> {
   content: T[];
