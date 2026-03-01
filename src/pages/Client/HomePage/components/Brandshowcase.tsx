@@ -1,6 +1,6 @@
 import { Carousel } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import './BrandShowcase.scss';
+import './Brandshowcase.scss';
 import { useNavigate } from 'react-router-dom';
 import { useBrandList } from '../../../../hooks/Brand/useBrand';
 

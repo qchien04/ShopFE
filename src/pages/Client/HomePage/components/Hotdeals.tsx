@@ -1,6 +1,6 @@
 import { Card, Tag, Button } from 'antd';
 import { ShoppingCartOutlined, FireOutlined } from '@ant-design/icons';
-import './HotDeals.scss';
+import './Hotdeals.scss';
 import { useProductList } from '../../../../hooks/Product/useProductList';
 import { useNavigate } from 'react-router-dom';
 
