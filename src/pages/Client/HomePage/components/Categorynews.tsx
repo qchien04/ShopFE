@@ -1,5 +1,5 @@
 import { Card } from 'antd';
-import './CategoryNews.scss';
+import './Categorynews.scss';
 import { useCategoryList } from '../../../../hooks/Category/useCategotyList';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
