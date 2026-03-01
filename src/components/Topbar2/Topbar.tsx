@@ -15,6 +15,8 @@ import { logout } from '../../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector, type RootState } from '../../app/store';
 import { useCategoryParentList } from '../../hooks/Category/useCategotyList';
+import { LogoutOutlined, SettingOutlined } from "@ant-design/icons";
+
 
 const TopBar = () => {
   const [cartCount, setCartCount] = useState(0);
@@ -98,33 +100,51 @@ const TopBar = () => {
   ];
 
 
-  const accountItems: MenuProps['items'] = isAuthenticated
+  const accountItems: MenuProps["items"] = isAuthenticated
   ? [
       {
-        key: 'profile',
+        key: "user-info",
+        disabled: true,
         label: (
-          <span onClick={handleDashboard}>
-            Hồ sơ
-          </span>
+          <div style={{ padding: "4px 8px" }}>
+            <div style={{ fontWeight: 600 }}>
+              {userAccount?.username || "User"}
+            </div>
+            <div style={{ fontSize: 12, color: "#888" }}>
+              {userAccount?.email}
+            </div>
+          </div>
         ),
       },
       {
-        key: 'logout',
-        label: (
-          <span onClick={handleLogout}>
-            Đăng xuất
-          </span>
-        ),
+        type: "divider",
+      },
+      {
+        key: "profile",
+        icon: <UserOutlined />,
+        label: "Hồ sơ",
+        onClick: handleDashboard,
+      },
+      {
+        key: "settings",
+        icon: <SettingOutlined />,
+        label: "Cài đặt",
+        onClick: () => navigate("/user/profile"),
+      },
+      {
+        key: "logout",
+        danger: true,
+        icon: <LogoutOutlined />,
+        label: "Đăng xuất",
+        onClick: handleLogout,
       },
     ]
   : [
       {
-        key: 'login',
-        label: (
-          <span onClick={() => navigate('/login')}>
-            Đăng nhập
-          </span>
-        ),
+        key: "login",
+        icon: <UserOutlined />,
+        label: "Đăng nhập",
+        onClick: () => navigate("/login"),
       },
     ];
 
