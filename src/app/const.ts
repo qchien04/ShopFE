@@ -1,8 +1,6 @@
-export const BASE_URL = 'https://anbato.site/api'
-export const APP_URL = 'https://anbato.site'
 
-// export const BASE_URL = 'https://anbato.site:8080/api'
-// export const APP_URL = 'https://anbato.site'
+export const BASE_URL = import.meta.env.VITE_BASE_URL
+export const APP_URL = import.meta.env.VITE_APP_URL
 
 export const API_TIMEOUT = 100000
 
