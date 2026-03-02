@@ -40,11 +40,11 @@ const CheckoutPage = () => {
   }, [products, state.orderItems]);
 
   const subtotal = items.reduce(
-    (sum, i) => sum + (i.product?.price || 0) * i.quantity,
+    (sum, i) => sum + (i.product?.salePrice || 0) * i.quantity,
     0
   );
-  const shippingFee = 30000;
-  const total = subtotal + shippingFee;
+  const shippingFee =20000;
+  const total = subtotal + shippingFee - shippingFee;
 
   const currentAddress = selectedAddress || addresses?.find((a) => a.isDefault) || addresses?.[0];
 
@@ -176,6 +176,10 @@ const CheckoutPage = () => {
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <Text type="secondary">Phí vận chuyển</Text>
+                  <Text>{shippingFee.toLocaleString()} ₫</Text>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <Text type="secondary">Giảm giá</Text>
                   <Text>{shippingFee.toLocaleString()} ₫</Text>
                 </div>
                 <Divider style={{ margin: "8px 0" }} />
