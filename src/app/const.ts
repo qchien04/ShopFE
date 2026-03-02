@@ -1,5 +1,9 @@
-export const BASE_URL = 'http://localhost:8080/api'
-export const APP_URL = 'http://anbato.site'
+export const BASE_URL = 'https://anbato.site:8080/api'
+export const APP_URL = 'https://anbato.site'
+
+// export const BASE_URL = 'https://anbato.site:8080/api'
+// export const APP_URL = 'https://anbato.site'
+
 export const API_TIMEOUT = 100000
 
 import { ELanguage } from './interface'
