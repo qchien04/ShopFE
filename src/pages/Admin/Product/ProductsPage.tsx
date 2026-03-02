@@ -15,7 +15,7 @@ import { useProductDetail } from "../../../hooks/Product/useProduct";
 const ProductsPage = () => {
   const [searchText, setSearchText] = useState("");
   
-  const { data, isLoading } = useProductList();
+  const { data, isLoading } = useProductList<Product[]>({type:"all"});
   const { mutate: deleteProduct, isPending: deleting } = useDeleteProduct();
 
   const filteredData = data?.filter((item) =>

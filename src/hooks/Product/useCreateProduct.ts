@@ -10,7 +10,7 @@ export const useCreateProduct = () => {
     mutationFn: productApi.createProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: productsQueryKeys.list("create"),
+        queryKey: productsQueryKeys.all,
       });
     },
   });

@@ -3,10 +3,11 @@ import { ShoppingCartOutlined, FireOutlined } from '@ant-design/icons';
 import './Hotdeals.scss';
 import { useProductList } from '../../../../hooks/Product/useProductList';
 import { useNavigate } from 'react-router-dom';
+import type { Product } from '../../../../types/product.type';
 
 
 const HotDeals = () => {
-  const {data:hotProducts}=useProductList({type:"featured"})
+  const {data:hotProducts}=useProductList<Product[]>({type:"featured"})
   const nav=useNavigate();
   return (
     <div className="hot-deals-section">

@@ -25,7 +25,7 @@ const FeaturedProducts = ({
   title = "Sản Phẩm Nổi Bật",
 }: FeaturedProductsProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { data: products } = useProductList({ type: "featured" });
+  const { data: products } = useProductList<Product[]>({ type: "featured" });
 
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
