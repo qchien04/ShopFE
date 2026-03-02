@@ -32,6 +32,7 @@ import BannerManager from "../pages/Admin/Banner";
 import SupportWidget from "../components/Support";
 import ChatManagePage from "../pages/Admin/ChatManager";
 import ProfilePage from "../pages/Client/Dashboard/Profile";
+import PaymentSuccess from "../pages/Client/PaymentStatus/Success";
 
 export const router = createBrowserRouter([
   {
@@ -76,6 +77,10 @@ export const router = createBrowserRouter([
        {
         path: "/post/:id",
         element: <PostDetailPage />,
+      },
+      {
+        path: "success",
+        element: <PaymentSuccess />,
       },
       {
         path: "/cart",
