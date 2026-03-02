@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://anbato.site:8080/api'
+export const BASE_URL = 'https://anbato.site/api'
 export const APP_URL = 'https://anbato.site'
 
 // export const BASE_URL = 'https://anbato.site:8080/api'
