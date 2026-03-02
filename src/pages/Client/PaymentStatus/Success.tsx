@@ -1,85 +1,78 @@
-import React from "react";
-import { Result, Button, Card } from "antd";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Button, Card } from "antd";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircleFilled } from "@ant-design/icons";
+import styles from "./PaymentSuccess.module.scss";
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
-  // const [params] = useSearchParams();
+  const [params] = useSearchParams();
 
-  // // Lấy dữ liệu từ query params (ví dụ ?orderId=123&amount=500000)
-  // const orderId = params.get("orderId") || "DH123456";
-  // const amount = params.get("amount") || "500000";
-  // const paymentMethod = params.get("method") || "Thanh toán khi nhận hàng";
+  const orderId = params.get("orderId") || "DH123456";
+  const amount = params.get("amount") || "500000";
+  const paymentMethod = params.get("method") || "Chuyển khoản";
+
+  const [countdown, setCountdown] = useState(10);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          navigate("/");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [navigate]);
 
   return (
-    <div style={styles.wrapper}>
-      <Card style={styles.card}>
-        <Result
-          icon={<CheckCircleFilled style={{ color: "#52c41a" }} />}
-          title="Thanh toán thành công!"
-          subTitle="Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đang được xử lý."
-        />
+    <div className={styles.wrapper}>
+      <Card className={styles.card}>
+        <div className={styles.successIcon}>
+          <CheckCircleFilled />
+        </div>
 
-        {/* <Descriptions
-          bordered
-          column={1}
-          size="middle"
-          style={{ marginTop: 20 }}
-        >
-          <Descriptions.Item label="Mã đơn hàng">
-            {orderId}
-          </Descriptions.Item>
-          <Descriptions.Item label="Tổng tiền">
-            {Number(amount).toLocaleString()} đ
-          </Descriptions.Item>
-          <Descriptions.Item label="Phương thức thanh toán">
-            {paymentMethod}
-          </Descriptions.Item>
-        </Descriptions> */}
+        <h1 className={styles.title}>Thanh toán thành công</h1>
+        <p className={styles.subtitle}>
+          Cảm ơn bạn đã mua hàng. Đơn hàng đang được xử lý.
+        </p>
 
-        <div style={styles.buttonGroup}>
+        <div className={styles.orderInfo}>
+          <div>
+            <span>Mã đơn hàng</span>
+            <strong>{orderId}</strong>
+          </div>
+
+          <div>
+            <span>Tổng tiền</span>
+            <strong>{Number(amount).toLocaleString()} đ</strong>
+          </div>
+
+          <div>
+            <span>Phương thức</span>
+            <strong>{paymentMethod}</strong>
+          </div>
+        </div>
+
+        <div className={styles.actions}>
           <Button
             type="primary"
             size="large"
-            onClick={() => navigate("/")}
-          >
-            Về trang chủ
-          </Button>
-
-          {/* <Button
-            size="large"
-            onClick={() => navigate(`/`)}
+            onClick={() => navigate(`/user/orders`)}
           >
             Xem đơn hàng
-          </Button> */}
+          </Button>
+
+          <Button size="large" onClick={() => navigate("/")}>
+            Về trang chủ ({countdown}s)
+          </Button>
         </div>
       </Card>
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  wrapper: {
-    minHeight: "80vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "#f5f5f5",
-    padding: "20px",
-  },
-  card: {
-    width: "100%",
-    maxWidth: 700,
-    borderRadius: 12,
-  },
-  buttonGroup: {
-    marginTop: 30,
-    display: "flex",
-    gap: 16,
-    justifyContent: "center",
-    flexWrap: "wrap",
-  },
 };
 
 export default PaymentSuccess;

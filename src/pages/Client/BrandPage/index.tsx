@@ -2,10 +2,11 @@ import { Button, Col, Drawer, Layout, Row, Badge } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useCallback, useMemo, useState } from "react";
-import { useProductList } from "../../../hooks/Product/useProductList";
+import { useProductList, type ParamSearch } from "../../../hooks/Product/useProductList";
 import FeaturedProductCard from "../../../components/FeaturedProductCard";
 import { Card } from "antd";
 import BrandSidebar from "./Component/CategorySidebar";
+import { Pagination } from "antd";
 
 const { Content } = Layout;
 
@@ -14,6 +15,8 @@ const ProductSkeleton = () => <Card loading style={{ width: "100%" }} />;
 export default function BrandPage() {
   const { slug } = useParams<{ slug: string }>();
   const brandId = Number(slug);
+  const [page, setPage] = useState(0);
+  const pageSize = 8;
 
   const [filters, setFilters] = useState({
     sort: "default",
@@ -30,23 +33,22 @@ export default function BrandPage() {
 
   const queryParams = useMemo(
     () => ({
-      brandId,
+      type: "brand",
       subCategoryIds:
         filters.subCategoryIds.length > 0
           ? filters.subCategoryIds.join(",")
           : undefined,
-      brandIds:[brandId],
+      brandIds: [brandId],
       sort: filters.sort,
       minPrice: filters.minPrice,
       maxPrice: filters.maxPrice,
+      page:page,
+      size: pageSize,
     }),
-    [brandId, filters]
+    [brandId, filters, page]
   );
 
-  const { data: products, isLoading } = useProductList({
-    type: "brand",
-    params: queryParams,
-  });
+  const { data, isLoading } = useProductList({...queryParams}as ParamSearch );
 
   const handleFilterChange = useCallback(
     (newFilters: {
@@ -56,6 +58,7 @@ export default function BrandPage() {
       maxPrice: number;
     }) => {
       setFilters(newFilters);
+      setPage(0);
     },
     []
   );
@@ -115,7 +118,7 @@ export default function BrandPage() {
             onClick={() => setDrawerOpen(false)}
             style={{ background: "#00b96b", borderColor: "#00b96b" }}
           >
-            Xem kết quả ({products?.length ?? 0})
+            Xem kết quả ({data?.totalElements ?? 0})
           </Button>
         }
       >
@@ -142,17 +145,32 @@ export default function BrandPage() {
         <Content style={{ flex: 1, minWidth: 0 }}>
           <Row gutter={[12, 12]}>
             {isLoading
-              ? Array.from({ length: 8 }).map((_, i) => (
-                  <Col xs={12} sm={12} md={8} lg={6} key={i}>
-                    <ProductSkeleton />
-                  </Col>
-                ))
-              : products?.map((product: any) => (
-                  <Col xs={12} sm={12} md={8} lg={6} key={product.id}>
-                    <FeaturedProductCard product={product} />
-                  </Col>
-                ))}
+            ? Array.from({ length: 8 }).map((_, i) => (
+                <Col xs={12} sm={12} md={8} lg={6} key={i}>
+                  <ProductSkeleton />
+                </Col>
+              ))
+            : data?.content.map((product: any) => (
+                <Col xs={12} sm={12} md={8} lg={6} key={product.id}>
+                  <FeaturedProductCard product={product} />
+                </Col>
+              ))
+            }
           </Row>
+          {data && (
+            <div style={{ marginTop: 24, textAlign: "center" }}>
+              <Pagination
+                current={data.number + 1}
+                pageSize={data.size}
+                total={data.totalElements}
+                onChange={(newPage) => {
+                  setPage(newPage - 1);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                showSizeChanger={false}
+              />
+            </div>
+          )}
         </Content>
       </div>
 

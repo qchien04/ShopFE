@@ -1,15 +1,9 @@
 import { deleteDataNoBody, getData, postData, putData } from "../app/axiosClient"
+import type { ParamSearch } from "../hooks/Product/useProductList"
 import type { ApiResponse } from "../types"
 import type { Product } from "../types/product.type"
 import type { ProductFormValues } from "../types/request.type"
-
-export interface PageResponse<T> {
-  content: T[]
-  totalElements: number
-  totalPages: number
-  size: number
-  number: number
-}
+import type { PageResponse } from "../types/response.type"
 
 export const productApi = {
   getAll: (): Promise<Product[]> =>
@@ -30,38 +24,29 @@ export const productApi = {
   getBySlug: (slug:string): Promise<Product> =>
     getData<Product>(`/products/slug/${slug}`),
 
-  getByCategory: (params: {
-    categoryId: number
-    subCategoryIds?: string
-    brandIds?: string
-    sort?: string
-    minPrice?: number
-    maxPrice?: number
-  }): Promise<Product[]> =>
+  getByCategory: (params:ParamSearch): Promise<Product[]> =>
     getData<Product[]>(
-      `/products/category/${params.categoryId}`,
+      `/products/category/${params.mainCategoryId}`,
       {
         subCategoryIds: params.subCategoryIds,
         brandIds: params.brandIds,
         sort: params.sort,
         minPrice: params.minPrice,
         maxPrice: params.maxPrice,
+        page: params.page,
+        size: params.size,
       }
     ),
-  getByBrand: (params: {
-    brandId: number
-    subCategoryIds?: string
-    sort?: string
-    minPrice?: number
-    maxPrice?: number
-  }): Promise<Product[]> =>
+  getByBrand: (params: ParamSearch): Promise<Product[]> =>
     getData<Product[]>(
-      `/products/brand/${params.brandId}`,
+      `/products/brand/${params.brandIds?params.brandIds[0]:0}`,
       {
         subCategoryIds: params.subCategoryIds,
         sort: params.sort,
         minPrice: params.minPrice,
         maxPrice: params.maxPrice,
+        page: params.page,
+        size: params.size,
       }
     ),
 
@@ -71,15 +56,9 @@ export const productApi = {
   getFeaturedProducts: (): Promise<Product[]> =>
     getData<Product[]>(`/products/featured`),
 
-  getByKeyword: (
-    keyword: string,
-    page: number,
-    size: number
-  ): Promise<PageResponse<Product>> =>
+  getByKeyword: (params:ParamSearch): Promise<PageResponse<Product>> =>
     getData<PageResponse<Product>>(`/products/search`, {
-      keyword,
-      page,
-      size,
+      ...params
     }),
 
   deleteById: (id:number): Promise<ApiResponse> =>

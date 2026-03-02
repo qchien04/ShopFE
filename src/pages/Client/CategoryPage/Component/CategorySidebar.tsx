@@ -8,7 +8,7 @@ interface Props {
   categoryId: number;
   onFilterChange?: (filters: {
     sort: string;
-    categoryIds: number[];
+    subCategoryIds: number[];
     brandIds: number[];
     minPrice:number;
     maxPrice:number;
@@ -48,7 +48,7 @@ const CategorySidebar = ({ categoryId, onFilterChange }: Props) => {
     const timer = setTimeout(() => {
       onFilterChange?.({
         sort,
-        categoryIds: selectedCategories,
+        subCategoryIds: selectedCategories,
         brandIds: selectedBrands,
         minPrice: priceRange[0],
         maxPrice: priceRange[1],
@@ -61,7 +61,7 @@ const CategorySidebar = ({ categoryId, onFilterChange }: Props) => {
   if (isLoading) return <Spin />;
 
   return (
-    <div style={{ padding: 16, background: "#fff", borderRadius: 10 }}>
+    <div style={{ padding: 16, background: "#fff", borderRadius: 10 ,maxHeight:"70vh"}}>
       <Title level={5}>Danh mục sản phẩm</Title>
       <Divider />
 

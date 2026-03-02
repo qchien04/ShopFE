@@ -5,17 +5,16 @@ import { useCategoryList } from '../../../../hooks/Category/useCategotyList';
 import { useState } from 'react';
 import type { Category } from '../../../../types/categories.type';
 import NewProductCard from '../../../../components/NewProductCard/NewProductCard';
+import type { Product } from '../../../../types/product.type';
 
 
 const NewProducts = () => {
   const {data:categories}=useCategoryList();
   const [selectedCategory,setSelectedCategory]= useState<Category|null>(null);
-  const { data: products } = useProductList({
+  const { data: products } = useProductList<Product[]>({
     type: 'new',
-    params: {
-      categoryId: selectedCategory?.id
-    }
-  });
+    mainCategoryId: selectedCategory?.id
+    });
 
   const handleChangeCat=(cat:Category|null)=>{
     console.log(cat)

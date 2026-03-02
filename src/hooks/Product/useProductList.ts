@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { productsQueryKeys } from "./room.query-key"
 import { productApi } from "../../api/product.api"
 import type { Product } from "../../types/product.type"
+import type { PageResponse } from "../../types/response.type"
 
 export type ProductListType =
   | "all"
@@ -12,78 +13,56 @@ export type ProductListType =
   | "new"
   | "search"
 
-
-interface UseProductListOptions {
-  type?: ProductListType
-  params?: Record<string, any>
+export type ParamSearch={
+  type:ProductListType,
+  keyword?:string|null,
+  page?: number,
+  size?: number,
+  minPrice?: number,
+  maxPrice?: number,
+  brandIds?: number[]|null,
+  mainCategoryId?:number,
+  subCategoryIds?:number[]|null,
+  sort?: string,
+  inStock?: boolean,
 }
 
-export const useProductList = <T = Product[]>({
-  type = "all",
-  params,
-}: UseProductListOptions = {}) => {
+export const useProductList = <T = PageResponse<Product>>(params: ParamSearch = {type:"all"}) => {
   return useQuery<T>({
-    queryKey: productsQueryKeys.list(
-      type,
-      params?.brandId,
-      params?.categoryId,
-      params?.subCategoryIds,
-      params?.brandIds,
-      params?.sort,
-      params?.minPrice,
-      params?.maxPrice
-    ),
+    queryKey: productsQueryKeys.list(params),
     queryFn: () => {
-      switch (type) {
+      switch (params.type) {
         case "category":
-          return productApi.getByCategory({
-            categoryId: params?.categoryId,
-            subCategoryIds: params?.subCategoryIds,
-            brandIds: params?.brandIds,
-            sort: params?.sort,
-            maxPrice:params?.maxPrice,
-            minPrice:params?.minPrice,
-
-          }) as T
+          return productApi.getByCategory(params) as T
 
         case "brand":
-          return productApi.getByBrand({
-            brandId: params?.brandId,
-            subCategoryIds: params?.subCategoryIds,
-            sort: params?.sort,
-            maxPrice:params?.maxPrice,
-            minPrice:params?.minPrice,
-          }) as T
+          return productApi.getByBrand(params) as T
 
         case "featured":
           return productApi.getFeaturedProducts() as T
           
         case "new":
-          return productApi.getNew(params?.categoryId) as T
+          return productApi.getNew(params.mainCategoryId||1) as T
 
         case "search":
-          return productApi.getByKeyword(
-            params?.keyword,
-            params?.page ?? 0,
-            params?.size ?? 8
-          ) as T
+          return productApi.getByKeyword(params) as T
 
         default:
           return productApi.getAll() as T
       }
     },
    enabled: (() => {
-      switch (type) {
+      switch (params.type) {
         case "all":
         case "featured":
         case "new":
           return true
 
         case "category":
-          return Boolean(params?.categoryId)
+          return Boolean(params?.mainCategoryId)
 
         case "brand":
-          return Boolean(params?.brandId)
+          return Boolean(params?.brandIds?.length==1)
 
         case "search":
           return Boolean(params?.keyword)

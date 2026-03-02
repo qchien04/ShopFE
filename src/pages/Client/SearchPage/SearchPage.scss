@@ -99,7 +99,8 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
-
+  max-height: 70vh;
+  overflow-y: scroll;
   &__header {
     display: flex;
     align-items: center;

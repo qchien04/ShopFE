@@ -1,12 +1,6 @@
 import { deleteDataNoBody, getData, postData, putData } from "../app/axiosClient"
 import type { Post, PostPayload, PostStatus } from "../types/entity.type";
-export interface PageResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number; // current page (0-based)
-}
+import type { PageResponse } from "../types/response.type";
 
 
 export interface UpdatePostPayload extends Partial<PostPayload> {}

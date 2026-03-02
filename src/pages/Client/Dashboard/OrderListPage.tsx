@@ -113,7 +113,7 @@ const OrderListPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div style={{ display: 'flex', flexDirection: 'column',alignItems:"center",justifyContent:"center", gap: 12 }}>
 
       {/* TABS */}
       <Tabs
@@ -147,7 +147,7 @@ const OrderListPage = () => {
           <Card
             key={order.id}
             size="small"
-            style={{ borderRadius: 10 }}
+            style={{ borderRadius: 10 ,width:"100%"}}
             styles={{ body: { padding: 14 } }}
           >
             {/* Header */}

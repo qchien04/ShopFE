@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useProductList } from "../../../hooks/Product/useProductList";
 import FeaturedProductCard from "../../../components/FeaturedProductCard";
 import "./SearchPage.scss";
-import type { PageResponse } from "../../../api/product.api";
 import type { Product } from "../../../types/product.type";
 import {
   FilterOutlined,
@@ -16,6 +15,7 @@ import { useCategoryList } from "../../../hooks/Category/useCategotyList";
 import { useBrandList } from "../../../hooks/Brand/useBrand";
 import type { Category } from "../../../types/categories.type";
 import type { Brand } from "../../../types/entity.type";
+import type { PageResponse } from "../../../types/response.type";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -51,7 +51,6 @@ const ProductSkeleton = () => <Card loading style={{ width: "100%" }} />;
 const fmtVND = (v: number) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(v);
 
-// ─── Filter Sidebar ───────────────────────────────────────────────────────────
 const FilterSidebar = ({
   filters,
   onChange,
@@ -293,25 +292,23 @@ export default function SearchPage() {
 
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
-  const pageSize = 12;
+  const pageSize = 8;
 
   const { data: categories = [] } = useCategoryList();
 
   const { data: brands = [] } = useBrandList();
 
   const { data, isLoading } = useProductList<PageResponse<Product>>({
-    type: "search",
-    params: {
-      keyword,
-      page: page - 1,
-      size: pageSize,
-      minPrice: filters.minPrice ?? undefined,
-      maxPrice: filters.maxPrice ?? undefined,
-      brandIds: filters.brandIds.length > 0 ? filters.brandIds.join(",") : undefined,
-      categoryIds: filters.categoryIds.length > 0 ? filters.categoryIds.join(",") : undefined,
-      sortBy: filters.sortBy,
-      inStock: filters.inStock || undefined,
-    },
+    type:"search", 
+    keyword:keyword||"",
+    page: page - 1,
+    size: pageSize,
+    minPrice: filters.minPrice ?? undefined,
+    maxPrice: filters.maxPrice ?? undefined,
+    brandIds: filters.brandIds,
+    subCategoryIds: filters.categoryIds,
+    sort: filters.sortBy, 
+    inStock: filters.inStock,
   });
 
   const products = data?.content || [];

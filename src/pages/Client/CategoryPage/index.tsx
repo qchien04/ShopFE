@@ -2,10 +2,11 @@ import { Button, Col, Drawer, Layout, Row, Badge } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useCallback, useMemo, useState } from "react";
-import { useProductList } from "../../../hooks/Product/useProductList";
+import { useProductList, type ParamSearch } from "../../../hooks/Product/useProductList";
 import FeaturedProductCard from "../../../components/FeaturedProductCard";
 import CategorySidebar from "./Component/CategorySidebar";
 import { Card } from "antd";
+import { Pagination } from "antd";
 
 const { Content } = Layout;
 
@@ -14,10 +15,11 @@ const ProductSkeleton = () => <Card loading style={{ width: "100%" }} />;
 export default function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
   const categoryId = Number(slug);
-
+  const [page, setPage] = useState(0);
+  const pageSize = 8;
   const [filters, setFilters] = useState({
     sort: "default",
-    categoryIds: [] as number[],
+    subCategoryIds: [] as number[],
     brandIds: [] as number[],
     minPrice: 0,
     maxPrice: 999999,
@@ -27,39 +29,40 @@ export default function CategoryPage() {
 
   const activeFilterCount =
     (filters.sort !== "default" ? 1 : 0) +
-    filters.categoryIds.length +
+    filters.subCategoryIds.length +
     filters.brandIds.length;
 
   const queryParams = useMemo(
     () => ({
-      categoryId,
+      type:"category",
+      mainCategoryId:categoryId,
       subCategoryIds:
-        filters.categoryIds.length > 0
-          ? filters.categoryIds.join(",")
+        filters.subCategoryIds.length > 0
+          ? filters.subCategoryIds.join(",")
           : undefined,
       brandIds:
         filters.brandIds.length > 0 ? filters.brandIds.join(",") : undefined,
       sort: filters.sort,
       minPrice: filters.minPrice,
       maxPrice: filters.maxPrice,
+      page,
+      size: pageSize,
     }),
-    [categoryId, filters]
+    [categoryId, filters, page]
   );
 
-  const { data: products, isLoading } = useProductList({
-    type: "category",
-    params: queryParams,
-  });
+  const { data, isLoading } = useProductList( {...queryParams}as ParamSearch );
 
   const handleFilterChange = useCallback(
     (newFilters: {
       sort: string;
-      categoryIds: number[];
+      subCategoryIds: number[];
       brandIds: number[];
       minPrice: number;
       maxPrice: number;
     }) => {
       setFilters(newFilters);
+      setPage(0);
     },
     []
   );
@@ -108,7 +111,7 @@ export default function CategoryPage() {
         placement="right"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        width={300}
+        size={300}
         styles={{ body: { padding: 0 } }}
         className="filter-drawer"
         footer={
@@ -119,7 +122,7 @@ export default function CategoryPage() {
             onClick={() => setDrawerOpen(false)}
             style={{ background: "#00b96b", borderColor: "#00b96b" }}
           >
-            Xem kết quả ({products?.length ?? 0})
+            Xem kết quả ({data?.totalElements ?? 0})
           </Button>
         }
       >
@@ -151,12 +154,27 @@ export default function CategoryPage() {
                     <ProductSkeleton />
                   </Col>
                 ))
-              : products?.map((product: any) => (
+              : data?.content.map((product: any) => (
                   <Col xs={12} sm={12} md={8} lg={6} key={product.id}>
                     <FeaturedProductCard product={product} />
                   </Col>
-                ))}
+                ))
+            }
           </Row>
+          {data && (
+            <div style={{ marginTop: 24, textAlign: "center" }}>
+              <Pagination
+                current={data.number + 1}   // Spring page bắt đầu từ 0
+                pageSize={data.size}
+                total={data.totalElements}
+                onChange={(newPage) => {
+                  setPage(newPage - 1);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                showSizeChanger={false}
+              />
+            </div>
+          )}
         </Content>
       </div>
 
