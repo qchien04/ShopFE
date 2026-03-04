@@ -31,7 +31,7 @@ jobs:
       - name: Deploy to Server
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.SERVER_HOST }}
+          host: ${{ secrets.SERVER_HOST2 }}
           username: ${{ secrets.SERVER_USER2 }}
           key: ${{ secrets.SSH_PRIVATE_KEY2 }}
           source: "dist/*"
