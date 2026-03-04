@@ -194,7 +194,7 @@ export interface DashboardDTO {
 
 export interface BannerSlot {
   id: string;
-  type: 'main' | 'side' | 'category';
+  type: 'main' | 'side' | 'category' | 'quick-top' | 'quick-bottom';
   label: string;
   image?: string;
   title?: string;
@@ -202,9 +202,21 @@ export interface BannerSlot {
   badge?: string;
   link?: string;
   icon?: string;
+  children?: BannerSlotChild[];
 }
+export interface BannerSlotChild {
+  id: string;
+  label: string;
+  link: string;
+  icon: string;
+}
+
 
 export interface BannerConfig {
   banners: BannerSlot[];
   categories: BannerSlot[];
+  quickTopOption: BannerSlot[];
+  quickBottomOption: BannerSlot[];
+  featuredPostIds:number[];
+  featuredPopularIds:number[];
 }

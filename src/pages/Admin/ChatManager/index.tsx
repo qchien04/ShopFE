@@ -4,6 +4,7 @@ import { useStaffNotifications } from "../../../hooks/ChatRealtime/useChat";
 import ChatBox from "../../../components/ChatRealtime";
 import { useAuth } from "../../../hooks/Auth/useAuth";
 import axiosClient from "../../../app/axiosClient";
+import styles from "./ChatManagePage.module.scss";
 
 interface Room {
   id: number;
@@ -19,12 +20,12 @@ export default function ChatManagePage() {
 
   // Lấy danh sách room đang chờ + active
   const fetchRoom=async()=>{
-    const ok:Room[]= await axiosClient.get("/chat/rooms?status=WAITING");
+    const ok:Room[]= await axiosClient.get("/chat/rooms");
     setRooms(ok);
   }
 
   const acceptRoom=async(room:Room)=>{
-    await axiosClient.post("/chat/rooms/accept",{ roomId: room.id, staffId: user!.id });
+    await axiosClient.post("/chat/accept",{ roomId: room.id, staffId: user!.id });
   }
 
 
@@ -51,7 +52,7 @@ export default function ChatManagePage() {
     // Xóa badge khi mở room
     setUnreadMap((prev) => ({ ...prev, [room.id]: 0 }));
     // Đánh dấu đã đọc
-    fetch(`/api/chat/rooms/${room.id}/read?userId=${user!.id}`, { method: "PATCH" });
+    axiosClient.patch(`/chat/rooms/${room.id}/read?userId=${user!.id}`, { method: "PATCH" });
 
     // Nếu room đang WAITING thì nhận phụ trách
     if (room.status === "WAITING") {
@@ -60,61 +61,58 @@ export default function ChatManagePage() {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      {/* Danh sách room */}
-      <div style={{ width: 260, borderRight: "1px solid #eee", overflowY: "auto" }}>
-        <div style={{ padding: "12px 16px", fontWeight: 600, borderBottom: "1px solid #eee" }}>
-          Danh sách chat
+  <div className={styles.page}>
+    {/* Sidebar */}
+    <div className={styles.sidebar}>
+      <div className={styles.sidebarHeader}>
+        <h3>💬 Danh sách chat</h3>
+        <div className={styles.sidebarMeta}>
+          <span className={styles.dot} />
+          {rooms.length} cuộc hội thoại
         </div>
+      </div>
+
+      <div className={styles.roomList}>
         {rooms.map((room) => (
           <div
             key={room.id}
             onClick={() => handleSelectRoom(room)}
-            style={{
-              padding: "12px 16px",
-              cursor: "pointer",
-              background: selectedRoomId === room.id ? "#e6f4ff" : "transparent",
-              borderBottom: "1px solid #f0f0f0",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
+            className={`${styles.roomItem} ${selectedRoomId === room.id ? styles.roomItemActive : ""}`}
           >
-            <div>
-              <div style={{ fontWeight: 500 }}>Khách #{room.customerId}</div>
-              <div style={{ fontSize: 12, color: room.status === "WAITING" ? "orange" : "green" }}>
-                {room.status === "WAITING" ? "Đang chờ" : "Đang hỗ trợ"}
+            <div className={styles.roomAvatar}>
+              {room.customerId.toString().slice(-2)}
+              <span className={`${styles.statusDot} ${
+                room.status === "WAITING" ? styles.statusDotWaiting : styles.statusDotActive
+              }`} />
+            </div>
+
+            <div className={styles.roomInfo}>
+              <div className={styles.roomName}>Khách #{room.customerId}</div>
+              <div className={room.status === "WAITING" ? styles.roomStatusWaiting : styles.roomStatusActive}>
+                {room.status === "WAITING" ? "⏳ Đang chờ" : "✅ Đang hỗ trợ"}
               </div>
             </div>
-            {/* Badge tin nhắn chưa đọc */}
+
             {unreadMap[room.id] > 0 && (
-              <div style={{
-                background: "red", color: "#fff",
-                borderRadius: "50%", width: 20, height: 20,
-                fontSize: 11, display: "flex",
-                alignItems: "center", justifyContent: "center",
-              }}>
-                {unreadMap[room.id]}
-              </div>
+              <div className={styles.badge}>{unreadMap[room.id]}</div>
             )}
           </div>
         ))}
       </div>
-
-      {/* Chat panel */}
-      <div style={{ flex: 1 }}>
-        {selectedRoomId ? (
-          <ChatBox
-            roomId={selectedRoomId}
-            userId={user!.id||1}
-            role="STAFF"
-          />
-        ) : (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#999" }}>
-            Chọn một cuộc hội thoại để bắt đầu
-          </div>
-        )}
-      </div>
     </div>
-  );
+
+    {/* Chat panel */}
+    <div className={styles.chatPanel}>
+      {selectedRoomId ? (
+        <ChatBox roomId={selectedRoomId} userId={user!.id || 1} />
+      ) : (
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIcon}>💬</div>
+          <div className={styles.emptyText}>Chọn một cuộc hội thoại</div>
+          <div className={styles.emptySub}>để bắt đầu hỗ trợ khách hàng</div>
+        </div>
+      )}
+    </div>
+  </div>
+);
 }

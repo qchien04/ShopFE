@@ -76,7 +76,6 @@ export default function SupportWidget() {
             <ChatBox
               roomId={roomId}
               userId={user!.id||1}
-              role="CUSTOMER"
             />
           </div>
         </div>

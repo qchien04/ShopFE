@@ -16,11 +16,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector, type RootState } from '../../app/store';
 import { useCategoryParentList } from '../../hooks/Category/useCategotyList';
 import { LogoutOutlined, SettingOutlined } from "@ant-design/icons";
+import { useCart } from '../../hooks/Cart/useCart';
 
 
 const TopBar = () => {
-  const [cartCount, setCartCount] = useState(0);
   const {data:categories} = useCategoryParentList();
+  const { data: cart } = useCart();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   
@@ -54,7 +55,6 @@ const TopBar = () => {
       userAccount?.roles?.length>0 &&
       userAccount?.roles[0]=='ADMIN'
     ) navigate("/admin/address");
-    setCartCount(0);
   };
 
   const handleCart = () => {
@@ -200,7 +200,7 @@ const TopBar = () => {
             </Dropdown>
             
             <div className="action-item" onClick={handleCart}>
-              <Badge count={cartCount} showZero>
+              <Badge count={cart?.items.length} showZero>
                 <ShoppingCartOutlined className="action-icon" />
               </Badge>
               <span className="action-text">Giỏ hàng</span>

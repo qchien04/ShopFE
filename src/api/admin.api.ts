@@ -11,8 +11,8 @@ export const adminApi = {
   getDashboard: (): Promise<DashboardDTO> => 
     getData<DashboardDTO>("/admin/dashboard"),
 
-  setConfigBanner: (banners:BannerSlot[],categories:BannerSlot[]): Promise<BannerConfig> => 
-    postData<BannerConfig>('/admin/configs/banner', { banners, categories }),
+  setConfigBanner: (banners:BannerSlot[],categories:BannerSlot[],quickTopOption:BannerSlot[],quickBottomOption:BannerSlot[], selectedPreIds:number[],selectedPopularIds:number[]): Promise<BannerConfig> => 
+    postData<BannerConfig>('/admin/configs/banner', { banners, categories,quickTopOption,quickBottomOption,selectedPreIds,selectedPopularIds }),
 
   getConfigBanner: (): Promise<BannerConfig> => 
     getData<BannerConfig>('/admin/configs/banner'),

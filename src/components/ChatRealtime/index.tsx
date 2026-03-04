@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "../../hooks/ChatRealtime/useChat";
+import styles from "./ChatBox.module.scss";
 
-export default function ChatBox({ roomId, userId, role }: {
-  roomId: number; userId: number; role: "CUSTOMER" | "STAFF";
+export default function ChatBox({ roomId, userId }: {
+  roomId: number;
+  userId: number;
 }) {
-  const { messages, connected, sendMessage } = useChat(roomId, userId);
+  const { messages, connected, sendMessage } = useChat(roomId);
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -14,54 +16,62 @@ export default function ChatBox({ roomId, userId, role }: {
 
   const handleSend = () => {
     if (!input.trim()) return;
-    sendMessage(input.trim(), role);
+    sendMessage(input.trim());
     setInput("");
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: 500 }}>
+    <div className={styles.chatBox}>
       {/* Header */}
-      <div style={{ padding: 12, background: "#1677ff", color: "#fff" }}>
-        Chat hỗ trợ {connected ? "🟢" : "🔴"}
+      <div className={styles.header}>
+        <div className={styles.headerAvatar}>💬</div>
+        <div className={styles.headerInfo}>
+          <div className={styles.headerTitle}>Chat hỗ trợ</div>
+          <div className={styles.headerStatus}>
+            <span className={`${styles.statusDot} ${connected ? styles.statusDotOnline : styles.statusDotOffline}`} />
+            <span className={connected ? styles.statusTextOnline : styles.statusTextOffline}>
+              {connected ? "Đang kết nối" : "Mất kết nối"}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Messages */}
-      <div style={{ flex: 1, overflowY: "auto", padding: 12 }}>
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            style={{
-              display: "flex",
-              justifyContent: msg.senderId === userId ? "flex-end" : "flex-start",
-              marginBottom: 8,
-            }}
-          >
-            <div style={{
-              maxWidth: "70%", padding: "8px 12px", borderRadius: 12,
-              background: msg.senderId === userId ? "#1677ff" : "#f0f0f0",
-              color: msg.senderId === userId ? "#fff" : "#000",
-            }}>
-              {msg.content}
-              <div style={{ fontSize: 10, marginTop: 4, opacity: 0.7 }}>
-                {new Date(msg.sentAt).toLocaleTimeString()}
+      <div className={styles.messages}>
+        {messages.map((msg) => {
+          const isMine = msg.senderId === userId;
+          return (
+            <div key={msg.id} className={`${styles.messageRow} ${isMine ? styles.messageRowMine : styles.messageRowOther}`}>
+              <div className={`${styles.avatar} ${isMine ? styles.avatarMine : styles.avatarOther}`}>
+                {isMine ? "T" : "K"}
+              </div>
+              <div className={`${styles.bubble} ${isMine ? styles.bubbleMine : styles.bubbleOther}`}>
+                {msg.content}
+                <div className={styles.bubbleTime}>
+                  {new Date(msg.sentAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={bottomRef} />
       </div>
 
       {/* Input */}
-      <div style={{ display: "flex", gap: 8, padding: 12, borderTop: "1px solid #eee" }}>
+      <div className={styles.inputArea}>
         <input
+          className={styles.input}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder="Nhập tin nhắn..."
-          style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: "1px solid #d9d9d9" }}
         />
-        <button onClick={handleSend} style={{ padding: "8px 16px", background: "#1677ff", color: "#fff", border: "none", borderRadius: 8 }}>
-          Gửi
+        <button
+          className={styles.sendBtn}
+          onClick={handleSend}
+          disabled={!input.trim() || !connected}
+        >
+          ➤
         </button>
       </div>
     </div>
