@@ -13,8 +13,8 @@ import "./Banner.scss";
 import { adminApi } from "../../../api/admin.api";
 import type { BannerConfig, BannerSlot } from "../../../types/entity.type";
 import EditPanel from "./EditPanel";
-import { useQuery, useQueries } from "@tanstack/react-query";
-import { Tabs, Checkbox, Avatar, Tag, Empty, Spin } from "antd";
+import { useQuery } from "@tanstack/react-query";
+import { Tabs } from "antd";
 import { postApi } from "../../../api/post.api"; // ← điều chỉnh path
 import type { Post } from "../../../types/entity.type";
 import { PostPicker } from "./PostPicker";
