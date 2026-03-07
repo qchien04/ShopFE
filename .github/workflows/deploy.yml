@@ -20,6 +20,12 @@ jobs:
       - run: npm install
       - run: npm run build
 
+      - name: Debug ENV
+        run: |
+          echo "===== ENV VARIABLES ====="
+          printenv | sort
+          echo "========================="
+
       - name: Test SSH
         uses: appleboy/ssh-action@v0.1.10
         with:
