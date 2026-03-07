@@ -96,7 +96,7 @@ const TopBar = () => {
     { key: '3', label: 'Tiktok' },
   ];
   
-  const promotionItems: MenuProps['items']=data?.saleEvents.map((item)=>{
+  const promotionItems: MenuProps['items']=data?.saleEvents?.map((item)=>{
     return {
       key:item.id,
       label:item.label,
