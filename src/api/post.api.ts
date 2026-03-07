@@ -16,12 +16,12 @@ export const postApi = {
   getAll: async (params: GetPostsParams = {}): Promise<PageResponse<Post>> =>
      getData<PageResponse<Post>>(`/posts`, { params }),
 
-
    getPre: async (): Promise<Post[]> =>
      getData<Post[]>(`/posts/pretent`,),
 
    getPopular: async (): Promise<Post[]> =>
      getData<Post[]>(`/posts/popular`,),
+   
 
   /**
    * Lấy chi tiết một bài viết theo ID

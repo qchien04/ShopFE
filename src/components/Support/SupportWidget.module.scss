@@ -1,0 +1,166 @@
+// ── Tokens ──────────────────────────────────────────────
+$white:      #ffffff;
+$bg:         #f5f4f0;
+$border:     #e8e4de;
+
+$text-primary:   #1a1815;
+$text-secondary: #7a7570;
+$text-muted:     #b0aba4;
+
+$accent:       #3d6b4f;
+$accent-light: #edf3ef;
+
+$shadow-float: 0 8px 40px rgba(0,0,0,.14), 0 2px 10px rgba(0,0,0,.08);
+$shadow-fab:   0 4px 20px rgba(61,107,79,.45);
+
+$radius-lg: 20px;
+$radius-xl: 24px;
+
+// ── Root ─────────────────────────────────────────────────
+.root {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  font-family: 'DM Sans', 'Nunito', sans-serif;
+}
+
+// ── Popup ────────────────────────────────────────────────
+.popup {
+  width: 360px;
+  height: 520px;
+  background: $white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-float;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1.5px solid $border;
+
+  // Hidden state
+  opacity: 0;
+  transform: translateY(16px) scale(.97);
+  pointer-events: none;
+  transition:
+    opacity .25s cubic-bezier(.4,0,.2,1),
+    transform .25s cubic-bezier(.4,0,.2,1);
+}
+
+.popupOpen {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.onlineDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #44b678;
+  flex-shrink: 0;
+  animation: blink 2.5s ease-in-out infinite;
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: .4; }
+  }
+}
+
+.closeBtn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: $bg;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all .15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: darken($bg, 4%);
+    color: $text-primary;
+  }
+}
+
+// Body
+.popupBody {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: $bg;
+}
+
+.loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: $text-muted;
+  font-size: 13px;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid $border;
+  border-top-color: $accent;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+}
+
+
+// ── Guest state (chưa đăng nhập) ─────────────────────────
+.guestState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.guestIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: $white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $accent-light;
+  box-shadow: $shadow-float;
+  margin-bottom: 4px;
+
+  svg { color: $accent; opacity: .6; }
+}
+
+.guestTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0;
+}
+
+.guestSub {
+  font-size: 12.5px;
+  color: $text-muted;
+  margin: 0;
+  line-height: 1.5;
+}

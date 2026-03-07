@@ -8,8 +8,8 @@ import { EnvironmentOutlined, EditOutlined, ShoppingOutlined, CheckCircleFilled 
 import { useCustomerAddresses } from "../../../hooks/CustomerAddress/useAddress";
 import { PaymentMethod, type CustomerAddress } from "../../../types/entity.type";
 import type { CreateOrderRequest, OrderRequestItem } from "../../../types/request.type";
-import { useProductsByIds } from "../../../hooks/Product/useProductList";
 import { orderApi } from "../../../api/order.api";
+import { useProductVariantsByIds } from "../../../hooks/Product/useProductList";
 
 const { Title: CTitle, Text } = Typography;
 
@@ -22,16 +22,16 @@ const CheckoutPage = () => {
 
   // ===== LẤY DANH SÁCH PRODUCT THEO productId =====
   const productIds = useMemo(
-    () => state.orderItems.map((i) => i.productId),
+    () => state.orderItems.map((i) => i.productVariantId),
     [state.orderItems]
   );
-  const { data: products, isLoading } = useProductsByIds(productIds);
+  const { data: products, isLoading } = useProductVariantsByIds(productIds);
 
   // ===== MERGE PRODUCT + QUANTITY =====
   const items = useMemo(() => {
     if (!products) return [];
     return state.orderItems.map((oi) => {
-      const product = products.find((p) => p.id === oi.productId);
+      const product = products.find((p) => p.id === oi.productVariantId);
       return {
         product,
         quantity: oi.quantity,

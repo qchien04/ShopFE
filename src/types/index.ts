@@ -8,10 +8,6 @@ export interface UserAccount{
   avt?:string,
   dob?:string,
   phoneNumber?:string,
-  address?:string,
-  city?:string,
-  district?:string,
-  commune?: string
 }
 
 
@@ -50,10 +46,24 @@ export interface UserRegisterPayLoad{
   avt?:string,
   dob?:string,
   phoneNumber?:string,
-  address?:string,
-  city?:string,
-  district?:string,
-  commune?: string
 }
+
+export interface Review{
+  id?:number,
+  prroductName:string,
+  userAvatar?:string,
+  userName?:string,
+  rating?:number,
+  comment?:string,
+  reviewStatus?:string,
+  createdAt?:string,
+}
+
+export interface ReviewSummary{
+  averageRating?:number,
+  totalReviews?:number,
+  reviews?:Review[],
+}
+
 
 

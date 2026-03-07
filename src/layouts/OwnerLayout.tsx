@@ -16,10 +16,9 @@ const navItems: NavItem[] = [
   { key: "categories", label: "Danh mục", icon: "🗂️", path: "/admin/categories" },
   { key: "brands", label: "Thương hiệu", icon: "🏷️", path: "/admin/brands" },
   { key: "orders", label: "Đơn hàng", icon: "🛒", path: "/admin/orders" },
-  { key: "address", label: "Địa chỉ", icon: "📍", path: "/admin/address" },
   { key: "post", label: "Bài viết", icon: "📝", path: "/admin/post" },
+  { key: "reviews", label: "Bình luận", icon: "⚙️", path: "/admin/reviews" },
   { key: "chat-manager", label: "Chat", icon: "📝", path: "/admin/chat-manager" },
-  { key: "banner", label: "Banner", icon: "📝", path: "/admin/banner" },
   { key: "configs", label: "Cài đặt", icon: "⚙️", path: "/admin/configs" },
 ];
 

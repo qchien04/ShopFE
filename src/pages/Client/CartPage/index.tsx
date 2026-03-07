@@ -19,6 +19,7 @@ import type { CartItem } from "../../../types/entity.type";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import type { OrderRequestItem } from "../../../types/request.type";
+import { useAppSelector, type RootState } from "../../../app/store";
 
 const { Text, Title } = Typography;
 
@@ -28,12 +29,19 @@ const CartPage = () => {
   const removeMutation = useRemoveCartItem();
   const clearMutation = useClearCart();
   const navigate = useNavigate();
+  const {isAuthenticated}= useAppSelector(
+    (state: RootState) => state.auth
+  );
+
+  if(!isAuthenticated){
+    navigate(`/login`);
+  }
 
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
 
   if (isLoading) {
     return (
-      <div style={{ textAlign: "center", padding: 80 }}>
+      <div style={{ textAlign: "center", padding: 80 ,minHeight:"100vh"}}>
         <Spin size="large" />
       </div>
     );
@@ -45,7 +53,7 @@ const CartPage = () => {
   const indeterminate = selectedKeys.length > 0 && selectedKeys.length < items.length;
 
   const total = selectedItems.reduce(
-    (sum, i) => sum + (i.product?.salePrice || 0) * i.quantity,
+    (sum, i) => sum + (i.productVariant?.salePrice || 0) * i.quantity,
     0
   );
 
@@ -63,7 +71,7 @@ const CartPage = () => {
       return;
     }
     const orderItems: OrderRequestItem[] = selectedItems.map((i) => ({
-      productId: i.product?.id,
+      productVariantId: i.productVariant?.id,
       quantity: i.quantity,
     }));
     navigate("/checkout", { state: { orderItems } });
@@ -116,7 +124,7 @@ const CartPage = () => {
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {items.map((item) => {
               const checked = selectedKeys.includes(item.id);
-              const subtotal = (item.product?.salePrice || 0) * item.quantity;
+              const subtotal = (item.productVariant?.salePrice || 0) * item.quantity;
 
               return (
                 <Card
@@ -140,7 +148,7 @@ const CartPage = () => {
                     <Image
                       width={80}
                       height={80}
-                      src={item.product?.mainImage}
+                      src={item.productVariant?.mainImage}
                       style={{ objectFit: "cover", borderRadius: 6, flexShrink: 0 }}
                       preview={false}
                     />
@@ -156,13 +164,13 @@ const CartPage = () => {
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
                         }}
-                        title={item.product?.name}
+                        title={item.productVariant?.name}
                       >
-                        {item.product?.name}
+                        {item.productVariant?.name}
                       </Text>
 
                       <Text type="secondary" style={{ fontSize: 12 }}>
-                        {item.product?.salePrice?.toLocaleString()} ₫ / sản phẩm
+                        {item.productVariant?.salePrice?.toLocaleString()} ₫ / sản phẩm
                       </Text>
 
                       {/* Qty + subtotal + delete */}

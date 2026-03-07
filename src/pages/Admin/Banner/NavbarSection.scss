@@ -1,0 +1,271 @@
+// ─── Thêm vào cuối Banner.scss ─────────────────────────────────────────────────
+
+// NavbarSection — nằm trên SlideStrip trong banner-canvas__main
+
+.navbar-section {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #f0fdf4;
+    border-bottom: 1px solid #d1fae5;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+
+    &:hover { background: #dcfce7; }
+
+    &-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    &-right {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+  }
+
+  &__icon {
+    color: #10b981;
+    font-size: 14px;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #065f46;
+  }
+
+  &__collapse-hint {
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  &__body {
+    padding: 12px 16px 14px;
+  }
+
+  &__add-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 7px 12px;
+    background: transparent;
+    border: 1.5px dashed #10b981;
+    border-radius: 7px;
+    color: #10b981;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover { background: #f0fdf4; }
+  }
+}
+
+// Live preview bar
+.nav-preview-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  background: #00b14f;
+  border-radius: 7px;
+  padding: 8px 14px;
+  margin-bottom: 12px;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 500;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.1);
+    white-space: nowrap;
+  }
+
+  &__caret {
+    font-size: 9px;
+    color: rgba(255,255,255,0.7);
+  }
+}
+
+// Column headers
+.nav-col-headers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  margin-bottom: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// Nav item row
+.nav-item-row {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  overflow: hidden;
+  transition: border-color 0.15s, opacity 0.15s;
+
+  &:hover { border-color: #6ee7b7; }
+
+  &--hidden {
+    opacity: 0.5;
+    border-style: dashed;
+  }
+
+  &__main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    background: #fafafa;
+  }
+
+  &__order {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    flex-shrink: 0;
+    width: 28px;
+  }
+
+  &__label-input { flex: 1; font-weight: 500; }
+  &__link-input  { flex: 1.2; font-size: 12px; }
+
+  &__toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    width: 54px;
+  }
+
+  &__expand-btn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 7px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+    font-size: 12px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: background 0.15s;
+    flex-shrink: 0;
+
+    &:hover { background: #e5e7eb; }
+
+    svg { font-size: 10px; transition: transform 0.2s; }
+    &--open svg { transform: rotate(90deg); }
+  }
+
+  &__del-btn {
+    background: transparent;
+    border: none;
+    color: #fca5a5;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    font-size: 13px;
+    flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+
+    &:hover { color: #ef4444; background: #fef2f2; }
+  }
+
+  &__children {
+    padding: 8px 10px 10px 36px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+// Order buttons
+.nav-order-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 9px;
+  cursor: pointer;
+  padding: 1px 4px;
+  border-radius: 3px;
+  line-height: 1;
+  transition: color 0.15s, background 0.15s;
+
+  &:hover:not(:disabled) { color: #10b981; background: #d1fae5; }
+  &:disabled { opacity: 0.3; cursor: not-allowed; }
+}
+
+.nav-order-num {
+  font-size: 10px;
+  color: #9ca3af;
+  font-weight: 600;
+  line-height: 1;
+}
+
+// Child rows
+.nav-child-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 4px;
+  border-bottom: 1px solid #f3f4f6;
+
+  &:last-of-type { border-bottom: none; }
+
+  &__del {
+    background: transparent;
+    border: none;
+    color: #fca5a5;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 12px;
+    flex-shrink: 0;
+    transition: color 0.15s;
+
+    &:hover { color: #ef4444; }
+  }
+
+  &__add {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    padding: 5px 10px;
+    background: transparent;
+    border: 1px dashed #d1d5db;
+    border-radius: 5px;
+    color: #6b7280;
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+
+    &:hover { border-color: #10b981; color: #10b981; }
+  }
+}

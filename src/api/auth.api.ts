@@ -1,5 +1,6 @@
 import { postData } from "../app/axiosClient"
 import type { ApiResponse, LoginPayload, LoginResponse, UserRegisterPayLoad } from "../types"
+import type { ChangePasswordRequest } from "../types/request.type"
 
 export const authApi = {
   login: (payload: LoginPayload): Promise<LoginResponse> =>
@@ -10,5 +11,9 @@ export const authApi = {
 
   gglogin: (payload: {accessToken:string}): Promise<LoginResponse> =>
     postData<LoginResponse>("/google/login/user", payload),
+
+  changePassword: (payload: ChangePasswordRequest): Promise<ApiResponse> =>
+    postData<ApiResponse>("/auth/changePassword", payload),
+  
 }
 

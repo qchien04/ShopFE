@@ -3,20 +3,35 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cartQueryKeys } from "./category.query-key";
 import { cartApi } from "../../api/cart.api";
 import { antdMessage } from "../../utils/antdMessage";
+import { useAppSelector, type RootState } from "../../app/store";
+import type { AddToCartRequest } from "../../types/request.type";
 
 export const useAddToCart = () => {
   const queryClient = useQueryClient();
-
+  const {isAuthenticated}= useAppSelector(
+      (state: RootState) => state.auth
+  );
+  
   return useMutation({
-    mutationFn: cartApi.addToCart,
+    mutationFn: (payload:AddToCartRequest) => {
+      if (!isAuthenticated) {
+        throw new Error("User not authenticated");
+      }
+      return cartApi.addToCart(payload);
+    },
+
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: cartQueryKeys.all,
       });
       antdMessage.success("Đã thêm vào giỏ hàng!");
     },
-    onError:()=>{
-      antdMessage.error("Có lỗi xảy ra!");
+    onError:(error)=>{
+      if (error.message === "User not authenticated") {
+        antdMessage.warning("Vui lòng đăng nhập trước!");
+      } else {
+        antdMessage.error("Có lỗi xảy ra khi thêm vào giỏ hàng!");
+      }
     }
   });
 };

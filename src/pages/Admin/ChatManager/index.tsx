@@ -1,118 +1,194 @@
-// pages/Staff/ChatManagePage.tsx
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useStaffNotifications } from "../../../hooks/ChatRealtime/useChat";
 import ChatBox from "../../../components/ChatRealtime";
 import { useAuth } from "../../../hooks/Auth/useAuth";
 import axiosClient from "../../../app/axiosClient";
 import styles from "./ChatManagePage.module.scss";
 
-interface Room {
+export interface Room {
   id: number;
   customerId: number;
-  status: string;
+  customerName: string;
+  customerAvt: string;
+  staffId?: number;
+  staffName?: string;
+  status: "WAITING" | "ACTIVE" | "CLOSED";
 }
 
 export default function ChatManagePage() {
   const { user } = useAuth();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
-  const [unreadMap, setUnreadMap] = useState<Record<number, number>>({}); // roomId -> số tin chưa đọc
+  const [unreadMap, setUnreadMap] = useState<Record<number, number>>({});
+  const [filter, setFilter] = useState<"ALL" | "WAITING" | "ACTIVE">("ALL");
 
-  // Lấy danh sách room đang chờ + active
-  const fetchRoom=async()=>{
-    const ok:Room[]= await axiosClient.get("/chat/rooms");
-    setRooms(ok);
-  }
+  const selectedRoom = rooms.find((r) => r.id === selectedRoomId);
 
-  const acceptRoom=async(room:Room)=>{
-    await axiosClient.post("/chat/accept",{ roomId: room.id, staffId: user!.id });
-  }
+  const fetchRooms = async () => {
+    const data: Room[] = await axiosClient.get("/chat/rooms");
+    setRooms(data);
+  };
 
+  useEffect(() => { fetchRooms(); }, []);
 
-  useEffect(() => {
-    fetchRoom();
-  }, []);
-
-  // Lắng nghe thông báo realtime
-  useStaffNotifications(user!.id||1, (notification) => {
+  const handleNotification = useCallback((notification: any) => {
     if (notification.type === "NEW_ROOM") {
-      // Có khách mới vào
       setRooms((prev) => [notification.data, ...prev]);
     }
-
     if (notification.type === "NEW_MESSAGE") {
       const { roomId, unreadCount } = notification.data;
-      // Cập nhật badge số tin chưa đọc
       setUnreadMap((prev) => ({ ...prev, [roomId]: unreadCount }));
     }
-  });
+  }, []);
 
-  const handleSelectRoom = (room: Room) => {
+  useStaffNotifications(user!.id || 1, handleNotification);
+
+  const handleSelectRoom = async (room: Room) => {
     setSelectedRoomId(room.id);
-    // Xóa badge khi mở room
     setUnreadMap((prev) => ({ ...prev, [room.id]: 0 }));
-    // Đánh dấu đã đọc
-    axiosClient.patch(`/chat/rooms/${room.id}/read?userId=${user!.id}`, { method: "PATCH" });
-
-    // Nếu room đang WAITING thì nhận phụ trách
+    axiosClient.patch(`/chat/rooms/${room.id}/read?userId=${user!.id}`);
     if (room.status === "WAITING") {
-      acceptRoom(room)
+      await axiosClient.post("/chat/accept", { roomId: room.id, staffId: user!.id });
+      setRooms((prev) =>
+        prev.map((r) => r.id === room.id ? { ...r, status: "ACTIVE" } : r)
+      );
     }
   };
 
+  const getInitials = (name: string) =>
+    name?.split(" ").map((w) => w[0]).slice(-2).join("").toUpperCase() || "?";
+
+  const waitingCount = rooms.filter((r) => r.status === "WAITING").length;
+  const activeCount = rooms.filter((r) => r.status === "ACTIVE").length;
+
+  const filteredRooms = rooms.filter((r) => {
+    if (filter === "WAITING") return r.status === "WAITING";
+    if (filter === "ACTIVE") return r.status === "ACTIVE";
+    return true;
+  });
+
   return (
-  <div className={styles.page}>
-    {/* Sidebar */}
-    <div className={styles.sidebar}>
-      <div className={styles.sidebarHeader}>
-        <h3>💬 Danh sách chat</h3>
-        <div className={styles.sidebarMeta}>
-          <span className={styles.dot} />
-          {rooms.length} cuộc hội thoại
-        </div>
-      </div>
-
-      <div className={styles.roomList}>
-        {rooms.map((room) => (
-          <div
-            key={room.id}
-            onClick={() => handleSelectRoom(room)}
-            className={`${styles.roomItem} ${selectedRoomId === room.id ? styles.roomItemActive : ""}`}
-          >
-            <div className={styles.roomAvatar}>
-              {room.customerId.toString().slice(-2)}
-              <span className={`${styles.statusDot} ${
-                room.status === "WAITING" ? styles.statusDotWaiting : styles.statusDotActive
-              }`} />
+    <div className={styles.page}>
+      <aside className={styles.sidebar}>
+        <div className={styles.sidebarTop}>
+          <div className={styles.sidebarHeading}>
+            <div className={styles.headingLeft}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              <h2>Hỗ trợ khách hàng</h2>
             </div>
-
-            <div className={styles.roomInfo}>
-              <div className={styles.roomName}>Khách #{room.customerId}</div>
-              <div className={room.status === "WAITING" ? styles.roomStatusWaiting : styles.roomStatusActive}>
-                {room.status === "WAITING" ? "⏳ Đang chờ" : "✅ Đang hỗ trợ"}
-              </div>
+            <div className={styles.liveIndicator}>
+              <span className={styles.liveDot} />
+              <span>Live</span>
             </div>
-
-            {unreadMap[room.id] > 0 && (
-              <div className={styles.badge}>{unreadMap[room.id]}</div>
-            )}
           </div>
-        ))}
-      </div>
-    </div>
 
-    {/* Chat panel */}
-    <div className={styles.chatPanel}>
-      {selectedRoomId ? (
-        <ChatBox roomId={selectedRoomId} userId={user!.id || 1} />
-      ) : (
-        <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}>💬</div>
-          <div className={styles.emptyText}>Chọn một cuộc hội thoại</div>
-          <div className={styles.emptySub}>để bắt đầu hỗ trợ khách hàng</div>
+          <div className={styles.statsRow}>
+            <div className={styles.statBox}>
+              <span className={styles.statNum}>{activeCount}</span>
+              <span className={styles.statLabel}>Đang hỗ trợ</span>
+            </div>
+            <div className={styles.statDivider} />
+            <div className={styles.statBox}>
+              <span className={styles.statNum} data-warn={waitingCount > 0 ? "true" : undefined}>
+                {waitingCount}
+              </span>
+              <span className={styles.statLabel}>Đang chờ</span>
+            </div>
+            <div className={styles.statDivider} />
+            <div className={styles.statBox}>
+              <span className={styles.statNum}>{rooms.length}</span>
+              <span className={styles.statLabel}>Tổng</span>
+            </div>
+          </div>
+
+          <div className={styles.filterRow}>
+            {(["ALL", "WAITING", "ACTIVE"] as const).map((tab) => (
+              <button
+                key={tab}
+                className={`${styles.filterBtn} ${filter === tab ? styles.filterBtnActive : ""}`}
+                onClick={() => setFilter(tab)}
+              >
+                {tab === "ALL" && "Tất cả"}
+                {tab === "WAITING" && "Chờ"}
+                {tab === "ACTIVE" && "Đang hỗ trợ"}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
+
+        <div className={styles.roomList}>
+          {filteredRooms.length === 0 && (
+            <div className={styles.emptyList}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              <p>Không có hội thoại</p>
+            </div>
+          )}
+          {filteredRooms.map((room) => (
+            <div
+              key={room.id}
+              onClick={() => handleSelectRoom(room)}
+              className={`${styles.roomItem} ${selectedRoomId === room.id ? styles.roomItemActive : ""} ${room.status === "WAITING" ? styles.roomItemWaiting : ""}`}
+            >
+              <div className={styles.avatarWrap}>
+                {room.customerAvt ? (
+                  <img
+                    src={room.customerAvt}
+                    alt={room.customerName}
+                    className={styles.avatarImg}
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      (e.currentTarget.nextElementSibling as HTMLElement)?.removeAttribute("style");
+                    }}
+                  />
+                ) : null}
+                <span
+                  className={styles.avatarInitials}
+                  style={room.customerAvt ? { display: "none" } : undefined}
+                >
+                  {getInitials(room.customerName)}
+                </span>
+                <span className={`${styles.presenceDot} ${room.status === "WAITING" ? styles.presenceWaiting : styles.presenceActive}`} />
+              </div>
+
+              <div className={styles.roomMeta}>
+                <span className={styles.roomName}>{room.customerName}</span>
+                <span className={`${styles.roomTag} ${room.status === "WAITING" ? styles.roomTagWaiting : styles.roomTagActive}`}>
+                  {room.status === "WAITING" ? "Chờ phản hồi" : "Đang hỗ trợ"}
+                </span>
+              </div>
+
+              {unreadMap[room.id] > 0 && (
+                <span className={styles.badge}>{unreadMap[room.id]}</span>
+              )}
+            </div>
+          ))}
+        </div>
+      </aside>
+
+      <main className={styles.chatPanel}>
+        {selectedRoomId && selectedRoom ? (
+          <ChatBox
+            roomId={selectedRoomId}
+            userId={user!.id || 1}
+            role="STAFF"
+            room={selectedRoom}
+          />
+        ) : (
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIllustration}>
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </div>
+            <h3>Chọn một cuộc hội thoại</h3>
+            <p>để bắt đầu hỗ trợ khách hàng</p>
+          </div>
+        )}
+      </main>
     </div>
-  </div>
-);
+  );
 }

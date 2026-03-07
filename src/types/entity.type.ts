@@ -1,9 +1,10 @@
-import type { Product, ProductStatus } from "./product.type";
+import type { PromoPost } from "../pages/Admin/Banner/PromoPostsSlot";
+import type { ProductStatus, ProductVariant } from "./product.type";
 
 export interface CartItem{
   id:number;
   cartId:number;
-  product:Product;
+  productVariant:ProductVariant;
   quantity:number;
   price:number;
   addedAt:string;
@@ -219,4 +220,5 @@ export interface BannerConfig {
   quickBottomOption: BannerSlot[];
   featuredPostIds:number[];
   featuredPopularIds:number[];
+  saleEvents: PromoPost[], 
 }

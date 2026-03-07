@@ -1,6 +1,6 @@
 // BannerManager.tsx
 import { useState, useEffect } from "react";
-import { Button, Modal, message, Tooltip } from "antd";
+import { Button, Modal, message, Tooltip, Space, Table, Input, Tag } from "antd";
 import {
   EditOutlined,
   PictureOutlined,
@@ -8,6 +8,8 @@ import {
   EyeOutlined,
   PlusOutlined,
   DeleteOutlined,
+  CopyOutlined,
+  LinkOutlined,
 } from "@ant-design/icons";
 import "./Banner.scss";
 import { adminApi } from "../../../api/admin.api";
@@ -18,9 +20,11 @@ import { Tabs } from "antd";
 import { postApi } from "../../../api/post.api"; // ← điều chỉnh path
 import type { Post } from "../../../types/entity.type";
 import { PostPicker } from "./PostPicker";
+import type { PageResponse } from "../../../types/response.type";
+import { antdMessage } from "../../../utils/antdMessage";
+import PromoPostsSlot, { type PromoPost } from "./PromoPostsSlot";
 
 
-  // ─── Default state ────────────────────────────────────────────────────────────
   const defaultMainSlides: BannerSlot[] = [
     { id: "main-1", type: "main", label: "Slide 1", image: "", title: "HAPPY NEW YEAR 2026", subtitle: "KHI MUA TỪ 2 MÓN TRỞ LÊN", badge: "GIẢM NGAY 15%", link: "/" },
     { id: "main-2", type: "main", label: "Slide 2", image: "", title: "TẾT SALE 2026", subtitle: "ƯU ĐÃI LÊN ĐẾN 50%", badge: "HOT DEAL", link: "/sale" },
@@ -155,6 +159,44 @@ import { PostPicker } from "./PostPicker";
     const [previewOpen,   setPreviewOpen]   = useState(false);
     const [saving,        setSaving]        = useState(false); // ← loading state
 
+    const [selectedPromo, setSelectedPromo] = useState<PromoPost[]>([]);
+
+
+
+    const [searchText, setSearchText] = useState("");
+    //const [editingPostId, setEditingPostId] = useState<number | null>(null);
+
+    const copyPostLink = (post: Post) => {
+      const link = `${window.location.origin}/post/${post.id}`; // điều chỉnh path nếu cần
+      navigator.clipboard.writeText(link).then(() => {
+        antdMessage.success(`Đã copy link: ${post.title}`);
+      });
+    };
+
+    const renderPostActions = (post: Post) => (
+      <Space size={4}>
+        <Tooltip title="Copy link bài viết">
+          <Button
+            size="small"
+            icon={<CopyOutlined />}
+            onClick={() => copyPostLink(post)}
+          />
+        </Tooltip>
+        <Tooltip title="Chỉnh sửa bài viết">
+          <Button
+            size="small"
+            type="primary"
+            ghost
+            icon={<EditOutlined />}
+            onClick={() => {
+              // Điều hướng đến trang edit – điều chỉnh path tuỳ project
+              window.open(`/admin/posts/${post.id}/edit`, "_blank");
+            }}
+          />
+        </Tooltip>
+      </Space>
+    );
+
     // ── Load từ API ──────────────────────────────────────────────────────────────
     const { data } = useQuery<BannerConfig>({
       queryKey: ["banner-config"],
@@ -174,6 +216,12 @@ import { PostPicker } from "./PostPicker";
       staleTime: 1000 * 60 * 5,
     });
 
+    const { data: allPosts, isLoading: loadingAllPosts } = useQuery<PageResponse<Post>>({
+      queryKey: ["posts-all"],
+      queryFn:  () => postApi.getAll(),
+      staleTime: 1000 * 60 * 5,
+    });
+
     useEffect(() => {
       if (!data) return;
 
@@ -189,6 +237,9 @@ import { PostPicker } from "./PostPicker";
       if (data.categories?.length) setCategories(data.categories);
       if (quickTop.length) setQuickTopOption(quickTop);    // ← FIX
       if (quickBot.length) setQuickBottomOption(quickBot); // ← FIX
+
+      if (data.saleEvents?.length) setSelectedPromo(data.saleEvents);
+
     }, [data]);
 
     // ── Slide actions ─────────────────────────────────────────────────────────────
@@ -235,6 +286,7 @@ import { PostPicker } from "./PostPicker";
           quickBottomOption,
           selectedPreIds,
           selectedPopularIds,
+          selectedPromo,
         );
         message.success("Đã lưu cấu hình banner!");
       } catch (err) {
@@ -289,6 +341,14 @@ import { PostPicker } from "./PostPicker";
           </div>
 
           <div className="banner-canvas__main">
+            <PromoPostsSlot
+              posts={allPosts?.content}
+              loading={loadingAllPosts}
+              selected={selectedPromo}     
+              onChange={setSelectedPromo}  
+              max={10}
+            />
+
             <SlideStrip
               slides={mainSlides}
               activeId={activeSlideId}
@@ -345,6 +405,8 @@ import { PostPicker } from "./PostPicker";
                     selectedIds={selectedPreIds}
                     onChange={setSelectedPreIds}
                     max={6}
+                    // ↓ truyền renderActions xuống PostPicker
+                    renderActions={renderPostActions}
                   />
                 ),
               },
@@ -358,11 +420,87 @@ import { PostPicker } from "./PostPicker";
                     selectedIds={selectedPopularIds}
                     onChange={setSelectedPopularIds}
                     max={6}
+                    renderActions={renderPostActions}
                   />
+                ),
+              },
+              // ─── Tab mới ──────────────────────────────────────────────────────────
+              {
+                key: "all",
+                label: `📋 Tất cả bài viết (${allPosts?.content?.length ?? 0})`,
+                children: (
+                  <div className="all-posts-tab">
+                    <Input.Search
+                      placeholder="Tìm theo tiêu đề..."
+                      allowClear
+                      style={{ marginBottom: 12, maxWidth: 360 }}
+                      onChange={(e) => setSearchText(e.target.value)}
+                    />
+                    <Table<Post>
+                      loading={loadingAllPosts}
+                      dataSource={(allPosts?.content ?? []).filter((p) =>
+                        p.title.toLowerCase().includes(searchText.toLowerCase())
+                      )}
+                      rowKey="id"
+                      size="small"
+                      pagination={{ pageSize: 10, showSizeChanger: false }}
+                      columns={[
+                        {
+                          title: "ID",
+                          dataIndex: "id",
+                          width: 60,
+                        },
+                        {
+                          title: "Tiêu đề",
+                          dataIndex: "title",
+                          ellipsis: true,
+                          render: (title: string, post: Post) => (
+                            <a
+                              href={`/post/${post.id}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {title}
+                            </a>
+                          ),
+                        },
+                        {
+                          title: "Danh mục",
+                          dataIndex: "category",
+                          width: 120,
+                          render: (cat: string) =>
+                            cat ? <Tag color="blue">{cat}</Tag> : "—",
+                        },
+                        {
+                          title: "Link",
+                          key: "link",
+                          width: 90,
+                          render: (_: unknown, post: Post) => (
+                            <Tooltip title={`${window.location.origin}/post/${post.id}`}>
+                              <Button
+                                size="small"
+                                icon={<LinkOutlined />}
+                                onClick={() => copyPostLink(post)}
+                              >
+                                Copy
+                              </Button>
+                            </Tooltip>
+                          ),
+                        },
+                        {
+                          title: "Thao tác",
+                          key: "actions",
+                          width: 80,
+                          render: (_: unknown, post: Post) => renderPostActions(post),
+                        },
+                      ]}
+                    />
+                  </div>
                 ),
               },
             ]}
           />
+
         </div>
 
         {/* Edit panel */}

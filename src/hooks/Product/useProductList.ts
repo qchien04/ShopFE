@@ -81,3 +81,11 @@ export const useProductsByIds = (ids: number[]) => {
     enabled: ids.length > 0,
   });
 };
+
+export const useProductVariantsByIds = (ids: number[]) => {
+  return useQuery({
+    queryKey: ["products", ids],
+    queryFn: () => productApi.getVariantByIds(ids),
+    enabled: ids.length > 0,
+  });
+};

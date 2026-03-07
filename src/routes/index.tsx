@@ -33,6 +33,7 @@ import SupportWidget from "../components/Support";
 import ChatManagePage from "../pages/Admin/ChatManager";
 import ProfilePage from "../pages/Client/Dashboard/Profile";
 import PaymentSuccess from "../pages/Client/PaymentStatus/Success";
+import ReviewManagePage from "../pages/Admin/Review/ReviewManagePage";
 
 export const router = createBrowserRouter([
   {
@@ -151,16 +152,16 @@ export const router = createBrowserRouter([
         element: <BrandsPage />,
       },
       {
-        path: "address",
-        element: <CustomerAddressPage />,
-      },
-      {
         path: "orders",
         element: <OrdersPage />,
       },
       {
-        path: "banner",
+        path: "configs",
         element: <BannerManager />,
+      },
+      {
+        path: "reviews",
+        element: <ReviewManagePage />,
       },
       {
         path: "chat-manager",

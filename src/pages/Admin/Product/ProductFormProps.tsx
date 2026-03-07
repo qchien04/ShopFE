@@ -2,7 +2,7 @@ import {
   Button, Form, Input, InputNumber, Select, Card, Row, Col,
   Upload, Switch, Space
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { useCategoryList } from "../../../hooks/Category/useCategotyList";
 import type { ProductFormValues } from "../../../types/request.type";
 import { uploadProps } from "../../../utils/uploadProps";
@@ -41,12 +41,11 @@ const ProductForm = ({
             featured: false,
             stockQuantity: 0,
             images: [],
-            specifications: [],
+            variants: [],
             ...initialValues,
           }}
         >
-          {/* ==== (GIỮ NGUYÊN TOÀN BỘ FORM CỦA BẠN) ==== */}
-                    {/* ===== Thông tin cơ bản ===== */}
+          {/* ===== Thông tin cơ bản ===== */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
@@ -57,7 +56,6 @@ const ProductForm = ({
                 <Input placeholder="VD: Arduino Uno R3" />
               </Form.Item>
             </Col>
-
             <Col span={12}>
               <Form.Item
                 name="sku"
@@ -80,14 +78,13 @@ const ProductForm = ({
                 <Select
                   showSearch
                   placeholder="Chọn danh mục"
-                  options={(categories?categories:[]).map((cat) => ({
+                  options={(categories ?? []).map((cat) => ({
                     label: cat.name,
                     value: cat.id,
                   }))}
                 />
               </Form.Item>
             </Col>
-
             <Col span={12}>
               <Form.Item
                 name="brandId"
@@ -97,7 +94,7 @@ const ProductForm = ({
                 <Select
                   showSearch
                   placeholder="Chọn thương hiệu"
-                  options={brands?.map((brand) => ({
+                  options={(brands ?? []).map((brand) => ({
                     label: brand.name,
                     value: brand.id,
                   }))}
@@ -121,7 +118,6 @@ const ProductForm = ({
                 />
               </Form.Item>
             </Col>
-
             <Col span={8}>
               <Form.Item name="salePrice" label="Giá khuyến mãi (₫)">
                 <InputNumber
@@ -131,7 +127,6 @@ const ProductForm = ({
                 />
               </Form.Item>
             </Col>
-
             <Col span={8}>
               <Form.Item
                 name="stockQuantity"
@@ -157,7 +152,6 @@ const ProductForm = ({
                 />
               </Form.Item>
             </Col>
-
             <Col span={12}>
               <Form.Item name="featured" label="Sản phẩm nổi bật" valuePropName="checked">
                 <Switch />
@@ -175,19 +169,11 @@ const ProductForm = ({
                 getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
                 rules={[{ required: true, message: "Upload ảnh chính" }]}
               >
-                <Upload
-                  listType="picture-card"
-                  maxCount={1}
-                  {...uploadProps(form, "mainPicture")}
-                >
-                  <div>
-                    <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
-                  </div>
+                <Upload listType="picture-card" maxCount={1} {...uploadProps(form, "mainPicture")}>
+                  <div><PlusOutlined /><div style={{ marginTop: 8 }}>Upload</div></div>
                 </Upload>
               </Form.Item>
             </Col>
-
             <Col span={12}>
               <Form.Item
                 name="images"
@@ -195,15 +181,8 @@ const ProductForm = ({
                 valuePropName="fileList"
                 getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
               >
-                <Upload
-                  listType="picture-card"
-                  multiple
-                  {...uploadProps(form, "images")}
-                >
-                  <div>
-                    <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
-                  </div>
+                <Upload listType="picture-card" multiple {...uploadProps(form, "images")}>
+                  <div><PlusOutlined /><div style={{ marginTop: 8 }}>Upload</div></div>
                 </Upload>
               </Form.Item>
             </Col>
@@ -222,54 +201,168 @@ const ProductForm = ({
             <TextArea rows={6} placeholder="Mô tả đầy đủ về sản phẩm..." />
           </Form.Item>
 
-          {/* ===== Thông số kỹ thuật ===== */}
-          <Form.List name="specifications">
+          {/* ===== Variants ===== */}
+          <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 12 }}>
+            Variants sản phẩm
+          </div>
+
+          <Form.List name="variants">
             {(fields, { add, remove }) => (
               <>
-                <Form.Item label="Thông số kỹ thuật">
-                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                    Thêm thông số
-                  </Button>
-                </Form.Item>
-                {fields.map(({ key, name, ...restField }) => (
-                  <Row key={key} gutter={16}>
-                    <Col span={10}>
-                      <Form.Item
-                        {...restField}
-                        name={[name, "specName"]}
-                        rules={[{ required: true, message: "Nhập tên thông số" }]}
+                {fields.map(({ key, name }) => (
+                  <Card
+                    key={key}
+                    size="small"
+                    style={{ marginBottom: 12, border: "1px solid #d9d9d9", borderRadius: 8 }}
+                    title={<span style={{ fontWeight: 600 }}>Variant #{name + 1}</span>}
+                    extra={
+                      <Button
+                        danger size="small"
+                        icon={<DeleteOutlined />}
+                        onClick={() => remove(name)}
                       >
-                        <Input placeholder="VD: Điện áp" />
-                      </Form.Item>
-                    </Col>
-                    <Col span={10}>
-                      <Form.Item
-                        {...restField}
-                        name={[name, "specValue"]}
-                        rules={[{ required: true, message: "Nhập giá trị" }]}
-                      >
-                        <Input placeholder="VD: 5V" />
-                      </Form.Item>
-                    </Col>
-                    <Col span={4}>
-                      <Button danger onClick={() => remove(name)}>
                         Xóa
                       </Button>
-                    </Col>
-                  </Row>
+                    }
+                  >
+                    {/* Tên + SKU */}
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <Form.Item
+                          name={[name, "name"]}
+                          label="Tên variant"
+                          rules={[{ required: true, message: "Nhập tên variant" }]}
+                        >
+                          <Input placeholder="VD: Đỏ - XL" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          name={[name, "sku"]}
+                          label="SKU"
+                          rules={[{ required: true, message: "Nhập SKU" }]}
+                        >
+                          <Input placeholder="VD: SP001-RED-XL" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+
+                    {/* Giá + Giá KM + Tồn kho */}
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <Form.Item
+                          name={[name, "price"]}
+                          label="Giá (₫)"
+                          rules={[{ required: true, message: "Nhập giá" }]}
+                        >
+                          <InputNumber
+                            min={0} style={{ width: "100%" }}
+                            formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <Form.Item name={[name, "salePrice"]} label="Giá KM (₫)">
+                          <InputNumber
+                            min={0} style={{ width: "100%" }}
+                            formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <Form.Item
+                          name={[name, "stockQuantity"]}
+                          label="Tồn kho"
+                          rules={[{ required: true }]}
+                        >
+                          <InputNumber min={0} style={{ width: "100%" }} />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+
+                    {/* Ảnh variant */}
+                    <Form.Item
+                      name={[name, "mainImage"]}
+                      label="Ảnh variant"
+                      valuePropName="fileList"
+                      getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+                    >
+                      <Upload
+                        listType="picture-card"
+                        maxCount={1}
+                        {...uploadProps(form, `variant_${name}`)}
+                      >
+                        <div><PlusOutlined /><div style={{ marginTop: 8 }}>Upload</div></div>
+                      </Upload>
+                    </Form.Item>
+
+                    {/* Attributes (key-value) */}
+                    <Form.List name={[name, "attributes"]}>
+                      {(attrFields, { add: addAttr, remove: removeAttr }) => (
+                        <>
+                          <div style={{ fontWeight: 500, marginBottom: 8 }}>
+                            Attributes
+                            <Button
+                              type="dashed" size="small"
+                              icon={<PlusCircleOutlined />}
+                              onClick={() => addAttr()}
+                              style={{ marginLeft: 8 }}
+                            >
+                              Thêm
+                            </Button>
+                          </div>
+                          {attrFields.map(({ key: ak, name: an }) => (
+                            <Row key={ak} gutter={8} style={{ marginBottom: 8 }}>
+                              <Col span={10}>
+                                <Form.Item
+                                  name={[an, "key"]}
+                                  rules={[{ required: true, message: "Nhập key" }]}
+                                  noStyle
+                                >
+                                  <Input placeholder="VD: màu sắc" />
+                                </Form.Item>
+                              </Col>
+                              <Col span={10}>
+                                <Form.Item
+                                  name={[an, "value"]}
+                                  rules={[{ required: true, message: "Nhập value" }]}
+                                  noStyle
+                                >
+                                  <Input placeholder="VD: đỏ" />
+                                </Form.Item>
+                              </Col>
+                              <Col span={4}>
+                                <Button
+                                  danger size="small"
+                                  icon={<DeleteOutlined />}
+                                  onClick={() => removeAttr(an)}
+                                />
+                              </Col>
+                            </Row>
+                          ))}
+                        </>
+                      )}
+                    </Form.List>
+                  </Card>
                 ))}
+
+                <Button
+                  type="dashed"
+                  onClick={() => add({ stockQuantity: 0, attributes: [] })}
+                  block
+                  icon={<PlusOutlined />}
+                  style={{ marginBottom: 16 }}
+                >
+                  Thêm variant
+                </Button>
               </>
             )}
           </Form.List>
+
           {/* ===== Submit ===== */}
           <Form.Item>
             <Space>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                size="large"
-              >
+              <Button type="primary" htmlType="submit" loading={loading} size="large">
                 {submitText}
               </Button>
               <Button size="large" onClick={() => form.resetFields()}>

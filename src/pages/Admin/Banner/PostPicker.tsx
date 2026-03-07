@@ -1,16 +1,20 @@
-import { Checkbox, Empty, Spin, Tag } from "antd";
+import { Checkbox, Empty, Spin, Tag, Tooltip, Button } from "antd";
 import type { Post } from "../../../types/entity.type";
 import { antdMessage } from "../../../utils/antdMessage";
 import {
   PictureOutlined,
+  CopyOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
+
 // ─── Post Picker ───────────────────────────────────────────────────────────────
-export const PostPicker = ({ posts, loading, selectedIds, onChange, max = 6 }: {
-  posts:       Post[]   | undefined;
-  loading:     boolean;
-  selectedIds: number[];
-  onChange:    (ids: number[]) => void;
-  max?:        number;
+export const PostPicker = ({ posts, loading, selectedIds, onChange, max = 6, renderActions }: {
+  posts:          Post[]   | undefined;
+  loading:        boolean;
+  selectedIds:    number[];
+  onChange:       (ids: number[]) => void;
+  max?:           number;
+  renderActions?: (post: Post) => React.ReactNode;
 }) => {
   const toggle = (id: number) => {
     if (selectedIds.includes(id)) {
@@ -22,6 +26,19 @@ export const PostPicker = ({ posts, loading, selectedIds, onChange, max = 6 }: {
       }
       onChange([...selectedIds, id]);
     }
+  };
+
+  const copyLink = (e: React.MouseEvent, post: Post) => {
+    e.stopPropagation(); // không trigger toggle khi click copy
+    const link = `${window.location.origin}/post/${post.id}`; // điều chỉnh path nếu cần
+    navigator.clipboard.writeText(link).then(() => {
+      antdMessage.success(`Đã copy link: ${post.title}`);
+    });
+  };
+
+  const openEdit = (e: React.MouseEvent, post: Post) => {
+    e.stopPropagation(); // không trigger toggle khi click edit
+    window.open(`/admin/posts/${post.id}/edit`, "_blank"); // điều chỉnh path nếu cần
   };
 
   if (loading) return <div className="post-picker__loading"><Spin /></div>;
@@ -61,6 +78,33 @@ export const PostPicker = ({ posts, loading, selectedIds, onChange, max = 6 }: {
                     {new Date(post.updatedAt).toLocaleDateString("vi-VN")}
                   </span>
                 </div>
+              </div>
+
+              {/* ── Actions: copy link + edit ── */}
+              <div className="post-card__actions" onClick={(e) => e.stopPropagation()}>
+                {renderActions
+                  ? renderActions(post)
+                  : (
+                    <>
+                      <Tooltip title="Copy link bài viết">
+                        <Button
+                          size="small"
+                          icon={<CopyOutlined />}
+                          onClick={(e) => copyLink(e, post)}
+                        />
+                      </Tooltip>
+                      <Tooltip title="Chỉnh sửa bài viết">
+                        <Button
+                          size="small"
+                          type="primary"
+                          ghost
+                          icon={<EditOutlined />}
+                          onClick={(e) => openEdit(e, post)}
+                        />
+                      </Tooltip>
+                    </>
+                  )
+                }
               </div>
             </div>
           );

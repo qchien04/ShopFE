@@ -328,9 +328,10 @@ const SalePostEditor: React.FC<SalePostEditorProps> = ({ onSave, initialData }) 
             <Col span={8}>
               <Form.Item label="Danh mục" name="category" rules={[{ required: true, message: 'Chọn danh mục!' }]}>
                 <Select size="large" placeholder="Chọn danh mục">
-                  <Option value="flash-sale">Mẹo vặt</Option>
-                  <Option value="khuyen-mai">Hướng dẫn sử dụng sản phẩm</Option>
-                  <Option value="san-pham-moi">Tin tức</Option>
+                  <Option value="meo-vat">Mẹo vặt</Option>
+                  <Option value="huong-dan">Hướng dẫn sử dụng sản phẩm</Option>
+                  <Option value="tin-tuc">Tin tức</Option>
+                  <Option value="khuyen-mai">Khuyến mãi</Option>
                 </Select>
               </Form.Item>
             </Col>

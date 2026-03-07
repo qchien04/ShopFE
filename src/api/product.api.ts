@@ -1,7 +1,7 @@
 import { deleteDataNoBody, getData, postData, putData } from "../app/axiosClient"
 import type { ParamSearch } from "../hooks/Product/useProductList"
 import type { ApiResponse } from "../types"
-import type { Product } from "../types/product.type"
+import type { Product, ProductVariant } from "../types/product.type"
 import type { ProductFormValues } from "../types/request.type"
 import type { PageResponse } from "../types/response.type"
 
@@ -20,6 +20,9 @@ export const productApi = {
 
   getByIds: (ids: number[]): Promise<Product[]> =>
   getData<Product[]>(`/products?ids=${ids.join(",")}`),
+
+  getVariantByIds: (ids: number[]): Promise<ProductVariant[]> =>
+  getData<ProductVariant[]>(`/products/variant?ids=${ids.join(",")}`),
 
   getBySlug: (slug:string): Promise<Product> =>
     getData<Product>(`/products/slug/${slug}`),

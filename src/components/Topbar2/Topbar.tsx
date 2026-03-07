@@ -12,11 +12,14 @@ import {
 import './Topbar.scss';
 import { queryClient } from '../../app/queryClient';
 import { logout } from '../../features/auth/authSlice';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector, type RootState } from '../../app/store';
 import { useCategoryParentList } from '../../hooks/Category/useCategotyList';
 import { LogoutOutlined, SettingOutlined } from "@ant-design/icons";
 import { useCart } from '../../hooks/Cart/useCart';
+import type { BannerConfig } from '../../types/entity.type';
+import { useQuery } from '@tanstack/react-query';
+import { adminApi } from '../../api/admin.api';
 
 
 const TopBar = () => {
@@ -24,7 +27,13 @@ const TopBar = () => {
   const { data: cart } = useCart();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  
+  const { data } = useQuery<BannerConfig>({
+    queryKey: ['banner-config'],  
+    queryFn: () => adminApi.getConfigBanner(),
+    staleTime: 1000 * 60 * 10,
+    retry: false,
+  });
+
   const {userAccount,isAuthenticated} = useAppSelector((state:RootState)=>state.auth);
 
   const [keyword, setKeyword] = useState("");
@@ -51,10 +60,9 @@ const TopBar = () => {
     console.log(userAccount?.roles?.length)
     if(!isAuthenticated) navigate("/login");
     if(userAccount?.roles?.length == 0) navigate("/user/profile");
-    if(userAccount?.roles?.length &&
-      userAccount?.roles?.length>0 &&
-      userAccount?.roles[0]=='ADMIN'
-    ) navigate("/admin/address");
+    if (userAccount?.roles?.includes("ADMIN")) {
+      navigate("/admin/dashboard");
+    }
   };
 
   const handleCart = () => {
@@ -87,11 +95,14 @@ const TopBar = () => {
     { key: '2', label: 'Lazada' },
     { key: '3', label: 'Tiktok' },
   ];
-
-  const promotionItems: MenuProps['items'] = [
-    { key: '1', label: 'Quyền Lợi Thành Viên' },
-    { key: '2', label: 'Chương Trình Miễn Phí Vận Chuyển' },
-  ];
+  
+  const promotionItems: MenuProps['items']=data?.saleEvents.map((item)=>{
+    return {
+      key:item.id,
+      label:item.label,
+      onClick:()=>navigate(`${item.link}`)
+    }
+  })
 
   const blogItems: MenuProps['items'] = [
     { key: '1', label: 'Mẹo Vặt' },
@@ -104,7 +115,6 @@ const TopBar = () => {
   ? [
       {
         key: "user-info",
-        disabled: true,
         label: (
           <div style={{ padding: "4px 8px" }}>
             <div style={{ fontWeight: 600 }}>
@@ -115,6 +125,7 @@ const TopBar = () => {
             </div>
           </div>
         ),
+        onClick: handleDashboard,
       },
       {
         type: "divider",
@@ -193,14 +204,18 @@ const TopBar = () => {
               menu={{ items: accountItems }}
               trigger={['hover']}
             >
-              <div className="action-item" style={{ cursor: 'pointer' }}>
+              <div
+                className="action-item"
+                style={{ cursor: 'pointer' }}
+                onClick={handleDashboard}
+              >
                 <UserOutlined className="action-icon" />
                 <span className="action-text">Tài khoản</span>
               </div>
             </Dropdown>
             
             <div className="action-item" onClick={handleCart}>
-              <Badge count={cart?.items.length} showZero>
+              <Badge count={cart?.items?.length || 0} showZero>
                 <ShoppingCartOutlined className="action-icon" />
               </Badge>
               <span className="action-text">Giỏ hàng</span>
@@ -234,7 +249,7 @@ const TopBar = () => {
               </span>
             </Dropdown>
             
-            <a href="#" className="nav-item">Kiểm Tra Đơn Hàng</a>
+            <Link to="/" className="nav-item">Kiểm tra đơn hàng</Link>
             
             <Dropdown menu={{items:marketplaceItems}} trigger={['hover']}>
               <a href="#" className="nav-item nav-dropdown">

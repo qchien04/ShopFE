@@ -117,33 +117,6 @@ const RegisterPage: React.FC = () => {
                   </Form.Item>
                 </Col>
               </Row>
-
-              <Row gutter={2}>
-                <Col span={24}>
-                  <Form.Item label="Địa chỉ" name="address" rules={rules}>
-                    <Input size="large" placeholder="Nhập địa chỉ của bạn" />
-                  </Form.Item>
-                </Col>
-
-                <Col span={8}>
-                  <Form.Item label="Tỉnh/Thành phố" name="city" rules={rules}>
-                    <Input size="large" placeholder="Tỉnh/Thành phố" />
-                  </Form.Item>
-                </Col>
-
-                <Col span={8}>
-                  <Form.Item label="Huyện/Quận" name="district" rules={rules}>
-                    <Input size="large" placeholder="Huyện/Quận" />
-                  </Form.Item>
-                </Col>
-
-                <Col span={8}>
-                  <Form.Item label="Xã/Phường" name="commune" rules={rules}>
-                    <Input size="large" placeholder="Xã/Phường" />
-                  </Form.Item>
-                </Col>
-                
-              </Row>
               
               <Alert
                 title="Lưu ý"

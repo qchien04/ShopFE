@@ -1,22 +1,32 @@
 import type { PaymentMethod } from "./entity.type";
 
+export interface VariantFormValue {
+  id?: number;
+  name: string;
+  sku: string;
+  price: number;
+  salePrice?: number;
+  stockQuantity: number;
+  mainImage?: any[];
+  attributes?: Array<{ key: string; value: string }>;
+}
+
 export interface ProductFormValues {
   name: string;
   sku: string;
-  slug: string;
+  slug?: string;
   categoryId: number;
   brandId: number;
   price: number;
   salePrice?: number;
   stockQuantity: number;
   shortDescription: string;
-  fullDescription: string;
+  fullDescription?: string;
   status: string;
   featured: boolean;
   mainImage: any[];
   images: any[];
-  specifications: Array<{ specName: string; specValue: string }>;
-  category:number[];
+  variants: VariantFormValue[];
 }
 
 
@@ -38,7 +48,7 @@ export interface BrandFormValues {
   active: boolean;
 }
 export interface AddToCartRequest {
-  productId: number;
+  productVariantId: number;
   quantity: number;
 }
 
@@ -61,7 +71,7 @@ export interface CreateCustomerAddressRequest {
 }
 
 export interface OrderRequestItem{
-  productId:number;
+  productVariantId:number;
   quantity:number;
 }
 
@@ -77,6 +87,22 @@ export interface CreatePaymentRequest{
   orderId: number;
   paymentMethod: PaymentMethod;
 }
+
+export interface ChangePasswordRequest{
+  oldPassword: string;
+  newPassword: string;
+}
+
+export interface UpdateUserInfoRequest{
+  fullName: string;
+  dob: string;
+}
+
+export interface ReviewRequest{
+  rating: number;
+  comment: string;
+}
+
 
 
 

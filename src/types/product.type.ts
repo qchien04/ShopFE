@@ -6,10 +6,18 @@ export interface ProductImage {
   imageUrl:string;
 }
 
-export interface ProductSpecification{
-  specName:string;
-  specValue:string;
+export interface ProductVariant{
+  id: number;
+  productId: number;
+  name: string;
+  sku: string;
+  price: number;
+  salePrice: number;
+  stockQuantity: number;
+  mainImage: string;
+  attributes:string;
 }
+
 export type ProductStatus =
   | "DRAFT" | "PUBLISHED" | "OUT_OF_STOCK" | "DISCONTINUED";
 
@@ -33,5 +41,5 @@ export interface Product {
   shortDescription:string;
   fullDescription:string;
   featured:boolean;
-  specifications?:ProductSpecification[];
+  productVariants?:ProductVariant[];
 }
