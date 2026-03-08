@@ -11,6 +11,6 @@ export const productsQueryKeys = {
       
     ] as const,
 
-  detail: (id: number) =>
+  detail: (id: number|string) =>
     ["products", "detail", id] as const,
 };

@@ -11,7 +11,7 @@ const NewProductCard = ({product}:Props) => {
   const nav=useNavigate();
   return (
     <Card
-      onClick={()=>nav(`/product/${product.id}`)}
+      onClick={()=>nav(`/products/${product.id}`)}
       key={product.id}
       className="product-card"
       cover={

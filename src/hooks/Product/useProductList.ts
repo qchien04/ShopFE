@@ -48,7 +48,7 @@ export const useProductList = <T = PageResponse<Product>>(params: ParamSearch = 
           return productApi.getByKeyword(params) as T
 
         default:
-          return productApi.getAll() as T
+          return productApi.getAll(params) as T
       }
     },
    enabled: (() => {

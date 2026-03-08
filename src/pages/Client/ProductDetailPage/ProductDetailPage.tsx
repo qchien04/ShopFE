@@ -34,7 +34,7 @@ import { message } from 'antd';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { data: product } = useProductDetail(Number(id));
+  const { data: product } = useProductDetail(id);
   const { data: reviewSummary } = useReviews(Number(id));
   const { mutate: AddToCart } = useAddToCart();
 
@@ -43,7 +43,7 @@ const ProductDetail = () => {
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const { data: wishlistCheck } = useWishlistCheck(Number(id))
+  const { data: wishlistCheck } = useWishlistCheck(product?.id)
   const { mutate: addWishlist, isPending: adding } = useAddWishlist();
   const { mutate: removeWishlist, isPending: removing } = useRemoveWishlist();
 
@@ -98,7 +98,7 @@ const ProductDetail = () => {
   const handleAddToCart = () => {
     if (!selectedVariant) return;
     AddToCart({
-      productVariantId: selectedVariant.id, // ✅ gửi đúng variantId
+      productVariantId: selectedVariant.id,
       quantity,
     });
     setQuantity(1);
@@ -144,7 +144,9 @@ const ProductDetail = () => {
     {
       key: '2',
       label: `Đánh giá (${reviewSummary?.totalReviews ?? 0})`,
-      children: <ReviewSection productId={Number(id)} />,
+      children: product.id && !isNaN(product.id)
+          ? <ReviewSection productId={product.id} />
+          : <></>,
     },
   ];
 
@@ -171,20 +173,34 @@ const ProductDetail = () => {
       : img.variantId === null && allImages.indexOf(img) === selectedImage
   )?.imageUrl ?? currentProduct.mainImage;
   
+  
 
   return (
     <div className="product-detail">
       <div className="product-container">
         {/* Breadcrumb */}
-        <Breadcrumb className="product-breadcrumb">
-          <Breadcrumb.Item href="/">Trang chủ</Breadcrumb.Item>
-          {currentProduct.category && (
-            <Breadcrumb.Item href={`/category/${currentProduct.category.id}`}>
-              {currentProduct.category.name}
-            </Breadcrumb.Item>
-          )}
-          <Breadcrumb.Item>{currentProduct.name}</Breadcrumb.Item>
-        </Breadcrumb>
+        <Breadcrumb
+          className="product-breadcrumb"
+          items={[
+            {
+              title: <a href="/">Trang chủ</a>,
+            },
+            ...(currentProduct.category
+              ? [
+                  {
+                    title: (
+                      <a href={`/category/${currentProduct.category.id}`}>
+                        {currentProduct.category.name}
+                      </a>
+                    ),
+                  },
+                ]
+              : []),
+            {
+              title: currentProduct.name,
+            },
+          ]}
+        />
 
         <div className="product-main">
           {/* Left: Images */}

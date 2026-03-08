@@ -1,80 +1,69 @@
-import { Table, Button, Space, Popconfirm, Tag, Image, Input, Modal } from "antd";
-import type { ColumnsType } from "antd/es/table";
+// ProductsPage.tsx
+import { Table, Button, Space, Input, Modal, Spin } from "antd";
 import { useState } from "react";
-import { useProductList } from "../../../hooks/Product/useProductList";
+import { useProductList }   from "../../../hooks/Product/useProductList";
 import { useDeleteProduct } from "../../../hooks/Product/useDeleteProduct";
-import type { Product } from "../../../types/product.type";
-import ProductForm from "./ProductFormProps";
 import { useCreateProduct } from "../../../hooks/Product/useCreateProduct";
 import { useUpdateProduct } from "../../../hooks/Product/useUpdateProduct";
 import { useProductDetail } from "../../../hooks/Product/useProduct";
+import type { Product }      from "../../../types/product.type";
+import type { PageResponse } from "../../../types/response.type";
+import ProductForm           from "./ProductFormProps";
+import { buildColumns } from "./Column";
 
-type ProductStatus = "DRAFT" | "PUBLISHED" | "OUT_OF_STOCK" | "DISCONTINUED";
+export const toPayload = (values: any) => ({
+  ...values,
+  mainImage:
+    values.mainImage?.[0]?.response?.imageUrl ||
+    values.mainImage?.[0]?.url || null,
+  imageIds: values.images?.map((f: any) => f.response?.id || f.uid) ?? [],
+  variants: (values.variants ?? []).map((v: any) => ({
+    ...v,
+    mainImage:
+      v.mainImage?.[0]?.response?.imageUrl ||
+      v.mainImage?.[0]?.url || null,
+    attributes: (v.attributes ?? []).reduce(
+      (acc: Record<string, string>, attr: any) => {
+        if (attr?.key) acc[attr.key] = attr.value;
+        return acc;
+      }, {}
+    ),
+  })),
+});
 
-const statusColor: Record<ProductStatus, string> = {
-  DRAFT: "default",
-  PUBLISHED: "success",
-  OUT_OF_STOCK: "warning",
-  DISCONTINUED: "error",
-};
 
-const statusText: Record<ProductStatus, string> = {
-  DRAFT: "Nháp",
-  PUBLISHED: "Đã xuất bản",
-  OUT_OF_STOCK: "Hết hàng",
-  DISCONTINUED: "Ngừng kinh doanh",
-};
+// ─── Component ───────────────────────────────────────────────────────────────
 
 const ProductsPage = () => {
+  const [page,       setPage]       = useState(1);
+  const [pageSize,   setPageSize]   = useState(10);
   const [searchText, setSearchText] = useState("");
-  const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<"create" | "edit">("create");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [keyword,    setKeyword]    = useState("");
+  const [open,       setOpen]       = useState(false);
+  const [mode,       setMode]       = useState<"create" | "edit">("create");
+  const [editingId,  setEditingId]  = useState<number | null>(null);
 
-  const { data, isLoading } = useProductList<Product[]>({ type: "all" });
-  const { mutate: deleteProduct, isPending: deleting } = useDeleteProduct();
-  const { mutate: createProduct, isPending: creating } = useCreateProduct();
-  const { mutate: updateProduct, isPending: updating } = useUpdateProduct();
-  const { data: productDetail } = useProductDetail(editingId ?? 0);
+  const { data, isLoading } = useProductList<PageResponse<Product>>({
+    type: "all", page: page - 1, size: pageSize, keyword,
+  });
 
-  const filteredData = data?.filter((item) =>
-    item.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const { mutate: deleteProduct, isPending: deleting  } = useDeleteProduct();
+  const { mutate: createProduct, isPending: creating  } = useCreateProduct();
+  const { mutate: updateProduct, isPending: updating  } = useUpdateProduct();
 
-  const openCreateModal = () => {
-    setMode("create");
-    setEditingId(null);
-    setOpen(true);
-  };
+  // ✅ Chỉ fetch khi đang edit
+  const { data: productDetail, isLoading: loadingDetail } =
+    useProductDetail(editingId ?? 0);
 
-  const openEditModal = (id: number) => {
-    setMode("edit");
-    setEditingId(id);
-    setOpen(true);
-  };
+  const openCreateModal = () => { setMode("create"); setEditingId(null); setOpen(true); };
+  const openEditModal   = (id: number) => { setMode("edit"); setEditingId(id); setOpen(true); };
+  const closeModal      = () => { setOpen(false); setEditingId(null); };
 
-  const closeModal = () => {
-    setOpen(false);
-    setEditingId(null);
-  };
+  const handleSearch = (value: string) => { setKeyword(value); setPage(1); };
+  const handleClear  = () => { setKeyword(""); setPage(1); setSearchText(""); };
 
   const handleSubmit = (values: any) => {
-    const payload = {
-      ...values,
-      mainImage: values.mainImage?.[0]?.response?.imageUrl || values.mainImage?.[0]?.url,
-      imageIds: values.images?.map((f: any) => f.response?.id || f.uid) || [],
-
-      // ✅ Transform variants: [{key,value}] → { key: value }
-      variants: values.variants?.map((v: any) => ({
-        ...v,
-        mainImage: v.mainImage?.[0]?.response?.imageUrl || v.mainImage?.[0]?.url || null,
-        attributes: (v.attributes ?? []).reduce((acc: any, attr: any) => {
-          if (attr?.key) acc[attr.key] = attr.value;
-          return acc;
-        }, {}),
-      })) ?? [],
-    };
-
+    const payload = toPayload(values);
     if (mode === "create") {
       createProduct(payload, { onSuccess: closeModal });
     } else {
@@ -82,126 +71,39 @@ const ProductsPage = () => {
     }
   };
 
-  const initialValues =
-    mode === "edit" && productDetail
-      ? {
-          name: productDetail.name,
-          sku: productDetail.sku,
-          categoryId: productDetail.category?.id,
-          brandId: productDetail.brand?.id,
-          price: productDetail.price,
-          salePrice: productDetail.salePrice,
-          stockQuantity: productDetail.stockQuantity,
-          status: productDetail.status,
-          featured: productDetail.featured,
-          shortDescription: productDetail.shortDescription,
-          fullDescription: productDetail.fullDescription,
+  const columns = buildColumns(openEditModal, deleteProduct, deleting);
 
-          mainImage: productDetail.mainImage
-            ? [{ uid: "-1", name: "main-image", status: "done", url: productDetail.mainImage }]
-            : [],
-
-          images: productDetail.images?.map((img: any) => ({
-            uid: img.id,
-            name: img.name ?? "image",
-            status: "done",
-            url: img.imageUrl,
-          })) ?? [],
-
-          // ✅ Map variants: { key: value } → [{key, value}]
-          variants: productDetail.productVariants?.map((v: any) => ({
-            id: v.id,
-            name: v.name,
-            sku: v.sku,
-            price: v.price,
-            salePrice: v.salePrice,
-            stockQuantity: v.stockQuantity,
-            mainImage: v.mainImage
-              ? [{ uid: `v-${v.id}`, name: "image", status: "done", url: v.mainImage }]
-              : [],
-            attributes: Object.entries(v.attributes ?? {}).map(([key, value]) => ({
-              key,
-              value:String(value),
-            })),
-          })) ?? [],
-        }
-      : undefined;
-
-  const columns: ColumnsType<Product> = [
-    {
-      title: "Ảnh",
-      dataIndex: "mainImage",
-      render: (url) => (
-        <Image
-          width={80} height={80}
-          style={{ objectFit: "cover", borderRadius: 6 }}
-          src={url}
-          fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+  // ── Nội dung Modal ──
+  const modalContent = () => {
+    // Tạo mới — render thẳng, không cần chờ
+    if (mode === "create") {
+      return (
+        <ProductForm
+          onSubmit={handleSubmit}
+          loading={creating}
+          submitText="Tạo sản phẩm"
         />
-      ),
-    },
-    { title: "SKU", dataIndex: "sku" },
-    { title: "Tên sản phẩm", dataIndex: "name" },
-    { title: "Danh mục", dataIndex: ["category", "name"] },
-    { title: "Thương hiệu", dataIndex: ["brand", "name"] },
-    {
-      title: "Giá",
-      dataIndex: "price",
-      render: (price, record) => (
-        <Space direction="vertical" size={0}>
-          <span style={{ textDecoration: record.salePrice ? "line-through" : "none", color: "#999" }}>
-            {price.toLocaleString()}₫
-          </span>
-          {record.salePrice && (
-            <span style={{ color: "#ff4d4f", fontWeight: "bold" }}>
-              {record.salePrice.toLocaleString()}₫
-            </span>
-          )}
-        </Space>
-      ),
-    },
-    {
-      title: "Tồn kho",
-      dataIndex: "stockQuantity",
-      render: (qty) => <Tag color={qty > 0 ? "green" : "red"}>{qty}</Tag>,
-    },
-    { title: "Đã bán", dataIndex: "soldCount" },
-    { title: "Lượt xem", dataIndex: "viewCount" },
-    {
-      title: "Variants",
-      dataIndex: "productVariants",
-      render: (variants: any[]) => (
-        <Tag color="blue">{variants?.length ?? 0} variants</Tag>
-      ),
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      render: (status: ProductStatus) => (
-        <Tag color={statusColor[status]}>{statusText[status]}</Tag>
-      ),
-    },
-    {
-      title: "Hành động",
-      fixed: "right",
-      render: (_, record) => (
-        <Space>
-          <Button type="primary" size="small" onClick={() => openEditModal(record.id)}>
-            Sửa
-          </Button>
-          <Popconfirm
-            title="Xóa sản phẩm này?"
-            description="Hành động này không thể hoàn tác!"
-            onConfirm={() => deleteProduct(record.id)}
-            okText="Xóa"
-            cancelText="Hủy"
-          >
-            <Button danger size="small" loading={deleting}>Xóa</Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+      );
+    }
+
+    // Sửa — hiện Spin khi đang fetch
+    if (loadingDetail || !productDetail) {
+      return (
+        <div style={{ textAlign: "center", padding: 80 }}>
+          <Spin size="large" tip="Đang tải thông tin sản phẩm..." />
+        </div>
+      );
+    }
+
+    return (
+      <ProductForm
+        productDetail={productDetail}  // ✅ truyền thẳng productDetail, không cần transform ở đây
+        onSubmit={handleSubmit}
+        loading={updating}
+        submitText="Lưu thay đổi"
+      />
+    );
+  };
 
   return (
     <div>
@@ -213,12 +115,7 @@ const ProductsPage = () => {
         destroyOnHidden
         title={mode === "create" ? "➕ Thêm sản phẩm" : "✏️ Sửa sản phẩm"}
       >
-        <ProductForm
-          initialValues={initialValues}
-          onSubmit={handleSubmit}
-          loading={creating || updating}
-          submitText={mode === "create" ? "Tạo sản phẩm" : "Lưu thay đổi"}
-        />
+        {modalContent()}
       </Modal>
 
       <Space style={{ marginBottom: 16, justifyContent: "space-between", width: "100%" }}>
@@ -226,7 +123,10 @@ const ProductsPage = () => {
         <Input.Search
           placeholder="Tìm kiếm sản phẩm..."
           style={{ width: 300 }}
-          onSearch={(value) => setSearchText(value)}
+          value={searchText}
+          onChange={e => setSearchText(e.target.value)}
+          onSearch={handleSearch}
+          onClear={handleClear}
           allowClear
         />
       </Space>
@@ -235,13 +135,16 @@ const ProductsPage = () => {
         bordered
         rowKey="id"
         columns={columns}
-        dataSource={filteredData}
+        dataSource={data?.content ?? []}
         loading={isLoading}
         scroll={{ x: 1400 }}
         pagination={{
-          pageSize: 10,
+          current:         page,
+          pageSize:        pageSize,
+          total:           data?.totalElements ?? 0,
           showSizeChanger: true,
-          showTotal: (total) => `Tổng ${total} sản phẩm`,
+          showTotal:       (total) => `Tổng ${total} sản phẩm`,
+          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
         }}
       />
     </div>

@@ -66,16 +66,28 @@ export interface ReviewSummary{
 }
 
 export interface Wishlist{
-  id?:number,
-  prroductId:number,
+  id:number,
+  productId:number,
   productName:string,
   mainImage?:string,
-  price?:number,
+  price:number,
   salePrice?:number,
-  status?:string,
-  addedAt?:string,
+  status:string,
+  addedAt:string,
 }
 
+export interface AiProduct {
+  name: string;
+  reason: string;
+  price: number;
+  link: string;
+}
+
+export interface AiResponse {
+  message: string;
+  products: AiProduct[];
+  note?: string;
+}
 
 
 

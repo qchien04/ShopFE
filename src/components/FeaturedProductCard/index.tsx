@@ -14,7 +14,7 @@ interface Props {
 const FeaturedProductCard = ({product}:Props) => {
   const nav=useNavigate();
   return (
-    <Card key={product.id} hoverable className={styles['product-card']} onClick={()=>nav(`/product/${product.id}`)}>
+    <Card key={product.id} hoverable className={styles['product-card']} onClick={()=>nav(`/products/${product.id}`)}>
       <div className={styles['image-wrapper']}>
         <img src={product.mainImage} alt={product.name} />
 

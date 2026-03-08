@@ -1,4 +1,4 @@
-// ── Tokens ──────────────────────────────────────────────
+@use "sass:color";
 $white:      #ffffff;
 $bg:         #f5f4f0;
 $border:     #e8e4de;
@@ -85,7 +85,7 @@ $radius-xl: 24px;
   flex-shrink: 0;
 
   &:hover {
-    background: darken($bg, 4%);
+    background: color.adjust($bg, $lightness: -4%);
     color: $text-primary;
   }
 }

@@ -123,7 +123,7 @@ const CheckoutPage = () => {
 
             {/* DANH SÁCH SẢN PHẨM */}
             <Card title={`Sản phẩm (${items.length})`}>
-              <Space direction="vertical" size={16} style={{ width: "100%" }}>
+              <Space orientation="vertical" size={16} style={{ width: "100%" }}>
                 {items.map((i, idx) => (
                   <div
                     key={idx}

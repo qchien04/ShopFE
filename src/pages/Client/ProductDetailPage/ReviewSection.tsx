@@ -11,6 +11,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
   const {userAccount:user}= useAppSelector(
       (state: RootState) => state.auth
     );
+
   const { data, isLoading } = useReviews(productId);
   const { mutate: addReview, isPending } = useAddReview(productId);
 

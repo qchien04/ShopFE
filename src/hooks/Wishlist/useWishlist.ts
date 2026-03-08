@@ -16,10 +16,11 @@ export const useAddWishlist = () => {
   });
 };
 
-export const useWishlistCheck= (id:number) => 
+export const useWishlistCheck= (id:number|undefined) => 
   useQuery({
     queryKey: ["wishlist-check", id],
-    queryFn: () =>wishListApi.check(id),
+    queryFn: () =>wishListApi.check(id as number),
+    enabled: !!id && !isNaN(id),
   });
 ;
 

@@ -1,4 +1,4 @@
-// ── Tokens (shared với ChatManagePage) ──────────────────
+@use "sass:color";
 $white:      #ffffff;
 $bg:         #f5f4f0;
 $surface:    #ffffff;
@@ -316,7 +316,7 @@ $radius-lg:  18px;
   transition: all .18s ease;
 
   &:hover:not(:disabled) {
-    background: darken($accent, 8%);
+    background: color.adjust($accent, $lightness: -8%);
     transform: scale(1.05);
   }
 

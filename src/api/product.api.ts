@@ -6,8 +6,8 @@ import type { ProductFormValues } from "../types/request.type"
 import type { PageResponse } from "../types/response.type"
 
 export const productApi = {
-  getAll: (): Promise<Product[]> =>
-    getData<Product[]>("/products"),
+  getAll: (param:ParamSearch): Promise<PageResponse<Product>> =>
+    getData<PageResponse<Product>>("/products",param),
 
   createProduct: (payload:ProductFormValues): Promise<Product> =>
     postData<Product>("/products", payload),
@@ -18,8 +18,8 @@ export const productApi = {
   getById: (id:number): Promise<Product> =>
     getData<Product>(`/products/${id}`),
 
-  getByIds: (ids: number[]): Promise<Product[]> =>
-  getData<Product[]>(`/products?ids=${ids.join(",")}`),
+  getByIds: (ids: number[]): Promise<PageResponse<Product>> =>
+  getData<PageResponse<Product>>(`/products?ids=${ids.join(",")}`),
 
   getVariantByIds: (ids: number[]): Promise<ProductVariant[]> =>
   getData<ProductVariant[]>(`/products/variant?ids=${ids.join(",")}`),

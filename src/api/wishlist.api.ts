@@ -7,7 +7,7 @@ export const wishListApi = {
     getData<Wishlist[]>(`/wishlist`),
 
   check: (productId:number): Promise<{isInWishlist:boolean}> =>
-    getData<{isInWishlist:boolean}>(`/${productId}/check`),
+    getData<{isInWishlist:boolean}>(`/wishlist/${productId}/check`),
 
   add: (productId:number): Promise<Wishlist> =>
     postData<Wishlist>(`/wishlist/${productId}`,{}),
