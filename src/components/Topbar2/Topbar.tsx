@@ -96,13 +96,11 @@ const TopBar = () => {
     { key: '3', label: 'Tiktok' },
   ];
   
-  const promotionItems: MenuProps['items']=data?.saleEvents?.map((item)=>{
-    return {
-      key:item.id,
-      label:item.label,
-      onClick:()=>navigate(`${item.link}`)
-    }
-  })
+  const promotionItems: MenuProps['items'] = data?.saleEvents?.map((item) => ({
+    key: item.id,
+    label: item.label,
+    onClick: () => navigate(`${item.link}`)
+  })) ?? []
 
   const blogItems: MenuProps['items'] = [
     { key: '1', label: 'Mẹo Vặt' },
@@ -195,7 +193,7 @@ const TopBar = () => {
 
           {/* Right Actions */}
           <div className="topbar-actions">
-            <div className="action-item">
+            <div className="action-item" onClick={()=>navigate("/wish-list")}>
               <HeartOutlined className="action-icon" />
               <span className="action-text">Yêu thích</span>
             </div>
@@ -257,7 +255,7 @@ const TopBar = () => {
               </a>
             </Dropdown>
             
-            <Dropdown menu={{items:promotionItems}} trigger={['hover']}>
+            <Dropdown menu={{ items: promotionItems ?? [] }} trigger={['hover']}>
               <a href="#" className="nav-item nav-dropdown">
                 Chương Trình Khuyến Mãi <DownOutlined />
               </a>

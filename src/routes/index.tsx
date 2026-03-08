@@ -34,6 +34,7 @@ import ChatManagePage from "../pages/Admin/ChatManager";
 import ProfilePage from "../pages/Client/Dashboard/Profile";
 import PaymentSuccess from "../pages/Client/PaymentStatus/Success";
 import ReviewManagePage from "../pages/Admin/Review/ReviewManagePage";
+import WishlistPage from "../pages/Client/WishListPage/WishlistPage";
 
 export const router = createBrowserRouter([
   {
@@ -94,6 +95,10 @@ export const router = createBrowserRouter([
       {
         path: "/post",
         element: <PostsPage />,
+      },
+      {
+        path: "wish-list",
+        element: <WishlistPage />,
       },
       {
         path: "checkout",

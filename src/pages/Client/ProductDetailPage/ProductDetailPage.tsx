@@ -28,6 +28,9 @@ import { useAddToCart } from '../../../hooks/Cart/useAddToCart';
 import ReviewSection from './ReviewSection';
 import { useReviews } from '../../../hooks/Review';
 import type { ProductImage, ProductVariant } from '../../../types/product.type';
+import { useAddWishlist, useRemoveWishlist, useWishlistCheck } from '../../../hooks/Wishlist/useWishlist';
+import { useEffect } from 'react';
+import { message } from 'antd';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,6 +43,36 @@ const ProductDetail = () => {
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
 
+  const { data: wishlistCheck } = useWishlistCheck(Number(id))
+  const { mutate: addWishlist, isPending: adding } = useAddWishlist();
+  const { mutate: removeWishlist, isPending: removing } = useRemoveWishlist();
+
+  useEffect(() => {
+    if (wishlistCheck?.isInWishlist !== undefined) {
+      setIsFavorite(wishlistCheck.isInWishlist);
+    }
+  }, [wishlistCheck]);
+
+  const handleToggleWishlist = () => {
+    if (isFavorite) {
+      removeWishlist(Number(id), {
+        onSuccess: () => {
+          setIsFavorite(false);
+          message.success("Đã xóa khỏi yêu thích");
+        },
+        onError: () => message.error("Có lỗi xảy ra"),
+      });
+    } else {
+      addWishlist(Number(id), {
+        onSuccess: () => {
+          setIsFavorite(true);
+          message.success("Đã thêm vào yêu thích ❤️");
+        },
+        onError: () => message.error("Có lỗi xảy ra"),
+      });
+    }
+  };
+  
   const currentProduct = product;
   if (!currentProduct) return <div>Đang tải...</div>;
   
@@ -162,8 +195,15 @@ const ProductDetail = () => {
                 alt={currentProduct.name}
                 preview={{ mask: 'Xem ảnh' }}
               />
-              <button className="favorite-btn" onClick={() => setIsFavorite(!isFavorite)}>
-                {isFavorite ? <HeartFilled /> : <HeartOutlined />}
+              <button
+                className={`favorite-btn ${isFavorite ? 'active' : ''}`}
+                onClick={handleToggleWishlist}
+                disabled={adding || removing}
+              >
+                {isFavorite
+                  ? <HeartFilled style={{ color: "#ef4444" }} />
+                  : <HeartOutlined />
+                }
               </button>
             </div>
 

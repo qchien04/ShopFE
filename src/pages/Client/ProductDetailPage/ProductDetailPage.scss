@@ -103,6 +103,28 @@
         .anticon-heart-filled {
           color: #ff4444;
         }
+        &.active {
+          background: #fff0f0;
+          border-color: #ef4444;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        // Animation khi click
+        &:not(:disabled):active {
+          transform: scale(0.85);
+        }
+
+        svg {
+          transition: transform 0.2s;
+        }
+
+        &:not(:disabled):hover svg {
+          transform: scale(1.2);
+        }
       }
     }
 

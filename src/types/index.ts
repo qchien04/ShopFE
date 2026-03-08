@@ -65,5 +65,17 @@ export interface ReviewSummary{
   reviews?:Review[],
 }
 
+export interface Wishlist{
+  id?:number,
+  prroductId:number,
+  productName:string,
+  mainImage?:string,
+  price?:number,
+  salePrice?:number,
+  status?:string,
+  addedAt?:string,
+}
+
+
 
 
