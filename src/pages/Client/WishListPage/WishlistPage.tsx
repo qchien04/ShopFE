@@ -1,9 +1,8 @@
 // pages/Customer/WishlistPage.tsx
 import { Empty, Spin, Tag, Button, Popconfirm, message } from "antd";
-import { ShoppingCartOutlined, DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import styles from "./WishlistPage.module.scss";
-import { useAddToCart } from "../../../hooks/Cart/useAddToCart";
 import { useRemoveWishlist, useWishlist } from "../../../hooks/Wishlist/useWishlist";
 
 export default function WishlistPage() {
