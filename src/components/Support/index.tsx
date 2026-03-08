@@ -32,7 +32,7 @@ export default function SupportWidget() {
   return (
     <div className={styles.root}>
       {/* ── Popup ── */}
-      <div className={`${styles.popup} ${open ? styles.popupOpen : ""}`}>
+      {open&&<div className={`${styles.popup} ${open ? styles.popupOpen : ""}`}>
         {/* Body */}
         <div className={styles.popupBody}>
           {!isAuthenticated ? (
@@ -63,7 +63,8 @@ export default function SupportWidget() {
           )}
         </div>
 
-      </div>
+      </div>}
+      
 
       <Badge count={!open ? unread : 0}>
         <FloatButton

@@ -1,120 +1,57 @@
-// =======================
-// FeaturedProducts.tsx
-// =======================
-
-import { Button } from "antd";
-import {
-  ArrowRightOutlined,
-  LeftOutlined,
-  RightOutlined,
-} from "@ant-design/icons";
-import { useRef, useState, useEffect } from "react";
+import { Carousel } from "antd";
+import { ArrowRightOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { useRef } from "react";
 import type { Product } from "../../../../types/product.type";
 import FeaturedProductCard from "../../../../components/FeaturedProductCard";
 import { useProductList } from "../../../../hooks/Product/useProductList";
-
 import "./FeaturedProducts.scss";
 
-interface FeaturedProductsProps {
-  title?: string;
-  onProductClick?: (product: Product) => void;
-  onAddToCart?: (product: Product) => void;
-}
-
-const FeaturedProducts = ({
-  title = "Sản Phẩm Nổi Bật",
-}: FeaturedProductsProps) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
+const FeaturedProducts = ({ title = "Sản Phẩm Nổi Bật" }: { title?: string }) => {
+  const carouselRef = useRef<any>(null);
   const { data: products } = useProductList<Product[]>({ type: "featured" });
-
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const scrollAmount = 300;
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const checkScroll = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    setCanScrollLeft(el.scrollLeft > 0);
-    setCanScrollRight(
-      el.scrollLeft + el.clientWidth < el.scrollWidth - 5
-    );
-  };
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    checkScroll();
-    el.addEventListener("scroll", checkScroll);
-    window.addEventListener("resize", checkScroll);
-
-    return () => {
-      el.removeEventListener("scroll", checkScroll);
-      window.removeEventListener("resize", checkScroll);
-    };
-  }, [products]);
 
   return (
     <div className="featured-container">
-      <div className="featured-inner">
-        {/* HEADER */}
-        <div className="featured-header">
-          <h2 className="featured-title">{title}</h2>
+      {/* HEADER */}
+      <div className="featured-header">
+        <h2 className="featured-title">{title}</h2>
+        <a href="#" className="featured-viewall">Xem tất cả <ArrowRightOutlined /></a>
+      </div>
 
-          <Button
-            type="link"
-            className="featured-viewall"
-            icon={<ArrowRightOutlined />}
+      {/* CAROUSEL */}
+      <div className="featured-wrapper">
+        <button type="button" className="featured-arrow" onClick={() => carouselRef.current?.prev()}>
+          <LeftOutlined />
+        </button>
+
+        <div className="featured-inner">
+          <Carousel
+            ref={carouselRef}
+            autoplay
+            autoplaySpeed={3000}
+            pauseOnHover
+            slidesToShow={5}
+            slidesToScroll={1}
+            arrows={false}
+            dots={false}
+            responsive={[
+              { breakpoint: 1400, settings: { slidesToShow: 4 } },
+              { breakpoint: 1200, settings: { slidesToShow: 3 } },
+              { breakpoint: 768,  settings: { slidesToShow: 2 } },
+              { breakpoint: 480,  settings: { slidesToShow: 1 } },
+            ]}
           >
-            Xem tất cả
-          </Button>
+            {products?.map((product) => (
+              <div key={product.id} className="featured-slide">
+                <FeaturedProductCard product={product} />
+              </div>
+            ))}
+          </Carousel>
         </div>
 
-        {/* PRODUCT LIST */}
-        <div className="featured-wrapper">
-          <Button
-            shape="circle"
-            icon={<LeftOutlined />}
-            onClick={() => scroll("left")}
-            disabled={!canScrollLeft}
-            className="scroll-btn left-btn"
-          />
-
-          <div className="featured-scroll-outer">
-            <div
-              ref={scrollRef}
-              className="featured-scroll hide-scrollbar"
-            >
-              {products?.map((product) => (
-                <div
-                  key={product.id}
-                  className="featured-product-item"
-                >
-                  <FeaturedProductCard product={product} />
-                
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <Button
-            shape="circle"
-            icon={<RightOutlined />}
-            onClick={() => scroll("right")}
-            disabled={!canScrollRight}
-            className="scroll-btn right-btn"
-          />
-        </div>
+        <button type="button" className="featured-arrow" onClick={() => carouselRef.current?.next()}>
+          <RightOutlined />
+        </button>
       </div>
     </div>
   );

@@ -6,10 +6,12 @@ import { useState } from 'react';
 import type { Category } from '../../../../types/categories.type';
 import NewProductCard from '../../../../components/NewProductCard/NewProductCard';
 import type { Product } from '../../../../types/product.type';
+import { useNavigate } from 'react-router-dom';
 
 
 const NewProducts = () => {
   const {data:categories}=useCategoryList();
+  const nav=useNavigate();
   const [selectedCategory,setSelectedCategory]= useState<Category|null>(null);
   const { data: products } = useProductList<Product[]>({
     type: 'new',
@@ -17,7 +19,6 @@ const NewProducts = () => {
     });
 
   const handleChangeCat=(cat:Category|null)=>{
-    console.log(cat)
     setSelectedCategory(cat)
   }
   return (
@@ -56,9 +57,10 @@ const NewProducts = () => {
 
       {/* View More Button */}
       <div className="view-more">
-        <Button size="large" className="view-more-btn">
+        {selectedCategory!=null&&
+        <Button size="large" className="view-more-btn" onClick={()=>nav(`category/${selectedCategory?.id}`)}>
           Xem thêm
-        </Button>
+        </Button>}
       </div>
     </section>
   );
