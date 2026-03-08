@@ -81,7 +81,7 @@ export function useChat(roomId: number) {
 export function useStaffNotifications(staffId: number, onNotify: (n: any) => void) {
   useEffect(() => {
     const client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/api/ws-chat"),
+      webSocketFactory: () => new SockJS(`${BASE_URL}/ws-chat`),
 
       // ── JWT cho staff connection ───────────────────────────────────────────
       connectHeaders: {
