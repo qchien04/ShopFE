@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import axiosClient from "../../app/axiosClient";
+import { BASE_URL } from "../../app/const";
 
 interface Message {
   id: number;
@@ -28,7 +29,7 @@ export function useChat(roomId: number) {
     fetchHistory();
     console.log(getToken())
     const client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/api/ws-chat"),
+      webSocketFactory: () => new SockJS(`${BASE_URL}/ws-chat`),
       // ── Gửi JWT 1 lần lúc CONNECT ─────────────────────────────────────────
       connectHeaders: {
         Authorization: `Bearer ${getToken()}`,
