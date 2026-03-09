@@ -109,7 +109,7 @@ const CartPage = () => {
           <Card
             size="small"
             style={{ marginBottom: 8, borderRadius: 8 }}
-            bodyStyle={{ padding: "10px 16px" }}
+            styles={{ body: { padding: "10px 16px" } }}
           >
             <Checkbox
               checked={allChecked}
@@ -135,7 +135,7 @@ const CartPage = () => {
                     borderColor: checked ? "#00b96b" : undefined,
                     transition: "border-color 0.2s",
                   }}
-                  bodyStyle={{ padding: 12 }}
+                  styles={{ body: { padding: 12 } }}
                 >
                   <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                     {/* Checkbox */}
@@ -230,7 +230,7 @@ const CartPage = () => {
               bottom: 16,
               boxShadow: "0 -2px 12px rgba(0,0,0,0.08)",
             }}
-            bodyStyle={{ padding: "14px 16px" }}
+            styles={{ body: { padding: "14px 16px" } }}
           >
             <div
               style={{

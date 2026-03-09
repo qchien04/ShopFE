@@ -102,7 +102,7 @@ const Banner: React.FC = () => {
           >
             {mainSlides.map((slide) => (
               <a key={slide.id} href={slide.link ?? '#'} className={styles.slide}>
-                <img src={slide.image} alt={slide.label} />
+                <img src={slide.image||"/"} alt={slide.label} />
               </a>
             ))}
           </Carousel>
@@ -112,7 +112,7 @@ const Banner: React.FC = () => {
         <div className={styles.sideBanners}>
           {sideBanners.slice(0, 2).map((s) => (
             <a key={s.id} href={s.link ?? '#'}>
-              <img src={s.image} alt={s.label} />
+              <img src={s.image||"/"} alt={s.label} />
             </a>
           ))}
         </div>

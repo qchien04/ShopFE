@@ -24,7 +24,7 @@ const HotDeals = () => {
 
         <div className="products-grid">
           {hotProducts?.map((product) => (
-            <HotProduct product={product}></HotProduct>
+            <HotProduct key={product.id} product={product}></HotProduct>
           ))}
         </div>
       </section>
@@ -41,7 +41,7 @@ const HotDeals = () => {
 
         <div className="deal-products-list">
           {hotProducts?.map((product) => (
-            <DealProduct product={product}></DealProduct>
+            <DealProduct key={product.id} product={product}></DealProduct>
           ))}
         </div>
       </section>

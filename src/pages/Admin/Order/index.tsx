@@ -4,38 +4,21 @@ import {
   Tag, 
   Button, 
   Space, 
-  Input, 
-  Select, 
-  Modal,
   Dropdown,
-  message,
-  DatePicker,
-  Statistic,
   Card,
-  Row,
-  Col,
   Image
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import {
-  EyeOutlined,
-  EditOutlined,
-  CheckOutlined,
-  CloseOutlined,
-  PrinterOutlined,
-  DownloadOutlined,
-  MoreOutlined,
-  ShoppingCartOutlined,
-  DollarOutlined,
-  ClockCircleOutlined,
-  TruckOutlined
-} from '@ant-design/icons';
+import {EyeOutlined,MoreOutlined,} from '@ant-design/icons';
 import type { Order } from '../../../types/entity.type';
-import { OrderStatus,PaymentStatus, PaymentMethod} from '../../../types/entity.type';
+import { OrderStatus,PaymentStatus} from '../../../types/entity.type';
 import OrderDetailModal from '../../../components/OrderDetailModal';
-import { useAdminOrders } from '../../../hooks/Order/useOrder';
+import { useAdminOrders, useUpdateStatusOrders } from '../../../hooks/Order/useOrder';
+import { getStatusActions, paymentMethodText, paymentStatusColors, paymentStatusText, statusColors, statusText } from './Mapper';
+import { Stat } from './Stat';
+import { Filter } from './Filter';
+import { antdModal } from '../../../utils/antdModal';
 
-const { RangePicker } = DatePicker;
 
 const OrdersPage = () => {
   const [searchText, setSearchText] = useState('');
@@ -44,135 +27,9 @@ const OrdersPage = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   
+  const {mutate:UpdateStatus}=useUpdateStatusOrders();
   const {data:orders}=useAdminOrders();
-  // Mock data - thay bằng API call
-  // const mockOrders: Order[] = [
-  //   {
-  //     id: 1,
-  //     orderNumber: 'ORD-2026-0001',
-  //     items: [
-  //       {
-  //         id: 1,
-  //         productId: 1,
-  //         productName: 'Ổ cắm điện 6000W',
-  //         productSku: '3S-6000W-C',
-  //         productImage: 'https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?w=100',
-  //         quantity: 2,
-  //         price: 41000,
-  //         subtotal: 82000
-  //       }
-  //     ],
-  //     total: 82000,
-  //     status: 'PENDING' as OrderStatus,
-  //     paymentMethod: 'BANK_TRANSFER' as PaymentMethod,
-  //     paymentStatus: 'UNPAID' as PaymentStatus,
-  //     note: 'Giao giờ hành chính',
-  //     createdAt: '2026-02-07T10:30:00Z'
-  //   },
-  //   {
-  //     id: 2,
-  //     orderNumber: 'ORD-2026-0002',
-  //     items: [
-  //       {
-  //         id: 2,
-  //         productId: 2,
-  //         productName: 'Biến áp 19V 5A',
-  //         productSku: 'BT-19V-5A',
-  //         productImage: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=100',
-  //         quantity: 1,
-  //         price: 194000,
-  //         subtotal: 194000
-  //       }
-  //     ],
-  //     total: 194000,
-  //     status: 'CONFIRMED' as OrderStatus,
-  //     paymentMethod: 'MOMO' as PaymentMethod,
-  //     paymentStatus: 'PAID' as PaymentStatus,
-  //     note: '',
-  //     createdAt: '2026-02-07T09:15:00Z'
-  //   },
-  //   {
-  //     id: 3,
-  //     orderNumber: 'ORD-2026-0003',
-  //     items: [
-  //       {
-  //         id: 3,
-  //         productId: 3,
-  //         productName: 'Cuộn cảm 1.8mm',
-  //         productSku: 'CC-1.8MM',
-  //         productImage: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=100',
-  //         quantity: 5,
-  //         price: 196000,
-  //         subtotal: 980000
-  //       }
-  //     ],
-  //     total: 980000,
-  //     status: 'SHIPPING' as OrderStatus,
-  //     paymentMethod: 'VNPAY' as PaymentMethod,
-  //     paymentStatus: 'PAID' as PaymentStatus,
-  //     note: 'Ship nhanh',
-  //     createdAt: '2026-02-06T14:20:00Z'
-  //   },
-  //   {
-  //     id: 4,
-  //     orderNumber: 'ORD-2026-0004',
-  //     items: [
-  //       {
-  //         id: 4,
-  //         productId: 4,
-  //         productName: 'Tụ điện 100uF',
-  //         productSku: 'TD-100UF',
-  //         productImage: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=100',
-  //         quantity: 10,
-  //         price: 15000,
-  //         subtotal: 150000
-  //       }
-  //     ],
-  //     total: 150000,
-  //     status: 'DELIVERED' as OrderStatus,
-  //     paymentMethod: 'ZALOPAY' as PaymentMethod,
-  //     paymentStatus: 'PAID' as PaymentStatus,
-  //     note: '',
-  //     createdAt: '2026-02-05T11:00:00Z'
-  //   }
-  // ];
 
-  const statusColors: Record<OrderStatus, string> = {
-    PENDING: 'gold',
-    CONFIRMED: 'blue',
-    PROCESSING: 'cyan',
-    SHIPPING: 'purple',
-    DELIVERED: 'success',
-    CANCELLED: 'error',
-    RETURNED: 'warning'
-  };
-
-  const statusText: Record<OrderStatus, string> = {
-    PENDING: 'Chờ xác nhận',
-    CONFIRMED: 'Đã xác nhận',
-    PROCESSING: 'Đang xử lý',
-    SHIPPING: 'Đang giao',
-    DELIVERED: 'Đã giao',
-    CANCELLED: 'Đã hủy',
-    RETURNED: 'Đã trả hàng'
-  };
-
-  const paymentMethodText: Record<PaymentMethod, string> = {
-    BANK_TRANSFER: 'Chuyển khoản',
-    COD: 'Thanh toán khi nhận hàng'
-  };
-
-  const paymentStatusColors: Record<PaymentStatus, string> = {
-    UNPAID: 'error',
-    PAID: 'success',
-    REFUNDED: 'warning'
-  };
-
-  const paymentStatusText: Record<PaymentStatus, string> = {
-    UNPAID: 'Chưa thanh toán',
-    PAID: 'Đã thanh toán',
-    REFUNDED: 'Đã hoàn tiền'
-  };
 
   const filteredOrders = orders?.filter(order => {
     const matchSearch = 
@@ -186,14 +43,15 @@ const OrdersPage = () => {
   });
 
   const handleUpdateStatus = (order: Order, newStatus: OrderStatus) => {
-    Modal.confirm({
+    antdModal.confirm({
       title: 'Cập nhật trạng thái đơn hàng',
       content: `Bạn có chắc muốn chuyển đơn hàng ${order.orderNumber} sang trạng thái "${statusText[newStatus]}"?`,
       okText: 'Xác nhận',
       cancelText: 'Hủy',
       onOk: () => {
-        // API call here
-        message.success(`Đã cập nhật trạng thái đơn hàng ${order.orderNumber}`);
+        UpdateStatus({id:order.id,status:newStatus});
+        setSelectedOrder(null);
+        setDetailModalOpen(false);
       }
     });
   };
@@ -202,43 +60,6 @@ const OrdersPage = () => {
     setSelectedOrder(order);
     setDetailModalOpen(true);
   };
-
-   const getStatusActions = (order: Order) => {
-    const actions: { key: OrderStatus; label: string; icon: any }[] = [];
-
-    switch (order.status) {
-      case OrderStatus.PENDING:
-        actions.push(
-          { key: OrderStatus.CONFIRMED, label: 'Xác nhận', icon: <CheckOutlined /> },
-          { key: OrderStatus.CANCELLED, label: 'Hủy đơn', icon: <CloseOutlined /> }
-        );
-        break;
-      case OrderStatus.CONFIRMED:
-        actions.push(
-          { key: OrderStatus.PROCESSING, label: 'Xử lý', icon: <ClockCircleOutlined /> },
-          { key: OrderStatus.CANCELLED, label: 'Hủy đơn', icon: <CloseOutlined /> }
-        );
-        break;
-      case OrderStatus.PROCESSING:
-        actions.push(
-          { key: OrderStatus.SHIPPING, label: 'Giao hàng', icon: <TruckOutlined /> }
-        );
-        break;
-      case OrderStatus.SHIPPING:
-        actions.push(
-          { key: OrderStatus.DELIVERED, label: 'Đã giao', icon: <CheckOutlined /> }
-        );
-        break;
-      case OrderStatus.DELIVERED:
-        actions.push(
-          { key: OrderStatus.RETURNED, label: 'Hoàn trả', icon: <CloseOutlined /> }
-        );
-        break;
-    }
-
-    return actions;
-  };
-
 
   const columns: ColumnsType<Order> = [
     {
@@ -363,7 +184,6 @@ const OrdersPage = () => {
     }
   ];
 
-  // Statistics
   const stats = {
     total: orders?.length,
     pending: orders?.filter(o => o.status === 'PENDING').length,
@@ -378,126 +198,19 @@ const OrdersPage = () => {
 
   return (
     <div className="orders-page">
-      {/* Statistics Cards */}
-      <Row gutter={16} className="stats-row">
-        <Col span={4}>
-          <Card>
-            <Statistic
-              title="Tổng đơn hàng"
-              value={stats.total}
-              prefix={<ShoppingCartOutlined />}
-              valueStyle={{ color: '#1890ff' }}
-            />
-          </Card>
-        </Col>
-        <Col span={4}>
-          <Card>
-            <Statistic
-              title="Chờ xác nhận"
-              value={stats.pending}
-              prefix={<ClockCircleOutlined />}
-              valueStyle={{ color: '#faad14' }}
-            />
-          </Card>
-        </Col>
-        <Col span={4}>
-          <Card>
-            <Statistic
-              title="Đang xử lý"
-              value={stats.processing}
-              prefix={<EditOutlined />}
-              valueStyle={{ color: '#13c2c2' }}
-            />
-          </Card>
-        </Col>
-        <Col span={4}>
-          <Card>
-            <Statistic
-              title="Đang giao"
-              value={stats.shipping}
-              prefix={<TruckOutlined />}
-              valueStyle={{ color: '#722ed1' }}
-            />
-          </Card>
-        </Col>
-        <Col span={4}>
-          <Card>
-            <Statistic
-              title="Đã giao"
-              value={stats.delivered}
-              prefix={<CheckOutlined />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
-        </Col>
-        <Col span={4}>
-          <Card>
-            <Statistic
-              title="Doanh thu"
-              value={stats.revenue}
-              prefix={<DollarOutlined />}
-              valueStyle={{ color: '#f5222d' }}
-              suffix="₫"
-            />
-          </Card>
-        </Col>
-      </Row>
+      <Stat stats={stats}></Stat>
 
-      {/* Filters */}
-      <Card className="filters-card">
-        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-          <Space wrap>
-            <Input.Search
-              placeholder="Tìm kiếm mã đơn, sản phẩm..."
-              style={{ width: 300 }}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              allowClear
-            />
+      <Filter 
+        paymentStatusFilter={paymentStatusFilter}
+        searchText={searchText}
+        setPaymentStatusFilter={setPaymentStatusFilter}
+        setSearchText={setSearchText}
+        setStatusFilter={setStatusFilter}
+        statusFilter={statusFilter}
+      >
 
-            <Select
-              style={{ width: 160 }}
-              placeholder="Trạng thái"
-              value={statusFilter}
-              onChange={setStatusFilter}
-              options={[
-                { value: 'ALL', label: 'Tất cả trạng thái' },
-                ...Object.entries(statusText).map(([key, value]) => ({
-                  value: key,
-                  label: value
-                }))
-              ]}
-            />
+      </Filter>
 
-            <Select
-              style={{ width: 160 }}
-              placeholder="Thanh toán"
-              value={paymentStatusFilter}
-              onChange={setPaymentStatusFilter}
-              options={[
-                { value: 'ALL', label: 'Tất cả' },
-                ...Object.entries(paymentStatusText).map(([key, value]) => ({
-                  value: key,
-                  label: value
-                }))
-              ]}
-            />
-
-            <RangePicker placeholder={['Từ ngày', 'Đến ngày']} />
-          </Space>
-
-          <Space>
-            <Button icon={<DownloadOutlined />}>
-              Xuất Excel
-            </Button>
-            <Button type="primary" icon={<PrinterOutlined />}>
-              In đơn hàng
-            </Button>
-          </Space>
-        </Space>
-      </Card>
-
-      {/* Table */}
       <Card className="table-card">
         <Table
           bordered
@@ -506,14 +219,13 @@ const OrdersPage = () => {
           dataSource={filteredOrders}
           scroll={{ x: 1219 }}
           pagination={{
-            pageSize: 10,
+            pageSize: 5,
             showSizeChanger: true,
             showTotal: (total) => `Tổng ${total} đơn hàng`
           }}
         />
       </Card>
 
-      {/* Detail Modal */}
       {selectedOrder && (
         <OrderDetailModal
           open={detailModalOpen}

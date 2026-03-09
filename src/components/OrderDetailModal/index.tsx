@@ -4,7 +4,6 @@ import {
   Descriptions,
   Table,
   Steps,
-  Timeline,
   Button,
   Space,
   Tag,
@@ -117,28 +116,28 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
     }
   ];
 
-  const orderTimeline = [
-    {
-      time: '2026-02-07 10:30',
-      status: 'Đơn hàng đã được tạo',
-      color: 'blue'
-    },
-    {
-      time: '2026-02-07 10:35',
-      status: 'Đã xác nhận đơn hàng',
-      color: 'green'
-    },
-    {
-      time: '2026-02-07 11:00',
-      status: 'Đang chuẩn bị hàng',
-      color: 'cyan'
-    },
-    {
-      time: '2026-02-07 14:00',
-      status: 'Đã giao cho đơn vị vận chuyển',
-      color: 'purple'
-    }
-  ];
+  // const orderTimeline = [
+  //   {
+  //     time: '2026-02-07 10:30',
+  //     status: 'Đơn hàng đã được tạo',
+  //     color: 'blue'
+  //   },
+  //   {
+  //     time: '2026-02-07 10:35',
+  //     status: 'Đã xác nhận đơn hàng',
+  //     color: 'green'
+  //   },
+  //   {
+  //     time: '2026-02-07 11:00',
+  //     status: 'Đang chuẩn bị hàng',
+  //     color: 'cyan'
+  //   },
+  //   {
+  //     time: '2026-02-07 14:00',
+  //     status: 'Đã giao cho đơn vị vận chuyển',
+  //     color: 'purple'
+  //   }
+  // ];
 
   const handleQuickAction = (newStatus: OrderStatus) => {
     onUpdateStatus(order, newStatus);
@@ -172,7 +171,6 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
       footer={null}
       className="order-detail-modal"
     >
-      {/* Progress Steps */}
       {currentStep >= 0 && (
         <div className="order-progress">
           <Steps
@@ -283,12 +281,12 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
       </div>
 
       {/* Timeline */}
-      <div className="order-timeline-section">
+      {/* <div className="order-timeline-section">
         <h4>📅 Lịch sử đơn hàng</h4>
         <Timeline
           items={orderTimeline.map(item => ({
             color: item.color,
-            children: (
+            content: (
               <div>
                 <p style={{ margin: 0, fontWeight: 500 }}>{item.status}</p>
                 <small style={{ color: '#999' }}>{item.time}</small>
@@ -296,7 +294,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
             )
           }))}
         />
-      </div>
+      </div> */}
 
       {/* Admin Note */}
       <div className="admin-note-section">

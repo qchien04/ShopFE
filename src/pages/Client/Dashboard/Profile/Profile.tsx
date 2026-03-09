@@ -15,16 +15,16 @@ import {
   CameraOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { authApi } from "../../../api/auth.api";
-import { antdMessage } from "../../../utils/antdMessage";
+import { authApi } from "../../../../api/auth.api";
+import { antdMessage } from "../../../../utils/antdMessage";
 import { useState } from "react";
-import { userApi } from "../../../api/user.api";
-import { useAppDispatch, useAppSelector, type RootState } from "../../../app/store";
-import { setUser } from "../../../features/auth/authSlice";
+import { userApi } from "../../../../api/user.api";
+import { useAppDispatch, useAppSelector, type RootState } from "../../../../app/store";
+import { setUser } from "../../../../features/auth/authSlice";
 import { Upload } from "antd";
-import { BASE_URL } from "../../../app/const";
+import { BASE_URL } from "../../../../app/const";
 import axios from "axios";
-import type { UserAccount } from "../../../types";
+import type { UserAccount } from "../../../../types";
 
 const { Title, Text } = Typography;
 

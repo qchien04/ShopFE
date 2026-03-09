@@ -38,10 +38,11 @@ function MapClickHandler({
         const data = await response.json();
         
         if (data && data.address) {
+          console.log(data.address)
           const address = data.address;
-          const province = address.province || address.state || "";
-          const district = address.county || address.city_district || "";
-          const ward = address.suburb || address.village || "";
+          const province = address.city || address.province || address.state || "";
+          const district = address.county || address.city_district || address.town || "";
+          const ward = address.suburb || address.village || address.quarter || "";
           const detailAddress = data.display_name || "";
           
           onLocationSelect(lat, lng, JSON.stringify({ province, district, ward, detailAddress }));
@@ -58,7 +59,6 @@ function MapClickHandler({
   return null;
 }
 
-// ⭐ Component để invalidate size khi map ready
 function MapInvalidator() {
   const map = useMapEvents({
     load: () => {
@@ -90,14 +90,13 @@ export default function CustomerAddressFormModal({
   
   const mapRef = useRef<L.Map | null>(null);
 
-  // Load map sau khi modal mở
   useEffect(() => {
     if (open) {
       setIsMapReady(false);
       
       const timer = setTimeout(() => {
         setShouldLoadMap(true);
-      }, 300); // ⭐ Tăng delay lên 300ms
+      }, 300); 
 
       return () => clearTimeout(timer);
     } else {
@@ -105,7 +104,6 @@ export default function CustomerAddressFormModal({
     }
   }, [open]);
 
-  // ⭐ Invalidate size khi modal đã mở hoàn toàn
   useEffect(() => {
     if (open && shouldLoadMap && mapRef.current) {
       const timer = setTimeout(() => {
@@ -116,7 +114,6 @@ export default function CustomerAddressFormModal({
     }
   }, [open, shouldLoadMap]);
 
-  // Reset form khi mở/đóng modal
   useEffect(() => {
     if (open) {
       if (initial) {
@@ -180,11 +177,12 @@ export default function CustomerAddressFormModal({
           const data = await response.json();
 
           if (data && data.address) {
+            console.log( data.address)
             const address = data.address;
             form.setFieldsValue({
-              province: address.province || address.state || "",
-              district: address.county || address.city_district || "",
-              ward: address.suburb || address.village || "",
+              province: address.city || address.province || address.state || "",
+              district:  address.county || address.city_district || address.town || "",
+              ward: address.suburb || address.village || address.quarter ||address.road ||"",
               detailAddress: data.display_name || "",
               lat,
               lng,
@@ -319,7 +317,7 @@ export default function CustomerAddressFormModal({
               zIndex: 1000,
               textAlign: 'center'
             }}>
-              <Spin size="large" tip="Đang tải bản đồ..." />
+              <Spin fullscreen size="large" tip="Đang tải bản đồ..." />
             </div>
           )}
           

@@ -70,7 +70,7 @@ export enum PaymentStatus{
 
 
 export interface Order{
-  id?: number;
+  id: number;
   orderNumber:string;
   items: OrderItem[];
   total:number;

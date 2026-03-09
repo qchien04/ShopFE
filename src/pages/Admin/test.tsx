@@ -1,19 +1,17 @@
-import { Button, Form, Input, message } from "antd";
-import { paymentApi } from "../../api/payment.api";
+import { Button, Input } from "antd";
 import { adminApi } from "../../api/admin.api";
+import { useState } from "react";
 
 const Test = () => {
-
-  const onFinish = async (values:any) => {
+  const [cfDomain,setDomain]=useState<string>("");
+  
+  const confirmWebhook = async () => {
     try {
-      const amount = values.amount;
-      console.log(amount)
-      const url=await paymentApi.payOSOder(values.orderId)
-
+      console.log(cfDomain)
+      const url=await adminApi.confirmWebhook(cfDomain)
       console.log(url)
 
     } catch (err) {
-      message.error("Không thể tạo thanh toán");
       console.error(err);
     }
   };
@@ -26,37 +24,22 @@ const Test = () => {
       console.log(url)
 
     } catch (err) {
-      message.error("Không thể tạo thanh toán");
       console.error(err);
     }
   };
 
   return (
-    <Form
-      layout="vertical"
-      onFinish={onFinish}
-      style={{ maxWidth: 400, margin: "50px auto" }}
-    >
-      <Form.Item
-        label="Số tiền (VND)"
-        name="orderId"
-        rules={[{ required: true, message: "Nhập số tiền" }]}
-      >
-        <Input
-          style={{ width: "100%" }}
-        />
-      </Form.Item>
+    <div style={{width:300,display:"flex",flexDirection:"column",gap:10}}>
+    <Input onChange={(e)=>setDomain(e.target.value)} />
+    <Button type="primary" block onClick={confirmWebhook}>
+      confirmWebhook
+    </Button>
 
-      <Form.Item>
-        <Button type="primary" htmlType="submit" block>
-          Kiểm tra
-        </Button>
-
-        <Button type="dashed" block onClick={onADmin}>
-          ADMIN
-        </Button>
-      </Form.Item>
-    </Form>
+    <Button block onClick={onADmin}>
+      ADMIN (kiểm tra các đơn thanh toán)
+    </Button>
+    </div>
+    
   );
 };
 

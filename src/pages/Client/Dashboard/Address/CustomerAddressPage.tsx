@@ -1,10 +1,10 @@
 // src/pages/CustomerAddress/CustomerAddressPage.tsx
 import { Button, Row, Col } from "antd";
 import { useState } from "react";
-import { useCustomerAddresses, useDeleteCustomerAddress } from "../../../hooks/CustomerAddress/useAddress";
-import type { CustomerAddress } from "../../../types/entity.type";
-import AddressCard from "../../../components/AddressCard/AddressCard";
-import CustomerAddressFormModal from "../../../components/AddressFormModal/AddressFormModal";
+import { useCustomerAddresses, useDeleteCustomerAddress } from "../../../../hooks/CustomerAddress/useAddress";
+import type { CustomerAddress } from "../../../../types/entity.type";
+import AddressCard from "../../../../components/AddressCard/AddressCard";
+import CustomerAddressFormModal from "../../../../components/AddressFormModal/AddressFormModal";
 
 export default function CustomerAddressPage() {
   const { data } = useCustomerAddresses();

@@ -9,7 +9,7 @@ import type { UploadFile } from 'antd';
 import './ChatBot.scss';
 import { aiApi } from '../../api/ai.api';
 import type { AiResponse } from '../../types';
-
+import { Link } from 'react-router-dom';
 interface Message {
   id: string;
   type: 'user' | 'bot';
@@ -32,13 +32,13 @@ const BotMessage = ({ msg }: { msg: Message }) => {
         {products && products.length > 0 && (
           <div className="ai-products">
             {products.map((p, i) => (
-              <a key={i} href={p.link} className="ai-product-card">
+             <Link key={i} to={p.link} className="ai-product-card">
                 <div className="ai-product-name">{p.name}</div>
                 <div className="ai-product-reason">{p.reason}</div>
                 <div className="ai-product-price">
                   {p.price?.toLocaleString('vi-VN')}₫
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         )}
@@ -214,7 +214,6 @@ const ChatBot = () => {
                   </div>
                 )}
 
-                {/* ✅ Dùng BotMessage cho bot, text thường cho user */}
                 {msg.type === 'bot'
                   ? <BotMessage msg={msg} />
                   : <div className="message-text">{msg.content}</div>

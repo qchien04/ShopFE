@@ -11,6 +11,9 @@ export const adminApi = {
   payUpdate: (): Promise<any> =>
     postData<any>(`/admin`,{}),
 
+  confirmWebhook: (cfDomain:string): Promise<any> =>
+    postData<any>(`/payments/confirm-webhook`, { domain: cfDomain }),
+
   getDashboard: (): Promise<DashboardDTO> => 
     getData<DashboardDTO>("/admin/dashboard"),
 

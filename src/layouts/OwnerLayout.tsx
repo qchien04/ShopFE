@@ -20,6 +20,7 @@ const navItems: NavItem[] = [
   { key: "reviews", label: "Bình luận", icon: "⚙️", path: "/admin/reviews" },
   { key: "chat-manager", label: "Chat", icon: "📝", path: "/admin/chat-manager" },
   { key: "configs", label: "Cài đặt", icon: "⚙️", path: "/admin/configs" },
+  { key: "test", label: "test", icon: "⚙️", path: "/admin/test" },
 ];
 
 const OwnerLayout = () => {

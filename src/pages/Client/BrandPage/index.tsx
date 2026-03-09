@@ -107,7 +107,7 @@ export default function BrandPage() {
         placement="right"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        width={300}
+        size={300}
         styles={{ body: { padding: 0 } }}
         className="filter-drawer"
         footer={
