@@ -115,6 +115,7 @@ export interface Post {
   content: string;       // HTML string từ TipTap editor
   tags?: string[];
   status: PostStatus;
+  createdAt: string;
   updatedAt: string;     // ISO string
 }
 

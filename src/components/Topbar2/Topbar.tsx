@@ -103,9 +103,18 @@ const TopBar = () => {
   })) ?? []
 
   const blogItems: MenuProps['items'] = [
-    { key: '1', label: 'Mẹo Vặt' },
-    { key: '2', label: 'Hướng Dẫn Sử Dụng Sản Phẩm' },
-    { key: '3', label: 'Tin tức' },
+    {
+      key: 'meo-vat',
+      label: 'Mẹo Vặt',
+    },
+    {
+      key: 'huong-dan',
+      label: 'Hướng Dẫn Sử Dụng Sản Phẩm',
+    },
+    {
+      key: 'tin-tuc',
+      label: 'Tin tức',
+    },
   ];
 
 
@@ -261,10 +270,22 @@ const TopBar = () => {
               </a>
             </Dropdown>
             
-            <Dropdown menu={{items:blogItems}} trigger={['hover']}>
-              <a href="#" onClick={handlePosts} className="nav-item nav-dropdown">
+            <Dropdown
+              trigger={['hover']}
+              menu={{
+                items: blogItems,
+                onClick: ({ key }) => {
+                  navigate(`/post?type=${key}`);
+                }
+              }}
+            >
+              <span
+                className="nav-item nav-dropdown"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate("/post")}
+              >
                 Bài Viết <DownOutlined />
-              </a>
+              </span>
             </Dropdown>
           </nav>
         </div>

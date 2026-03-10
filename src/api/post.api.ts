@@ -14,10 +14,13 @@ export interface GetPostsParams {
 export const postApi = {
 
   getAll: async (params: GetPostsParams = {}): Promise<PageResponse<Post>> =>
-     getData<PageResponse<Post>>(`/posts`, { params }),
+     getData<PageResponse<Post>>(`/posts`, params),
 
    getPre: async (): Promise<Post[]> =>
      getData<Post[]>(`/posts/pretent`,),
+
+   getRand: async (): Promise<Post[]> =>
+     getData<Post[]>(`/posts/rand`,),
 
    getPopular: async (): Promise<Post[]> =>
      getData<Post[]>(`/posts/popular`,),
