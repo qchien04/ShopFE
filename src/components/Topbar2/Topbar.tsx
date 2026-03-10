@@ -50,10 +50,6 @@ const TopBar = () => {
     navigate("/login");
   };
 
-  const handlePosts = () => {
-    navigate("/post");
-  };
-
   
   const handleDashboard = () => {
     console.log(userAccount)
