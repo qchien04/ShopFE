@@ -61,7 +61,7 @@ const CategorySidebar = ({ categoryId, onFilterChange }: Props) => {
   if (isLoading) return <Spin />;
 
   return (
-    <div style={{ padding: 16, background: "#fff", borderRadius: 10 ,maxHeight:"70vh"}}>
+    <div style={{ padding: 16, background: "#fff", borderRadius: 10}}>
       <Title level={5}>Danh mục sản phẩm</Title>
       <Divider />
 

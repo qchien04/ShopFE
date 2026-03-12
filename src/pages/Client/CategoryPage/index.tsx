@@ -164,7 +164,7 @@ export default function CategoryPage() {
           {data && (
             <div style={{ marginTop: 24, textAlign: "center" }}>
               <Pagination
-                current={data.number + 1}   // Spring page bắt đầu từ 0
+                current={data.page + 1}
                 pageSize={data.size}
                 total={data.totalElements}
                 onChange={(newPage) => {

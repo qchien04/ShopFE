@@ -17,7 +17,7 @@ export default function BrandPage() {
   const brandId = Number(slug);
   const [page, setPage] = useState(0);
   const pageSize = 8;
-
+  
   const [filters, setFilters] = useState({
     sort: "default",
     subCategoryIds: [] as number[],
@@ -49,6 +49,9 @@ export default function BrandPage() {
   );
 
   const { data, isLoading } = useProductList({...queryParams}as ParamSearch );
+
+
+  
 
   const handleFilterChange = useCallback(
     (newFilters: {
@@ -160,7 +163,7 @@ export default function BrandPage() {
           {data && (
             <div style={{ marginTop: 24, textAlign: "center" }}>
               <Pagination
-                current={data.number + 1}
+                current={data.page + 1}
                 pageSize={data.size}
                 total={data.totalElements}
                 onChange={(newPage) => {

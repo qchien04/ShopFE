@@ -14,6 +14,7 @@ import visa from '../../assets/visa.png'
 import banking from '../../assets/banking.png'
 import "./Footer.scss";
 import { useCategoryParentList } from '../../hooks/Category/useCategotyList';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   const {data:categories} = useCategoryParentList();
@@ -52,7 +53,7 @@ const Footer: React.FC = () => {
             <h3 className="column-title">Sản Phẩm</h3>
             <ul className="footer-links">
               {categories?.slice(0,6).map((cat)=>{
-                return <li key={cat.id}><a href={`/category/${cat.id}`}>{cat.name}</a></li>
+                return <li key={cat.id}><Link to={`/category/${cat.id}`}>{cat.name}</Link></li>
               })}
               <li><a href={`/category/`}>Xem tất cả sản phẩm</a></li>
             </ul>

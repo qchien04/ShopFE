@@ -57,7 +57,7 @@ const BrandSidebar = ({ brandId, onFilterChange }: Props) => {
   if (isLoading) return <Spin />;
 
   return (
-    <div style={{ padding: 16, background: "#fff", borderRadius: 10 ,maxHeight:"70vh"}}>
+    <div style={{ padding: 16, background: "#fff", borderRadius: 10}}>
       <Title level={5}>Danh mục sản phẩm</Title>
       <Divider />
 
@@ -97,7 +97,6 @@ const BrandSidebar = ({ brandId, onFilterChange }: Props) => {
 
       <Divider />
 
-      {/* SUB CATEGORIES */}
       <Text strong>Loại</Text>
       <Checkbox.Group
         value={selectedCategories}
