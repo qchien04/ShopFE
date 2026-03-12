@@ -50,12 +50,12 @@ export const buildColumns = (
       </Space>
     ),
   },
-  {
-    title: "Tồn kho", dataIndex: "stockQuantity", width: 100,
-    render: (qty) => <Tag color={qty > 0 ? "green" : "red"}>{qty}</Tag>,
-  },
-  { title: "Đã bán",   dataIndex: "soldCount",  width: 90 },
-  { title: "Lượt xem", dataIndex: "viewCount",  width: 90 },
+  // {
+  //   title: "Tồn kho", dataIndex: "stockQuantity", width: 100,
+  //   render: (qty) => <Tag color={qty > 0 ? "green" : "red"}>{qty}</Tag>,
+  // },
+  // { title: "Đã bán",   dataIndex: "soldCount",  width: 90 },
+  // { title: "Lượt xem", dataIndex: "viewCount",  width: 90 },
   {
     title: "Trạng thái", dataIndex: "status", width: 140,
     render: (status: ProductStatus) => (
