@@ -3,7 +3,7 @@ import { Input, Button, Avatar, Tooltip, Upload, message } from 'antd';
 import {
   SendOutlined, PaperClipOutlined, SmileOutlined, DeleteOutlined,
   CopyOutlined, RobotOutlined, UserOutlined, CloseOutlined,
-  MinusOutlined, ReloadOutlined, PlusOutlined
+  ReloadOutlined
 } from '@ant-design/icons';
 import type { UploadFile } from 'antd';
 import './ChatBot.scss';
@@ -63,7 +63,6 @@ const ChatBot = () => {
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [isMinimized, setIsMinimized] = useState(false);
   const [isClosed, setIsClosed] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -78,7 +77,6 @@ const ChatBot = () => {
     try {
       const res: AiResponse = await aiApi.ask(userMessage);
 
-      // ✅ Nếu BE trả về AiResponse object
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         type: 'bot',
@@ -142,13 +140,6 @@ const ChatBot = () => {
   const formatTime = (d: Date) =>
     d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
 
-  const quickActions = [
-    { icon: '💰', text: 'Hỏi về giá',  query: 'Cho tôi hỏi về giá sản phẩm' },
-    { icon: '🚚', text: 'Giao hàng',   query: 'Chính sách giao hàng như thế nào?' },
-    { icon: '🛡️', text: 'Bảo hành',   query: 'Sản phẩm có bảo hành không?' },
-    { icon: '💳', text: 'Thanh toán',  query: 'Các hình thức thanh toán' },
-  ];
-
   if (isClosed) {
     return (
       <div className="chatbot-trigger" onClick={() => setIsClosed(false)}>
@@ -159,7 +150,7 @@ const ChatBot = () => {
   }
 
   return (
-    <div className={`chatbot-container ${isMinimized ? 'minimized' : ''}`}>
+    <div className={`chatbot-container`}>
       {/* Header */}
       <div className="chatbot-header">
         <div className="header-left">
@@ -175,25 +166,10 @@ const ChatBot = () => {
           <Tooltip title="Làm mới">
             <Button type="text" icon={<ReloadOutlined />} onClick={handleClearChat} />
           </Tooltip>
-          <Tooltip title={isMinimized ? 'Mở rộng' : 'Thu gọn'}>
-            <Button type="text" icon={isMinimized ? <PlusOutlined /> : <MinusOutlined />}
-              onClick={() => setIsMinimized(v => !v)} />
-          </Tooltip>
           <Tooltip title="Đóng">
             <Button type="text" icon={<CloseOutlined />} onClick={() => setIsClosed(true)} />
           </Tooltip>
         </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="quick-actions">
-        {quickActions.map((a, i) => (
-          <button key={i} className="quick-action-btn"
-            onClick={() => { setInputValue(a.query); setTimeout(handleSend, 100); }}>
-            <span className="action-icon">{a.icon}</span>
-            <span className="action-text">{a.text}</span>
-          </button>
-        ))}
       </div>
 
       {/* Messages */}

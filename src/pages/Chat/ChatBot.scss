@@ -1,7 +1,7 @@
 // ChatBot.scss
 .chatbot-trigger {
   position: fixed;
-  bottom: 124px;
+  bottom: 24px;
   left: 24px;
   z-index: 9999;
   cursor: pointer;
@@ -47,7 +47,7 @@
 .chatbot-container {
   position: fixed;
   bottom: 24px;
-  right: 24px;
+  left: 24px;
   width: 800px;
   height: 600px;
   background: white;

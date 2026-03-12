@@ -1,4 +1,4 @@
-import { Menu, Button, Tooltip } from 'antd';
+import { Menu } from 'antd';
 import {
   HomeOutlined,
   AppstoreOutlined,
@@ -6,8 +6,6 @@ import {
   GiftOutlined,
   ReadOutlined,
   SearchOutlined,
-  CustomerServiceOutlined,
-  MessageOutlined,
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import styles from './sidebar.module.scss';
@@ -35,11 +33,9 @@ const Sidebar = () => {
     retry: false,
   });
 
-  // ── Lấy quick-top để build menu danh mục động ──
   const quickTopItems = data?.quickTopOption?.filter((b) => b.type === 'quick-top') ?? [];
   const quickBottomItems = data?.quickBottomOption?.filter((b) => b.type === 'quick-bottom') ?? [];
 
-  // Build menu items: quick-top thành submenu "Sản Phẩm", children từ slot.children
   const productMenu = quickTopItems.length
     ? [{
         key: 'products',
@@ -53,7 +49,6 @@ const Sidebar = () => {
               {item.label}
             </a>
           ),
-          // nếu item có children (dropdown) thì render tiếp cấp 3
           ...(item.children?.length ? {
             children: item.children.map((child) => ({
               key: child.id,
@@ -67,7 +62,7 @@ const Sidebar = () => {
           } : {}),
         })),
       }]
-    : [{ // fallback nếu chưa có data
+    : [{ 
         key: 'products',
         icon: <AppstoreOutlined />,
         label: 'Sản Phẩm',
@@ -83,7 +78,6 @@ const Sidebar = () => {
 
   return (
     <aside className={styles.sidebar}>
-      {/* MENU */}
       <div className={styles.sidebarMenu}>
         <div className={styles.menuHeader}>
           <AppstoreOutlined />
@@ -98,7 +92,6 @@ const Sidebar = () => {
         />
       </div>
 
-      {/* TRENDING SEARCH — từ quick-bottom */}
       <div className={styles.trendingSearch}>
         <div className={styles.searchHeader}>
           <SearchOutlined />
@@ -113,24 +106,12 @@ const Sidebar = () => {
                   {item.label}
                 </a>
               ))
-            : // fallback
+            :
               ['Hộp Nhựa', 'Fe Sắt Silic', 'Khuôn Nhựa'].map((t) => (
                 <div key={t} className={styles.searchTag}>{t}</div>
               ))
           }
         </div>
-      </div>
-
-      {/* SOCIAL CONTACT */}
-      <div className={styles.socialContacts}>
-        <Tooltip title="Chat Zalo">
-          <Button type="primary" shape="circle" size="large"
-            className={styles['zalo-btn']} icon={<CustomerServiceOutlined />} />
-        </Tooltip>
-        <Tooltip title="Messenger">
-          <Button type="primary" shape="circle" size="large"
-            className={styles['messenger-btn']} icon={<MessageOutlined />} />
-        </Tooltip>
       </div>
     </aside>
   );

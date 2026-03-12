@@ -19,7 +19,7 @@ $radius-xl: 24px;
 // ── Root ─────────────────────────────────────────────────
 .root {
   position: fixed;
-  bottom: 28px;
+  bottom: 75px;
   right: 28px;
   z-index: 9999;
   display: flex;
@@ -41,7 +41,6 @@ $radius-xl: 24px;
   overflow: hidden;
   border: 1.5px solid $border;
 
-  // Hidden state
   opacity: 0;
   transform: translateY(16px) scale(.97);
   pointer-events: none;
