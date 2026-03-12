@@ -4,10 +4,22 @@ import './Brandshowcase.scss';
 import { useNavigate } from 'react-router-dom';
 import { useBrandList } from '../../../../hooks/Brand/useBrand';
 import { useRef } from 'react';
+import { Grid } from "antd";
+
+const { useBreakpoint } = Grid;
+
 
 const BrandShowcase = () => {
   const nav = useNavigate();
   const { data: brands } = useBrandList();
+  
+  const screens = useBreakpoint();
+
+  const slides =
+    screens.xl ? 5 :
+    screens.lg ? 4 :
+    screens.md ? 3 :
+    screens.sm ? 2 : 1;
   const carouselRef = useRef<any>(null);
 
   const handlePrev = (e: React.MouseEvent) => {
@@ -46,15 +58,31 @@ const BrandShowcase = () => {
             autoplaySpeed={3000}
             pauseOnHover 
             pauseOnDotsHover
-            slidesToShow={5}
+            slidesToShow={slides}
             slidesToScroll={1}
             arrows={false}
             dots={false}  
             responsive={[
-              { breakpoint: 1400, settings: { slidesToShow: 4 } },
-              { breakpoint: 1200, settings: { slidesToShow: 3 } },
-              { breakpoint: 768,  settings: { slidesToShow: 2 } },
-              { breakpoint: 480,  settings: { slidesToShow: 1 } },
+              {
+                breakpoint: 1400,
+                settings: { slidesToShow: 4, slidesToScroll: 1 },
+              },
+              {
+                breakpoint: 1200,
+                settings: { slidesToShow: 3, slidesToScroll: 1 },
+              },
+              {
+                breakpoint: 992,
+                settings: { slidesToShow: 3, slidesToScroll: 1 },
+              },
+              {
+                breakpoint: 768,
+                settings: { slidesToShow: 2, slidesToScroll: 1 },
+              },
+              {
+                breakpoint: 480,
+                settings: { slidesToShow: 1, slidesToScroll: 1 },
+              },
             ]}
           >
             {brands?.map((brand) => (
