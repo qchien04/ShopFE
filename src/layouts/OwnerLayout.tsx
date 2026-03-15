@@ -30,7 +30,6 @@ const OwnerLayout = () => {
     (state: RootState) => state.auth
   );
   const location = useLocation();
-  const nav=useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [activeKey, setActiveKey] = useState("products");
 

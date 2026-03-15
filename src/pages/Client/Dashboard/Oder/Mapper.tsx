@@ -11,6 +11,7 @@ export const statusMap: Record<OrderStatus, { color: string; label: string; icon
   [OrderStatus.SHIPPING]:   { color: 'purple',  label: 'Đang giao',    icon: <TruckOutlined /> },
   [OrderStatus.DELIVERED]:  { color: 'success', label: 'Đã giao',      icon: <CheckCircleOutlined /> },
   [OrderStatus.CANCELLED]:  { color: 'error',   label: 'Đã hủy',       icon: <CloseCircleOutlined /> },
+  [OrderStatus.DELIVERY_FAILED]:  { color: 'warning',   label: 'Giao thất bại',       icon: <CloseCircleOutlined /> },
   [OrderStatus.RETURNED]:   { color: 'warning', label: 'Đã trả hàng',  icon: <CloseCircleOutlined /> },
 };
 
