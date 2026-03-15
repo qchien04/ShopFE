@@ -10,8 +10,8 @@ export const orderApi = {
   getAllOrder: (): Promise<Order[]> =>
     getData<Order[]>("/orders"),
 
-  updateStatusOrders: (id:number,status:OrderStatus): Promise<Order> =>
-    putData<Order>(`/orders/${id}/status?status=${status}`,{}),
+  updateStatusOrders: (id:number,status:OrderStatus,reason:string,internalNote:string): Promise<Order> =>
+    putData<Order>(`/orders/${id}/status`,{status:status,reason,internalNote}),
 
   createOrder: (payload:CreateOrderRequest): Promise<Order> =>
     postData<Order>("/orders", payload),

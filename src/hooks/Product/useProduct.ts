@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import type { Product } from "../../types/product.type"
 import { productApi } from "../../api/product.api"
 import { productsQueryKeys } from "./room.query-key"
+import type { ProductStats } from "../../types"
 
 export const useProductDetail = <T = Product>(id?: number|string) => {
   const isId = !isNaN(Number(id));
@@ -18,3 +19,12 @@ export const useProductDetail = <T = Product>(id?: number|string) => {
     enabled: !!id,
   })
 }
+
+
+
+export const useProductStats = (productId: number | null) =>
+  useQuery<ProductStats>({
+    queryKey: ["product-stats", productId],
+    queryFn:  () =>productApi.getProductStats(productId!),
+    enabled: !!productId,
+  });

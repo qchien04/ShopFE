@@ -89,5 +89,29 @@ export interface AiResponse {
   note?: string;
 }
 
+export interface VariantStats {
+  variantId:    number;
+  soldToday:    number;
+  soldThisWeek: number;
+  soldThisMonth:number;
+  soldThisYear: number;
+  soldTotal:    number;
+  revenueTotal: number;
+}
+
+export interface ProductStats {
+  productId:      number;
+  productName:    string;
+  totalViewCount: number;
+  totalSoldCount: number;
+  soldToday:      number;
+  soldThisWeek:   number;
+  soldThisMonth:  number;
+  soldThisYear:   number;
+  revenueToday:   number;
+  variantStats:   VariantStats[];
+}
+
+
 
 

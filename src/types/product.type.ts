@@ -37,9 +37,9 @@ export interface Product {
   brandName: string;
   viewCount?: number;
   soldCount?: number;
-  images?:ProductImage[];
+  images:ProductImage[];
   shortDescription:string;
   fullDescription:string;
   featured:boolean;
-  productVariants?:ProductVariant[];
+  productVariants:ProductVariant[];
 }

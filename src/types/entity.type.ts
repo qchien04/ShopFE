@@ -40,17 +40,19 @@ export interface OrderItem {
   quantity: number;
   price: number;
   subtotal:number;
+  attributes:string;
 }
 
 
-export enum OrderStatus{
-  PENDING="PENDING",
-  CONFIRMED="CONFIRMED",
-  PROCESSING="PROCESSING",
-  SHIPPING="SHIPPING", 
-  DELIVERED="DELIVERED", 
-  CANCELLED="CANCELLED", 
-  RETURNED="RETURNED",
+export enum OrderStatus {
+  PENDING          = 'PENDING',
+  CONFIRMED        = 'CONFIRMED',
+  PROCESSING       = 'PROCESSING',
+  SHIPPING         = 'SHIPPING',
+  DELIVERED        = 'DELIVERED',
+  DELIVERY_FAILED  = 'DELIVERY_FAILED',
+  CANCELLED        = 'CANCELLED',
+  RETURNED         = 'RETURNED',
 }
 
 
@@ -71,6 +73,10 @@ export enum PaymentStatus{
 
 export interface Order{
   id: number;
+  customerName:String;
+  customerPhone:String;
+  shippingAddress:String;
+  shippingFee:number;
   orderNumber:string;
   items: OrderItem[];
   total:number;
@@ -78,7 +84,12 @@ export interface Order{
   paymentMethod:PaymentMethod;
   paymentStatus:PaymentStatus;
   note:string;
+  discount:number;
   createdAt:string;
+  deliveredAt:string;
+  deliveryAttempts?: number;  
+  cancelReason?:     string; 
+  internalNote?:     string;
 }
 
 

@@ -42,17 +42,29 @@ const OrdersPage = () => {
     return matchSearch && matchStatus && matchPaymentStatus;
   });
 
-  const handleUpdateStatus = (order: Order, newStatus: OrderStatus) => {
+  const handleUpdateStatus = (order: Order, newStatus: OrderStatus, reason?: string, internalNote?:string) => {
     antdModal.confirm({
       title: 'Cập nhật trạng thái đơn hàng',
-      content: `Bạn có chắc muốn chuyển đơn hàng ${order.orderNumber} sang trạng thái "${statusText[newStatus]}"?`,
+      content: (
+        <div>
+          <div>
+            Chuyển đơn <b>{order.orderNumber}</b> sang{' '}
+            <b>"{statusText[newStatus]}"</b>?
+          </div>
+          {reason && (
+            <div style={{ marginTop: 8, color: '#666', fontSize: 13 }}>
+              Lý do: {reason}
+            </div>
+          )}
+        </div>
+      ),
       okText: 'Xác nhận',
       cancelText: 'Hủy',
       onOk: () => {
-        UpdateStatus({id:order.id,status:newStatus});
-        setSelectedOrder(null);
+        UpdateStatus({ id: order.id, status: newStatus, reason:reason||"",internalNote:internalNote||"" });
         setDetailModalOpen(false);
-      }
+        setSelectedOrder(null);
+      },
     });
   };
 

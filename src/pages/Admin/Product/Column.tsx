@@ -1,7 +1,7 @@
 import type { ColumnsType } from "antd/es/table"
 import type { Product, ProductStatus } from "../../../types/product.type"
 import { Button, Image, Popconfirm, Space, Tag } from "antd";
-
+import { EyeOutlined } from "@ant-design/icons";
 const STATUS_COLOR: Record<ProductStatus, string> = {
   DRAFT:        "default",
   PUBLISHED:    "success",
@@ -19,6 +19,7 @@ const STATUS_TEXT: Record<ProductStatus, string> = {
 export const buildColumns = (
   onEdit:   (id: number) => void,
   onDelete: (id: number) => void,
+  onView:   (id: number) => void,
   deleting: boolean,
 ): ColumnsType<Product> => [
   {
@@ -66,6 +67,13 @@ export const buildColumns = (
     title: "Hành động", fixed: "right", width: 130,
     render: (_, record) => (
       <Space>
+        <Button
+          size="small"
+          icon={<EyeOutlined />}
+          onClick={() => onView(record.id)}
+        >
+          Xem
+        </Button>
         <Button type="primary" size="small" onClick={() => onEdit(record.id)}>Sửa</Button>
         <Popconfirm
           title="Xóa sản phẩm này?"

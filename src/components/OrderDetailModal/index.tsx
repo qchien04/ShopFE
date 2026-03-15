@@ -1,374 +1,362 @@
 import { useState } from 'react';
 import {
-  Modal,
-  Descriptions,
-  Table,
-  Steps,
-  Button,
-  Space,
-  Tag,
-  Input,
-  message,
-  Divider,
-  Image
+  Modal, Descriptions, Table, Steps, Button,
+  Space, Tag, Input, Divider, Image, Alert,
 } from 'antd';
 import {
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  CloseCircleOutlined,
-  TruckOutlined,
-  ShoppingOutlined,
-  DollarOutlined,
-  UserOutlined,
-  PhoneOutlined,
-  EnvironmentOutlined
+  CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined,
+  TruckOutlined, ShoppingOutlined, DollarOutlined,
+  UserOutlined, PhoneOutlined, EnvironmentOutlined, WarningOutlined,
+  RollbackOutlined,
 } from '@ant-design/icons';
-import type { Order, OrderItem, OrderStatus } from '../../types/entity.type';
+import type { Order, OrderItem } from '../../types/entity.type';
+import { OrderStatus } from '../../types/entity.type';
+import { getStatusActions, getStatusStep, paymentMethodText, paymentStatusColors, paymentStatusText, reasonPlaceholder, requiresReason, statusColors, statusText } from '../../pages/Admin/Order/Mapper';
 
-const { TextArea } = Input;
 
 interface Props {
-  open: boolean;
-  order: Order;
-  onClose: () => void;
-  onUpdateStatus: (order: Order, newStatus: OrderStatus) => void;
+  open:           boolean;
+  order:          Order;
+  onClose:        () => void;
+  onUpdateStatus: (order: Order, newStatus: OrderStatus, reason?: string, internalNote?:string) => void;
 }
 
 const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
-  const [adminNote, setAdminNote] = useState('');
+  const [adminNote,     setAdminNote]     = useState(order.internalNote ?? '');
+  const [reasonTarget,  setReasonTarget]  = useState<OrderStatus | null>(null);
+  const [reason,        setReason]        = useState('');
 
-  const statusColors: Record<OrderStatus, string> = {
-    PENDING: 'gold',
-    CONFIRMED: 'blue',
-    PROCESSING: 'cyan',
-    SHIPPING: 'purple',
-    DELIVERED: 'success',
-    CANCELLED: 'error',
-    RETURNED: 'warning'
+  const currentStep    = getStatusStep(order.status);
+  const statusActions  = getStatusActions(order);
+  const isDeliveryFail = order.status === OrderStatus.DELIVERY_FAILED;
+  const isCancelled    = order.status === OrderStatus.CANCELLED;
+  const isReturned     = order.status === OrderStatus.RETURNED;
+  const isTerminal     = isCancelled || isReturned;
+
+  // ── Xử lý action ──────────────────────────────────────────────────────────
+  const handleAction = (newStatus: OrderStatus) => {
+    if (requiresReason(newStatus)) {
+      setReasonTarget(newStatus);
+      setReason('');
+    } else {
+      onUpdateStatus(order, newStatus,reason,adminNote);
+    }
   };
 
-  const statusText: Record<OrderStatus, string> = {
-    PENDING: 'Chờ xác nhận',
-    CONFIRMED: 'Đã xác nhận',
-    PROCESSING: 'Đang xử lý',
-    SHIPPING: 'Đang giao',
-    DELIVERED: 'Đã giao',
-    CANCELLED: 'Đã hủy',
-    RETURNED: 'Đã trả hàng'
+  const confirmAction = () => {
+    if (!reasonTarget) return;
+    onUpdateStatus(order, reasonTarget, reason.trim(),adminNote);
+    setReasonTarget(null);
+    setReason('');
   };
 
-  const getStatusStep = (status: OrderStatus): number => {
-    const steps: Record<OrderStatus, number> = {
-      PENDING: 0,
-      CONFIRMED: 1,
-      PROCESSING: 2,
-      SHIPPING: 3,
-      DELIVERED: 4,
-      CANCELLED: -1,
-      RETURNED: -1
-    };
-    return steps[status];
+  const cancelAction = () => {
+    setReasonTarget(null);
+    setReason('');
   };
 
+  // ── Columns ───────────────────────────────────────────────────────────────
   const itemColumns = [
     {
       title: 'Sản phẩm',
       dataIndex: 'productName',
-      width: 300,
       render: (text: string, record: OrderItem) => (
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <Image
-            width={60}
-            height={60}
+            width={56} height={56}
             src={record.productImage}
             style={{ objectFit: 'cover', borderRadius: 6 }}
           />
           <div>
             <div style={{ fontWeight: 500 }}>{text}</div>
-            <small style={{ color: '#999' }}>SKU: {record.productSku}</small>
+            <div style={{ fontSize: 12, color: '#999' }}>SKU: {record.productSku}</div>
+            {record.attributes && Object.keys(record.attributes).length > 0 && (
+              <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                {Object.entries(record.attributes).map(([k, v]) => (
+                  <Tag key={k} style={{ fontSize: 11, margin: 0 }}>{k}: {v}</Tag>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      )
+      ),
     },
     {
-      title: 'Đơn giá',
-      dataIndex: 'price',
-      align: 'right' as const,
-      width: 120,
-      render: (price: number) => `${price.toLocaleString('vi-VN')}₫`
+      title: 'Đơn giá', dataIndex: 'price', align: 'right' as const, width: 120,
+      render: (p: number) => p.toLocaleString('vi-VN') + '₫',
     },
     {
-      title: 'Số lượng',
-      dataIndex: 'quantity',
-      align: 'center' as const,
-      width: 100
+      title: 'SL', dataIndex: 'quantity', align: 'center' as const, width: 60,
     },
     {
-      title: 'Thành tiền',
-      dataIndex: 'subtotal',
-      align: 'right' as const,
-      width: 130,
-      render: (subtotal: number) => (
+      title: 'Thành tiền', dataIndex: 'subtotal', align: 'right' as const, width: 130,
+      render: (s: number) => (
         <span style={{ fontWeight: 600, color: '#ff4444' }}>
-          {subtotal.toLocaleString('vi-VN')}₫
+          {s.toLocaleString('vi-VN')}₫
         </span>
-      )
-    }
+      ),
+    },
   ];
-
-  // const orderTimeline = [
-  //   {
-  //     time: '2026-02-07 10:30',
-  //     status: 'Đơn hàng đã được tạo',
-  //     color: 'blue'
-  //   },
-  //   {
-  //     time: '2026-02-07 10:35',
-  //     status: 'Đã xác nhận đơn hàng',
-  //     color: 'green'
-  //   },
-  //   {
-  //     time: '2026-02-07 11:00',
-  //     status: 'Đang chuẩn bị hàng',
-  //     color: 'cyan'
-  //   },
-  //   {
-  //     time: '2026-02-07 14:00',
-  //     status: 'Đã giao cho đơn vị vận chuyển',
-  //     color: 'purple'
-  //   }
-  // ];
-
-  const handleQuickAction = (newStatus: OrderStatus) => {
-    onUpdateStatus(order, newStatus);
-  };
-
-  const handleSaveNote = () => {
-    // API call to save admin note
-    message.success('Đã lưu ghi chú');
-  };
-
-  const currentStep = getStatusStep(order.status);
 
   return (
     <Modal
       open={open}
-      title={
-        <div className="modal-header">
-          <div>
-            <h3>Chi tiết đơn hàng #{order.orderNumber}</h3>
-            <Tag color={statusColors[order.status]} style={{ fontSize: 13 }}>
-              {statusText[order.status]}
-            </Tag>
-          </div>
-          <small style={{ color: '#999' }}>
-            Tạo lúc: {new Date(order.createdAt).toLocaleString('vi-VN')}
-          </small>
-        </div>
-      }
       onCancel={onClose}
       width={1000}
       footer={null}
-      className="order-detail-modal"
-    >
-      {currentStep >= 0 && (
-        <div className="order-progress">
-          <Steps
-            current={currentStep}
-            items={[
-              {
-                title: 'Chờ xác nhận',
-                icon: <ClockCircleOutlined />
-              },
-              {
-                title: 'Đã xác nhận',
-                icon: <CheckCircleOutlined />
-              },
-              {
-                title: 'Đang xử lý',
-                icon: <ShoppingOutlined />
-              },
-              {
-                title: 'Đang giao',
-                icon: <TruckOutlined />
-              },
-              {
-                title: 'Hoàn thành',
-                icon: <CheckCircleOutlined />
-              }
-            ]}
-          />
-        </div>
-      )}
-
-      {order.status === 'CANCELLED' && (
-        <div className="cancelled-notice">
-          <CloseCircleOutlined style={{ fontSize: 48, color: '#ff4444' }} />
-          <h3>Đơn hàng đã bị hủy</h3>
-        </div>
-      )}
-
-      <Divider />
-
-      {/* Order Info */}
-      <div className="order-info-section">
-        <h4>📋 Thông tin đơn hàng</h4>
-        <Descriptions bordered column={2} size="small">
-          <Descriptions.Item label="Mã đơn hàng" span={1}>
-            <strong>{order.orderNumber}</strong>
-          </Descriptions.Item>
-          <Descriptions.Item label="Trạng thái" span={1}>
-            <Tag color={statusColors[order.status]}>
+      destroyOnClose
+      title={
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', paddingRight: 32 }}>
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>
+              Đơn hàng #{order.orderNumber}
+            </div>
+            <Tag color={statusColors[order.status]} style={{ fontSize: 12 }}>
               {statusText[order.status]}
             </Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="Phương thức thanh toán" span={1}>
-            <Tag color="blue" icon={<DollarOutlined />}>
-              {order.paymentMethod}
-            </Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="Trạng thái thanh toán" span={1}>
-            <Tag color={order.paymentStatus === 'PAID' ? 'success' : 'error'}>
-              {order.paymentStatus === 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'}
-            </Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="Ghi chú khách hàng" span={2}>
-            {order.note || <span style={{ color: '#999' }}>Không có ghi chú</span>}
-          </Descriptions.Item>
-        </Descriptions>
-      </div>
+            {isDeliveryFail && order.deliveryAttempts && order.deliveryAttempts > 0 && (
+              <Tag color="volcano" style={{ fontSize: 12 }}>
+                Thất bại {order.deliveryAttempts} lần
+              </Tag>
+            )}
+          </div>
+          <div style={{ fontSize: 12, color: '#999', textAlign: 'right', fontWeight: 400 }}>
+            <div>Tạo lúc: {new Date(order.createdAt).toLocaleString('vi-VN')}</div>
+            {order.deliveredAt && (
+              <div>Giao lúc: {new Date(order.deliveredAt).toLocaleString('vi-VN')}</div>
+            )}
+          </div>
+        </div>
+      }
+    >
+      <div style={{ maxHeight: '78vh', overflowY: 'auto', paddingRight: 4 }}>
 
-      {/* Customer Info - Mock data */}
-      <div className="customer-info-section">
-        <h4>👤 Thông tin khách hàng</h4>
-        <Descriptions bordered column={2} size="small">
-          <Descriptions.Item label="Họ tên" span={1}>
-            <UserOutlined /> Nguyễn Văn A
-          </Descriptions.Item>
-          <Descriptions.Item label="Số điện thoại" span={1}>
-            <PhoneOutlined /> 0123 456 789
-          </Descriptions.Item>
-          <Descriptions.Item label="Địa chỉ giao hàng" span={2}>
-            <EnvironmentOutlined /> 123 Đường ABC, Phường XYZ, Quận 1, TP.HCM
-          </Descriptions.Item>
-        </Descriptions>
-      </div>
+        {/* ── Thanh tiến trình ────────────────────────────────────────────── */}
+        {!isTerminal && (
+          <div style={{ marginBottom: 8 }}>
+            <Steps
+              size="small"
+              current={currentStep}
+              status={isDeliveryFail ? 'error' : 'process'}
+              items={[
+                { title: 'Chờ xác nhận', icon: <ClockCircleOutlined /> },
+                { title: 'Đã xác nhận',  icon: <CheckCircleOutlined /> },
+                { title: 'Đang xử lý',   icon: <ShoppingOutlined />    },
+                {
+                  title: isDeliveryFail ? 'Giao thất bại' : 'Đang giao',
+                  icon:  isDeliveryFail ? <WarningOutlined /> : <TruckOutlined />,
+                },
+                { title: 'Hoàn thành',   icon: <CheckCircleOutlined /> },
+              ]}
+            />
+          </div>
+        )}
 
-      {/* Order Items */}
-      <div className="order-items-section">
-        <h4>🛒 Sản phẩm đặt hàng</h4>
-        <Table
-          bordered
-          rowKey="id"
-          columns={itemColumns}
-          dataSource={order.items}
-          pagination={false}
-          summary={() => (
-            <Table.Summary fixed>
-              <Table.Summary.Row>
-                <Table.Summary.Cell index={0} colSpan={3} align="right">
-                  <strong>Tổng cộng:</strong>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell index={1} align="right">
-                  <strong style={{ fontSize: 16, color: '#ff4444' }}>
-                    {order.total.toLocaleString('vi-VN')}₫
-                  </strong>
-                </Table.Summary.Cell>
-              </Table.Summary.Row>
-            </Table.Summary>
-          )}
-        />
-      </div>
+        {/* ── Banner trạng thái đặc biệt ──────────────────────────────────── */}
+        {isDeliveryFail && (
+          <Alert
+            type="warning"
+            showIcon
+            icon={<WarningOutlined />}
+            style={{ marginBottom: 16 }}
+            message={
+              <span style={{ fontWeight: 500 }}>
+                Giao hàng thất bại {order.deliveryAttempts ?? 1} lần
+              </span>
+            }
+            description={order.cancelReason && `Lý do: ${order.cancelReason}`}
+          />
+        )}
 
-      {/* Timeline */}
-      {/* <div className="order-timeline-section">
-        <h4>📅 Lịch sử đơn hàng</h4>
-        <Timeline
-          items={orderTimeline.map(item => ({
-            color: item.color,
-            content: (
-              <div>
-                <p style={{ margin: 0, fontWeight: 500 }}>{item.status}</p>
-                <small style={{ color: '#999' }}>{item.time}</small>
-              </div>
-            )
-          }))}
-        />
-      </div> */}
+        {isCancelled && (
+          <Alert
+            type="error"
+            showIcon
+            icon={<CloseCircleOutlined />}
+            style={{ marginBottom: 16 }}
+            message="Đơn hàng đã bị hủy"
+            description={order.cancelReason && `Lý do: ${order.cancelReason}`}
+          />
+        )}
 
-      {/* Admin Note */}
-      <div className="admin-note-section">
-        <h4>📝 Ghi chú nội bộ</h4>
-        <TextArea
-          rows={3}
-          placeholder="Thêm ghi chú nội bộ..."
-          value={adminNote}
-          onChange={(e) => setAdminNote(e.target.value)}
-        />
-        <Button
-          type="primary"
-          style={{ marginTop: 8 }}
-          onClick={handleSaveNote}
-        >
-          Lưu ghi chú
-        </Button>
-      </div>
+        {isReturned && (
+          <Alert
+            type="warning"
+            showIcon
+            icon={<RollbackOutlined />}
+            style={{ marginBottom: 16 }}
+            message="Đơn hàng đã hoàn trả"
+            description={order.cancelReason && `Lý do: ${order.cancelReason}`}
+          />
+        )}
 
-      {/* Quick Actions */}
-      <Divider />
-      <div className="quick-actions">
-        <Space>
-          {order.status === 'PENDING' && (
-            <>
+        <Divider style={{ margin: '12px 0' }} />
+
+        {/* ── Thông tin đơn hàng ──────────────────────────────────────────── */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontWeight: 500, marginBottom: 8 }}>📋 Thông tin đơn hàng</div>
+          <Descriptions bordered column={2} size="small">
+            <Descriptions.Item label="Mã đơn hàng">
+              <strong>{order.orderNumber}</strong>
+            </Descriptions.Item>
+            <Descriptions.Item label="Trạng thái">
+              <Tag color={statusColors[order.status]}>{statusText[order.status]}</Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Thanh toán">
+              <Tag color="blue" icon={<DollarOutlined />}>
+                {paymentMethodText[order.paymentMethod]}
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Trạng thái TT">
+              <Tag color={paymentStatusColors[order.paymentStatus]}>
+                {paymentStatusText[order.paymentStatus]}
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Tổng tiền" span={2}>
+              <strong style={{ fontSize: 15, color: '#ff4444' }}>
+                {order.total.toLocaleString('vi-VN')}₫
+              </strong>
+              {order.discount > 0 && (
+                <span style={{ color: '#52c41a', marginLeft: 12, fontSize: 13 }}>
+                  Giảm {order.discount.toLocaleString('vi-VN')}₫
+                </span>
+              )}
+            </Descriptions.Item>
+            <Descriptions.Item label="Ghi chú KH" span={2}>
+              {order.note || <span style={{ color: '#bbb' }}>Không có</span>}
+            </Descriptions.Item>
+          </Descriptions>
+        </div>
+
+        {/* ── Thông tin khách hàng ─────────────────────────────────────────── */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontWeight: 500, marginBottom: 8 }}>👤 Thông tin khách hàng</div>
+          <Descriptions bordered column={2} size="small">
+            <Descriptions.Item label={<><UserOutlined /> Họ tên</>}>
+              {order.customerName}
+            </Descriptions.Item>
+            <Descriptions.Item label={<><PhoneOutlined /> Số điện thoại</>}>
+              {order.customerPhone}
+            </Descriptions.Item>
+            <Descriptions.Item label={<><EnvironmentOutlined /> Địa chỉ giao hàng</>} span={2}>
+              {order.shippingAddress}
+            </Descriptions.Item>
+          </Descriptions>
+        </div>
+
+        {/* ── Sản phẩm ─────────────────────────────────────────────────────── */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontWeight: 500, marginBottom: 8 }}>🛒 Sản phẩm đặt hàng</div>
+          <Table
+            bordered
+            rowKey="id"
+            size="small"
+            columns={itemColumns}
+            dataSource={order.items}
+            pagination={false}
+            summary={() => (
+              <Table.Summary fixed>
+                <Table.Summary.Row>
+                  <Table.Summary.Cell index={0} colSpan={2} align="right">
+                    <span style={{ color: '#999' }}>Phí vận chuyển:</span>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={1} align="right" colSpan={2}>
+                    {order.shippingFee > 0
+                      ? order.shippingFee.toLocaleString('vi-VN') + '₫'
+                      : <span style={{ color: '#52c41a' }}>Miễn phí</span>
+                    }
+                    {order.discount > 0 && (
+                      <span style={{ color: '#52c41a', marginLeft: 12, fontSize: 13 }}>
+                        Giảm {order.discount.toLocaleString('vi-VN')}₫
+                      </span>
+                    )}
+                  </Table.Summary.Cell>
+                </Table.Summary.Row>
+                <Table.Summary.Row>
+                  <Table.Summary.Cell index={0} colSpan={2} align="right">
+                    <strong>Tổng cộng:</strong>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={1} align="right" colSpan={2}>
+                    <strong style={{ fontSize: 15, color: '#ff4444' }}>
+                      {order.total.toLocaleString('vi-VN')}₫
+                    </strong>
+                  </Table.Summary.Cell>
+                </Table.Summary.Row>
+              </Table.Summary>
+            )}
+          />
+        </div>
+
+        {/* ── Ghi chú nội bộ ───────────────────────────────────────────────── */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontWeight: 500, marginBottom: 8 }}>📝 Ghi chú nội bộ</div>
+          <Input.TextArea
+            rows={2}
+            placeholder="Ghi chú chỉ admin thấy..."
+            value={adminNote}
+            onChange={e => setAdminNote(e.target.value)}
+          />
+        </div>
+
+        <Divider style={{ margin: '12px 0' }} />
+
+        {/* ── Quick Actions ─────────────────────────────────────────────────── */}
+        {statusActions.length > 0 && !reasonTarget && (
+          <Space wrap>
+            {statusActions.map(action => (
+              <Button
+                key={action.key}
+                type={action.danger ? 'default' : 'primary'}
+                danger={action.danger}
+                icon={action.icon}
+                onClick={() => handleAction(action.key)}
+              >
+                {action.label}
+              </Button>
+            ))}
+          </Space>
+        )}
+
+        {/* ── Nhập lý do (hiện sau khi bấm action cần reason) ─────────────── */}
+        {reasonTarget && (
+          <div style={{
+            background: '#fafafa', border: '1px solid #f0f0f0',
+            borderRadius: 8, padding: 16,
+          }}>
+            <div style={{ fontWeight: 500, marginBottom: 8 }}>
+              {reasonTarget === OrderStatus.DELIVERY_FAILED && 'Lý do giao thất bại'}
+              {reasonTarget === OrderStatus.CANCELLED       && 'Lý do hủy đơn'}
+              {reasonTarget === OrderStatus.RETURNED        && 'Lý do hoàn hàng'}
+            </div>
+            <Input.TextArea
+              autoFocus
+              rows={3}
+              placeholder={reasonPlaceholder[reasonTarget]}
+              value={reason}
+              onChange={e => setReason(e.target.value)}
+              style={{ marginBottom: 10 }}
+            />
+            <Space>
               <Button
                 type="primary"
-                icon={<CheckCircleOutlined />}
-                onClick={() => handleQuickAction('CONFIRMED' as OrderStatus)}
+                danger={[OrderStatus.CANCELLED, OrderStatus.RETURNED].includes(reasonTarget)}
+                disabled={!reason.trim()}
+                onClick={confirmAction}
               >
-                Xác nhận đơn
+                Xác nhận
               </Button>
-              <Button
-                danger
-                icon={<CloseCircleOutlined />}
-                onClick={() => handleQuickAction('CANCELLED' as OrderStatus)}
-              >
-                Hủy đơn
-              </Button>
-            </>
-          )}
+              <Button onClick={cancelAction}>Hủy</Button>
+            </Space>
+          </div>
+        )}
 
-          {order.status === 'CONFIRMED' && (
-            <Button
-              type="primary"
-              icon={<ShoppingOutlined />}
-              onClick={() => handleQuickAction('PROCESSING' as OrderStatus)}
-            >
-              Bắt đầu xử lý
-            </Button>
-          )}
+        {/* ── Đóng ─────────────────────────────────────────────────────────── */}
+        {!reasonTarget && (
+          <Button style={{marginLeft:5, marginTop: statusActions.length > 0 ? 8 : 0 }} onClick={onClose}>
+            Đóng
+          </Button>
+        )}
 
-          {order.status === 'PROCESSING' && (
-            <Button
-              type="primary"
-              icon={<TruckOutlined />}
-              onClick={() => handleQuickAction('SHIPPING' as OrderStatus)}
-            >
-              Giao hàng
-            </Button>
-          )}
-
-          {order.status === 'SHIPPING' && (
-            <Button
-              type="primary"
-              icon={<CheckCircleOutlined />}
-              onClick={() => handleQuickAction('DELIVERED' as OrderStatus)}
-            >
-              Đã giao hàng
-            </Button>
-          )}
-
-          <Button onClick={onClose}>Đóng</Button>
-        </Space>
       </div>
     </Modal>
   );

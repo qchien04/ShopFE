@@ -1,7 +1,8 @@
 // OwnerLayout.tsx
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./OwnerLayout.scss";
+import { useAppSelector, type RootState } from "../app/store";
 
 interface NavItem {
   key: string;
@@ -25,10 +26,22 @@ const navItems: NavItem[] = [
 
 const OwnerLayout = () => {
   const navigate = useNavigate();
+  const {isAuthenticated,userAccount}= useAppSelector(
+    (state: RootState) => state.auth
+  );
   const location = useLocation();
+  const nav=useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [activeKey, setActiveKey] = useState("products");
 
+
+  if (!isAuthenticated || !userAccount) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (!userAccount.roles?.includes("ADMIN")) {
+    return <Navigate to="/" replace />;
+  }
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);

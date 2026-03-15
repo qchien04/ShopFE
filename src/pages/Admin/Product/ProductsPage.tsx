@@ -10,6 +10,7 @@ import type { Product }      from "../../../types/product.type";
 import type { PageResponse } from "../../../types/response.type";
 import ProductForm           from "./ProductFormProps";
 import { buildColumns } from "./Column";
+import ProductDetailModal from "./ProductDetailModal";
 
 export const toPayload = (values: any) => ({
   ...values,
@@ -42,10 +43,15 @@ const ProductsPage = () => {
   const [open,       setOpen]       = useState(false);
   const [mode,       setMode]       = useState<"create" | "edit">("create");
   const [editingId,  setEditingId]  = useState<number | null>(null);
+  const [viewOpen,    setViewOpen]    = useState(false);
+  const [viewingId,   setViewingId]   = useState<number | null>(null);
 
   const { data, isLoading } = useProductList<PageResponse<Product>>({
     type: "all", page: page - 1, size: pageSize, keyword,
   });
+
+  const openViewModal  = (id: number) => { setViewingId(id); setViewOpen(true); };
+  const closeViewModal = () => { setViewOpen(false); setViewingId(null); };
 
   const { mutate: deleteProduct, isPending: deleting  } = useDeleteProduct();
   const { mutate: createProduct, isPending: creating  } = useCreateProduct();
@@ -71,7 +77,7 @@ const ProductsPage = () => {
     }
   };
 
-  const columns = buildColumns(openEditModal, deleteProduct, deleting);
+  const columns = buildColumns(openEditModal,deleteProduct,openViewModal, deleting);
 
   // ── Nội dung Modal ──
   const modalContent = () => {
@@ -117,6 +123,13 @@ const ProductsPage = () => {
       >
         {modalContent()}
       </Modal>
+
+
+      <ProductDetailModal
+        productId={viewingId}
+        open={viewOpen}
+        onClose={closeViewModal}
+      />
 
       <Space style={{ marginBottom: 16, justifyContent: "space-between", width: "100%" }}>
         <Button type="primary" onClick={openCreateModal}>➕ Thêm sản phẩm</Button>
