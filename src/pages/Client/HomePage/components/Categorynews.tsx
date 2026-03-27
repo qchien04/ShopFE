@@ -30,7 +30,7 @@ const CategoryNews = () => {
       {/* Danh mục nổi bật */}
       <section className="category-grid">
         <div className="section-header">
-          <div className="section-icon">🏆</div>
+          <div className="section-icon"></div>
           <h2 className="section-title">Danh mục nổi bật</h2>
           <a href="#" className="view-all-link">
             Xem tất cả →
@@ -51,7 +51,7 @@ const CategoryNews = () => {
       {/* Tin Tức */}
       <section className="news-section">
         <div className="section-header">
-          <div className="section-icon">📰</div>
+          <div className="section-icon"></div>
           <h2 className="section-title">Tin Tức</h2>
           <a href="#" className="view-all-link">
             Xem thêm Tin Tức ›
@@ -82,7 +82,7 @@ const CategoryNews = () => {
           {/* Popular News Sidebar */}
           <div className="popular-news">
             <div className="popular-header">
-              <span className="popular-icon">🔥</span>
+              <span className="popular-icon"></span>
               <h3>MẸO VẶT</h3>
             </div>
             <div className="popular-list">

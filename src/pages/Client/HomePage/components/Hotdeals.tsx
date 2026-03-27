@@ -32,7 +32,7 @@ const HotDeals = () => {
       {/* Deal Hot Trong Tuần */}
       <section className="deal-hot">
         <div className="section-header">
-          <div className="section-icon">✅</div>
+          <div className="section-icon"></div>
           <h2 className="section-title">Deal Hot Trong Tuần</h2>
           <a href="#" className="view-all-link">
             Xem tất cả →

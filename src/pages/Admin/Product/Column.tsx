@@ -39,7 +39,7 @@ export const buildColumns = (
   {
     title: "Giá", dataIndex: "price", width: 140,
     render: (price, record) => (
-      <Space direction="vertical" size={0}>
+      <Space orientation="vertical" size={0}>
         <span style={{ textDecoration: record.salePrice ? "line-through" : "none", color: "#999" }}>
           {price?.toLocaleString()}₫
         </span>

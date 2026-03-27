@@ -1,4 +1,4 @@
-import { Checkbox, Empty, Spin, Tag, Tooltip, Button } from "antd";
+import { Checkbox, Empty, Pagination, Spin, Tag, Tooltip, Button } from "antd";
 import type { Post } from "../../../types/entity.type";
 import { antdMessage } from "../../../utils/antdMessage";
 import {
@@ -7,14 +7,29 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 
-// ─── Post Picker ───────────────────────────────────────────────────────────────
-export const PostPicker = ({ posts, loading, selectedIds, onChange, max = 6, renderActions }: {
+export const PostPicker = ({
+  posts,
+  loading,
+  selectedIds,
+  onChange,
+  max = 6,
+  renderActions,
+  page = 0,
+  pageSize = 10,
+  total,
+  onPageChange,
+}: {
   posts:          Post[]   | undefined;
   loading:        boolean;
   selectedIds:    number[];
   onChange:       (ids: number[]) => void;
   max?:           number;
   renderActions?: (post: Post) => React.ReactNode;
+  // Props phân trang — tuỳ chọn (nếu không truyền thì không hiện Pagination)
+  page?:          number;
+  pageSize?:      number;
+  total?:         number;
+  onPageChange?:  (page: number, pageSize: number) => void;
 }) => {
   const toggle = (id: number) => {
     if (selectedIds.includes(id)) {
@@ -29,16 +44,16 @@ export const PostPicker = ({ posts, loading, selectedIds, onChange, max = 6, ren
   };
 
   const copyLink = (e: React.MouseEvent, post: Post) => {
-    e.stopPropagation(); // không trigger toggle khi click copy
-    const link = `${window.location.origin}/post/${post.id}`; // điều chỉnh path nếu cần
+    e.stopPropagation();
+    const link = `${window.location.origin}/post/${post.id}`;
     navigator.clipboard.writeText(link).then(() => {
       antdMessage.success(`Đã copy link: ${post.title}`);
     });
   };
 
   const openEdit = (e: React.MouseEvent, post: Post) => {
-    e.stopPropagation(); // không trigger toggle khi click edit
-    window.open(`/admin/posts/${post.id}/edit`, "_blank"); // điều chỉnh path nếu cần
+    e.stopPropagation();
+    window.open(`/admin/posts/${post.id}/edit`, "_blank");
   };
 
   if (loading) return <div className="post-picker__loading"><Spin /></div>;
@@ -50,6 +65,7 @@ export const PostPicker = ({ posts, loading, selectedIds, onChange, max = 6, ren
         Đã chọn <strong>{selectedIds.length}</strong> / {max} bài •
         Click để chọn/bỏ chọn bài hiển thị trang chủ
       </div>
+
       <div className="post-picker__list">
         {posts.map((post) => {
           const checked = selectedIds.includes(post.id);
@@ -70,7 +86,7 @@ export const PostPicker = ({ posts, loading, selectedIds, onChange, max = 6, ren
                   <div className="post-card__desc">{post.description}</div>
                 )}
                 <div className="post-card__meta">
-                  <Tag color="blue"  style={{ fontSize: 11 }}>{post.category}</Tag>
+                  <Tag color="blue" style={{ fontSize: 11 }}>{post.category}</Tag>
                   <Tag color={post.status === "PUBLISHED" ? "green" : "default"} style={{ fontSize: 11 }}>
                     {post.status === "PUBLISHED" ? "Đã đăng" : "Nháp"}
                   </Tag>
@@ -110,6 +126,22 @@ export const PostPicker = ({ posts, loading, selectedIds, onChange, max = 6, ren
           );
         })}
       </div>
+
+      {/* ── Phân trang ── chỉ hiện khi có onPageChange và total */}
+      {onPageChange && total !== undefined && (
+        <div className="post-picker__pagination">
+          <Pagination
+            current={page}
+            pageSize={pageSize}
+            total={total}
+            onChange={onPageChange}
+            showSizeChanger
+            pageSizeOptions={["5", "10", "20"]}
+            showTotal={(t, range) => `${range[0]}–${range[1]} / ${t} bài`}
+            size="small"
+          />
+        </div>
+      )}
     </div>
   );
 };

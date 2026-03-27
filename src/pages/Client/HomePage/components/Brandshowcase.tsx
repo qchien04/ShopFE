@@ -37,7 +37,7 @@ const BrandShowcase = () => {
   return (
     <section className="brand-showcase">
       <div className="section-header">
-        <div className="section-icon">🏷️</div>
+        <div className="section-icon"></div>
         <h2 className="section-title">Mua Nhiều Giá Sỉ</h2>
         <a href="#" className="view-all-link">Xem tất cả →</a>
       </div>

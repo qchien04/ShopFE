@@ -22,7 +22,7 @@ import {
   DollarOutlined
 } from '@ant-design/icons';
 import './ProductDetailPage.scss';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useProductDetail } from '../../../hooks/Product/useProduct';
 import { useAddToCart } from '../../../hooks/Cart/useAddToCart';
 import ReviewSection from './ReviewSection';
@@ -42,7 +42,7 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
-
+  const nav=useNavigate()
   const { data: wishlistCheck } = useWishlistCheck(product?.id)
   const { mutate: addWishlist, isPending: adding } = useAddWishlist();
   const { mutate: removeWishlist, isPending: removing } = useRemoveWishlist();
@@ -105,7 +105,8 @@ const ProductDetail = () => {
   };
 
   const handleBuyNow = () => {
-    console.log('Buy now:', { product: currentProduct, quantity, variant: selectedVariant });
+    handleAddToCart();
+    nav("/cart");
   };
 
   const features = [

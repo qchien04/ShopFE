@@ -205,14 +205,25 @@ import PromoPostsSlot, { type PromoPost } from "./PromoPostsSlot";
       retry: false,
     });
 
-    const { data: prePosts,     isLoading: loadingPre }     = useQuery<Post[]>({
-      queryKey: ["posts-pre"],
-      queryFn:  () => postApi.getPre(),
+    const [prePage,     setPrePage]     = useState(1);
+    const [prePageSize, setPrePageSize] = useState(10);
+    const { data: prePosts,     isLoading: loadingPre } = useQuery<PageResponse<Post>>({
+      queryKey: ["posts-pre",prePage,prePageSize],
+      queryFn:  () => postApi.getAll({
+        size: prePageSize,
+        page: prePage-1,
+      }),
       staleTime: 1000 * 60 * 5,
     });
-    const { data: popularPosts, isLoading: loadingPopular } = useQuery<Post[]>({
-      queryKey: ["posts-popular"],
-      queryFn:  () => postApi.getPopular(),
+
+    const [popularPage,     setPopularPage]     = useState(1);
+    const [popularPageSize, setPopularPageSize] = useState(10);
+    const { data: popularPosts, isLoading: loadingPopular } = useQuery<PageResponse<Post>>({
+      queryKey: ["posts-popular", popularPage, popularPageSize],
+      queryFn:  () => postApi.getAll({
+        size: popularPageSize,
+        page: popularPage-1,
+      }),
       staleTime: 1000 * 60 * 5,
     });
 
@@ -400,13 +411,20 @@ import PromoPostsSlot, { type PromoPost } from "./PromoPostsSlot";
                 label: `🗞️ Tin tức mới (${selectedPreIds.length} đã chọn)`,
                 children: (
                   <PostPicker
-                    posts={prePosts}
+                    posts={prePosts?.content}
                     loading={loadingPre}
                     selectedIds={selectedPreIds}
                     onChange={setSelectedPreIds}
                     max={6}
                     // ↓ truyền renderActions xuống PostPicker
                     renderActions={renderPostActions}
+                    page={prePage}
+                    pageSize={prePageSize}
+                    total={prePosts?.totalElements}
+                    onPageChange={(p, ps) => {
+                      setPrePage(p);
+                      setPrePageSize(ps);
+                    }}
                   />
                 ),
               },
@@ -415,12 +433,19 @@ import PromoPostsSlot, { type PromoPost } from "./PromoPostsSlot";
                 label: `🔥 Mẹo vặt (${selectedPopularIds.length} đã chọn)`,
                 children: (
                   <PostPicker
-                    posts={popularPosts}
+                    posts={popularPosts?.content}
                     loading={loadingPopular}
                     selectedIds={selectedPopularIds}
                     onChange={setSelectedPopularIds}
                     max={6}
                     renderActions={renderPostActions}
+                    page={popularPage}
+                    pageSize={popularPageSize}
+                    total={popularPosts?.totalElements}
+                    onPageChange={(p, ps) => {
+                      setPopularPage(p);
+                      setPopularPageSize(ps);
+                    }}
                   />
                 ),
               },

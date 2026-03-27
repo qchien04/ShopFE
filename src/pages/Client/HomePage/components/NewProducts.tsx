@@ -24,7 +24,7 @@ const NewProducts = () => {
   return (
     <section className="new-products">
       <div className="section-header">
-        <div className="section-icon">🔥</div>
+        <div className="section-icon"></div>
         <h2 className="section-title">Sản Phẩm Mới</h2>
       </div>
 
