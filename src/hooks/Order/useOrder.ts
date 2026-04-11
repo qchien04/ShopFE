@@ -32,3 +32,11 @@ export const useUpdateStatusOrders = () => {
   });
 };
 
+export const useOrderDetail = (id: number | null) => {
+  return useQuery({
+    queryKey: ["order-detail", id],
+    queryFn: () => orderApi.getOrderById(id!),
+    enabled: !!id,
+  });
+};
+

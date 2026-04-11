@@ -22,9 +22,11 @@ interface Props {
 }
 
 const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
-  const [adminNote,     setAdminNote]     = useState(order.internalNote ?? '');
+  const [adminNote,     setAdminNote]     = useState(order?.internalNote ?? '');
   const [reasonTarget,  setReasonTarget]  = useState<OrderStatus | null>(null);
   const [reason,        setReason]        = useState('');
+
+  if (!order) return null;
 
   const currentStep    = getStatusStep(order.status);
   const statusActions  = getStatusActions(order);
@@ -217,9 +219,17 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
                 {order.total.toLocaleString('vi-VN')}₫
               </strong>
               {order.discount > 0 && (
-                <span style={{ color: '#52c41a', marginLeft: 12, fontSize: 13 }}>
-                  Giảm {order.discount.toLocaleString('vi-VN')}₫
-                </span>
+                <div style={{ marginTop: 4 }}>
+                  <span style={{ color: '#52c41a', fontSize: 13, display: 'block' }}>
+                    Giảm {order.discount.toLocaleString('vi-VN')}₫ 
+                    {order.couponCode && ` (${order.couponCode})`}
+                  </span>
+                  {order.couponDetails && (
+                    <span style={{ color: '#999', fontSize: 11, fontStyle: 'italic', display: 'block', marginLeft: 2 }}>
+                      {order.couponDetails}
+                    </span>
+                  )}
+                </div>
               )}
             </Descriptions.Item>
             <Descriptions.Item label="Ghi chú KH" span={2}>
@@ -266,9 +276,17 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
                       : <span style={{ color: '#52c41a' }}>Miễn phí</span>
                     }
                     {order.discount > 0 && (
-                      <span style={{ color: '#52c41a', marginLeft: 12, fontSize: 13 }}>
-                        Giảm {order.discount.toLocaleString('vi-VN')}₫
-                      </span>
+                      <div style={{ marginTop: 4 }}>
+                        <span style={{ color: '#52c41a', fontSize: 13, display: 'block' }}>
+                          Giảm {order.discount.toLocaleString('vi-VN')}₫ 
+                          {order.couponCode && ` (${order.couponCode})`}
+                        </span>
+                        {order.couponDetails && (
+                          <span style={{ color: '#999', fontSize: 11, fontStyle: 'italic', display: 'block' }}>
+                            {order.couponDetails}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </Table.Summary.Cell>
                 </Table.Summary.Row>

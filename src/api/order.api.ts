@@ -15,5 +15,8 @@ export const orderApi = {
 
   createOrder: (payload:CreateOrderRequest): Promise<Order> =>
     postData<Order>("/orders", payload),
+
+  getOrderById: (id: number): Promise<Order> =>
+    getData<Order>(`/orders/${id}`),
 }
 

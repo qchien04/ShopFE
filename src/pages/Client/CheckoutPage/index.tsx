@@ -1,6 +1,6 @@
-import { Card, Typography, Space, Button, Modal, Radio, Divider, message, Spin, Row, Col, Tag } from "antd";
+import { Card, Typography, Space, Button, Modal, Radio, Divider, message, Spin, Row, Col, Tag, QRCode, Input } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   EnvironmentOutlined, EditOutlined, ShoppingOutlined,
   CheckCircleFilled, PlusOutlined, BankOutlined,
@@ -11,24 +11,36 @@ import { PaymentMethod, type CustomerAddress } from "../../../types/entity.type"
 import type { CreateOrderRequest, OrderRequestItem } from "../../../types/request.type";
 import { orderApi } from "../../../api/order.api";
 import { paymentApi } from "../../../api/payment.api";
+import { couponApi } from "../../../api/coupon.api";
 import { useProductVariantsByIds } from "../../../hooks/Product/useProductList";
 import CustomerAddressFormModal from "../../../components/AddressFormModal/AddressFormModal";
 import { PaymentMethodCard } from "./PaymentMethodCard";
+import QrCodeModal from "./QrCodeModal";
 
 const { Title: CTitle, Text } = Typography;
 
 
 const CheckoutPage = () => {
   const { state } = useLocation() as { state: { orderItems: OrderRequestItem[] } };
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
   const { data: addresses } = useCustomerAddresses();
 
-  const [open,            setOpen]            = useState(false);
+  const [open, setOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<CustomerAddress | null>(null);
   const [addressFormOpen, setAddressFormOpen] = useState(false);
-  const [editingAddress,  setEditingAddress]  = useState<CustomerAddress | undefined>();
-  const [payMethod,       setPayMethod]       = useState<PaymentMethod>(PaymentMethod.BANK_TRANSFER);
-  const [redirecting,     setRedirecting]     = useState(false); // fullscreen spin
+  const [editingAddress, setEditingAddress] = useState<CustomerAddress | undefined>();
+  const [payMethod, setPayMethod] = useState<PaymentMethod>(PaymentMethod.BANK_TRANSFER);
+  const [redirecting, setRedirecting] = useState(false); // fullscreen spin
+  const [payData, setPayData] = useState<any>(null);
+  const [payModalVisible, setPayModalVisible] = useState(false);
+
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCouponCode, setAppliedCouponCode] = useState<string | undefined>(undefined);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
+  const [checkingCoupon, setCheckingCoupon] = useState(false);
+  const [couponMessage, setCouponMessage] = useState("");
+  const [couponStatus, setCouponStatus] = useState<"success" | "error" | "">("");
+
 
   const productIds = useMemo(
     () => state.orderItems.map((i) => i.productVariantId),
@@ -44,17 +56,63 @@ const CheckoutPage = () => {
     }));
   }, [products, state.orderItems]);
 
-  const subtotal    = items.reduce((sum, i) => sum + (i.product?.salePrice || 0) * i.quantity, 0);
+  const subtotal = items.reduce((sum, i) => sum + (i.product?.salePrice || 0) * i.quantity, 0);
   const shippingFee = 20000;
-  const discount    = shippingFee;
-  const total       = subtotal + shippingFee - discount;
+  const discount = 0;
+  const total = subtotal + shippingFee - discount - couponDiscount;
 
   const currentAddress = selectedAddress || addresses?.find((a) => a.isDefault) || addresses?.[0];
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCheckingCoupon(true);
+    try {
+      const res: any = await couponApi.validateCoupon({ code: couponCode, orderTotal: subtotal });
+      if (res.valid && res.discountAmount) {
+        setAppliedCouponCode(couponCode);
+        setCouponDiscount(res.discountAmount);
+        setCouponStatus("success");
+        setCouponMessage(`Đã áp dụng mã giảm giá: -${res.discountAmount.toLocaleString("vi-VN")} ₫`);
+      } else {
+        setAppliedCouponCode(undefined);
+        setCouponDiscount(0);
+        setCouponStatus("error");
+        setCouponMessage(res.message || "Mã giảm giá không hợp lệ");
+      }
+    } catch (err: any) {
+      setAppliedCouponCode(undefined);
+      setCouponDiscount(0);
+      setCouponStatus("error");
+      setCouponMessage("Lỗi khi kiểm tra mã. Vui lòng thử lại.");
+    } finally {
+      setCheckingCoupon(false);
+    }
+  };
 
   const openAddressForm = (addr?: CustomerAddress) => {
     setEditingAddress(addr);
     setAddressFormOpen(true);
   };
+
+  useEffect(() => {
+    let interval: any;
+    if (payModalVisible && payData) {
+      interval = setInterval(async () => {
+        try {
+          const res: any = await paymentApi.payOSOder("ORD" + payData.orderCode);
+          if (res.data && res.data.status === "PAID") {
+            clearInterval(interval);
+            message.success("Thanh toán thành công!");
+            setPayModalVisible(false);
+            navigate("/success?orderId=" + payData.orderCode + "&amount=" + total + "&method=" + payMethod);
+          }
+        } catch (err) {
+          console.error("Lỗi khi kiểm tra trạng thái thanh toán", err);
+        }
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [payModalVisible, payData, navigate]);
 
   const handleOrder = async () => {
     if (!currentAddress) { message.error("Vui lòng chọn địa chỉ giao hàng"); return; }
@@ -65,13 +123,16 @@ const CheckoutPage = () => {
         addressId: currentAddress.id || 0,
         items: state.orderItems,
         paymentMethod: payMethod,
+        ...(appliedCouponCode ? { couponCode: appliedCouponCode } : {}),
       };
 
       const order = await orderApi.createOrder(payload);
 
       if (payMethod === PaymentMethod.BANK_TRANSFER) {
         const res = await paymentApi.pay({ orderId: order.id, paymentMethod: PaymentMethod.BANK_TRANSFER });
-        window.location.href = res.checkoutUrl;
+        setPayData(res);
+        setPayModalVisible(true);
+        setRedirecting(false);
       } else {
         message.success("Đặt hàng thành công!");
         navigate("/orders");
@@ -90,7 +151,7 @@ const CheckoutPage = () => {
 
   return (
     <div style={{ background: "#f5f5f5", minHeight: "100vh" }}>
-      {redirecting&&<Spin fullscreen size="large" tip="Đang xử lý đơn hàng..." />}
+      {redirecting && <Spin fullscreen size="large" tip="Đang xử lý đơn hàng..." />}
 
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 16px" }}>
         <CTitle level={2} style={{ marginTop: 16, color: "#111827" }}>
@@ -200,8 +261,36 @@ const CheckoutPage = () => {
                   <Text>{shippingFee.toLocaleString("vi-VN")} ₫</Text>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <Text type="secondary">Giảm giá</Text>
+                  <Text type="secondary">Miễn phí vận chuyển</Text>
                   <Text style={{ color: "#00b96b" }}>-{discount.toLocaleString("vi-VN")} ₫</Text>
+                </div>
+                {couponDiscount > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <Text type="secondary">Voucher giảm giá</Text>
+                    <Text style={{ color: "#00b96b" }}>-{couponDiscount.toLocaleString("vi-VN")} ₫</Text>
+                  </div>
+                )}
+
+                <div style={{ marginTop: 8 }}>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <Input
+                      placeholder="Nhập mã giảm giá"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value);
+                        if (couponStatus !== "") {
+                          setCouponStatus("");
+                          setCouponMessage("");
+                        }
+                      }}
+                    />
+                    <Button type="primary" onClick={handleApplyCoupon} loading={checkingCoupon}>Áp dụng</Button>
+                  </div>
+                  {couponMessage && (
+                    <Text type={couponStatus === "error" ? "danger" : "success"} style={{ fontSize: 12, display: 'block', marginTop: 4 }}>
+                      {couponMessage}
+                    </Text>
+                  )}
                 </div>
                 <Divider style={{ margin: "4px 0" }} />
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -291,6 +380,12 @@ const CheckoutPage = () => {
           open={addressFormOpen}
           initial={editingAddress}
           onCancel={() => { setAddressFormOpen(false); setEditingAddress(undefined); }}
+        />
+
+        <QrCodeModal
+          payModalVisible={payModalVisible}
+          setPayModalVisible={setPayModalVisible}
+          payData={payData}
         />
       </div>
     </div>

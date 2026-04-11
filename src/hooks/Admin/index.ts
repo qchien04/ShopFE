@@ -41,3 +41,9 @@ export const useDeleteReview = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-reviews"] }),
   });
 };
+
+export const useNewUsersInWeek = () =>
+  useQuery({
+    queryKey: ["admin-new-users"],
+    queryFn: adminApi.getNewUsersInWeek,
+  });

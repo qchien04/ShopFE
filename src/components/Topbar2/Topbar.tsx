@@ -252,6 +252,8 @@ const TopBar = () => {
               </span>
             </Dropdown>
             
+            <Link to="/vouchers" className="nav-item">Mã Giảm Giá</Link>
+            
             <Link to="/" className="nav-item">Kiểm tra đơn hàng</Link>
             
             <Dropdown menu={{items:marketplaceItems}} trigger={['hover']}>

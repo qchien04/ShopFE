@@ -85,6 +85,8 @@ export interface Order{
   paymentStatus:PaymentStatus;
   note:string;
   discount:number;
+  couponCode?:string;
+  couponDetails?:string;
   createdAt:string;
   deliveredAt:string;
   deliveryAttempts?: number;  
@@ -233,4 +235,31 @@ export interface BannerConfig {
   featuredPostIds:number[];
   featuredPopularIds:number[];
   saleEvents: PromoPost[], 
+}
+
+export type DiscountType = "PERCENTAGE" | "FIXED_AMOUNT";
+
+export interface Coupon {
+  id: number;
+  code: string;
+  description: string;
+  discountType: DiscountType;
+  discountValue: number;
+  minOrderValue: number;
+  maxDiscountAmount?: number;
+  usageLimit: number;
+  usedCount: number;
+  startDate: string;
+  endDate: string;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface UserAccountDTO {
+  id: number;
+  username: string;
+  fullName: string;
+  dob: string;
+  email: string;
+  roles: string[];
 }

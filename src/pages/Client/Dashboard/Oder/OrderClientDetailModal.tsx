@@ -56,7 +56,22 @@ const OrderClientDetailModal=({detailOpen,selectedOrder,setDetailOpen}:Props)=>{
               </Tag>
             </Descriptions.Item>
             <Descriptions.Item label="Tổng tiền" span={2}>
-              <Text strong style={{ color: '#e53935' }}>{selectedOrder.total.toLocaleString('vi-VN')}₫</Text>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Text strong style={{ color: '#e53935' }}>{selectedOrder.total.toLocaleString('vi-VN')}₫</Text>
+                  {selectedOrder.discount > 0 && (
+                    <Tag color="success" style={{ margin: 0 }}>
+                      Giảm {selectedOrder.discount.toLocaleString('vi-VN')}₫ 
+                      {selectedOrder.couponCode && ` (${selectedOrder.couponCode})`}
+                    </Tag>
+                  )}
+                </div>
+                {selectedOrder.couponDetails && (
+                  <Text style={{ fontSize: 11, color: '#888', fontStyle: 'italic' }}>
+                    * Chi tiết mã: {selectedOrder.couponDetails}
+                  </Text>
+                )}
+              </div>
             </Descriptions.Item>
             {selectedOrder.note && (
               <Descriptions.Item label="Ghi chú" span={2}>{selectedOrder.note}</Descriptions.Item>

@@ -1,6 +1,8 @@
 // Dashboard.tsx
+import { useNavigate } from "react-router-dom";
 import { Table, Tag, Progress, Tooltip, Spin, Alert } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import { useState } from "react";
 import type {
   RecentOrderDTO,
   FeaturedProductDTO,
@@ -8,7 +10,11 @@ import type {
 } from "../../../types/entity.type";
 import "./Dashboard.scss";
 import type { ProductStatus } from "../../../types/product.type";
-import { useDashboard } from "../../../hooks/Admin";
+import { useDashboard, useNewUsersInWeek } from "../../../hooks/Admin";
+import { useUpdateStatusOrders, useOrderDetail } from "../../../hooks/Order/useOrder";
+import OrderDetailModal from "../../../components/OrderDetailModal";
+import ProductDetailModal from "../Product/ProductDetailModal";
+import NewUsersModal from "./NewUsersModal";
 
 const fmtCurrency = (v: number) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(v);
@@ -16,27 +22,27 @@ const fmtCurrency = (v: number) =>
 const fmtPercent = (v: number) => `${v > 0 ? "+" : ""}${v.toFixed(1)}%`;
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string }> = {
-  PENDING:    { label: "Chờ xác nhận", color: "amber"  },
-  CONFIRMED:  { label: "Đã xác nhận",  color: "blue"   },
-  PROCESSING: { label: "Đang xử lý",   color: "violet" },
-  SHIPPING:   { label: "Đang giao",    color: "cyan"   },
-  DELIVERED:  { label: "Đã giao",      color: "green"  },
-  CANCELLED:  { label: "Đã huỷ",       color: "red"    },
-  DELIVERY_FAILED:  { label: "Giao thất bại",       color: "purple"    },
-  RETURNED:   { label: "Hoàn hàng",    color: "orange" },
+  PENDING: { label: "Chờ xác nhận", color: "amber" },
+  CONFIRMED: { label: "Đã xác nhận", color: "blue" },
+  PROCESSING: { label: "Đang xử lý", color: "violet" },
+  SHIPPING: { label: "Đang giao", color: "cyan" },
+  DELIVERED: { label: "Đã giao", color: "green" },
+  CANCELLED: { label: "Đã huỷ", color: "red" },
+  DELIVERY_FAILED: { label: "Giao thất bại", color: "purple" },
+  RETURNED: { label: "Hoàn hàng", color: "orange" },
 };
 
 const PRODUCT_STATUS_CONFIG: Record<ProductStatus, { label: string; color: string }> = {
-  PUBLISHED:    { label: "Đang bán",  color: "green"   },
-  DRAFT:        { label: "Nháp",      color: "default" },
-  OUT_OF_STOCK: { label: "Hết hàng",  color: "red"     },
-  DISCONTINUED: { label: "Ngưng bán", color: "orange"  },
+  PUBLISHED: { label: "Đang bán", color: "green" },
+  DRAFT: { label: "Nháp", color: "default" },
+  OUT_OF_STOCK: { label: "Hết hàng", color: "red" },
+  DISCONTINUED: { label: "Ngưng bán", color: "orange" },
 };
 
 const PAY_STATUS_CONFIG = {
-  UNPAID:   { label: "Chưa TT", color: "red"   },
-  PAID:     { label: "Đã TT",   color: "green" },
-  REFUNDED: { label: "Hoàn TT", color: "blue"  },
+  UNPAID: { label: "Chưa TT", color: "red" },
+  PAID: { label: "Đã TT", color: "green" },
+  REFUNDED: { label: "Hoàn TT", color: "blue" },
 };
 
 const MiniBarChart = ({ data }: { data: { dayLabel: string; revenue: number }[] }) => {
@@ -93,7 +99,20 @@ const DonutChart = ({ data }: { data: { label: string; count: number; color: str
 };
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const { data, isLoading, isError, error } = useDashboard();
+  const { mutate: updateStatus } = useUpdateStatusOrders();
+
+  // Modal states
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const [productModalOpen, setProductModalOpen] = useState(false);
+  const [newUsersModalOpen, setNewUsersModalOpen] = useState(false);
+
+  // Fetch full order data only when modal is open
+  const { data: fullOrderData } = useOrderDetail(selectedOrderId);
+  const { data: newUsersData } = useNewUsersInWeek();
 
   if (isLoading) {
     return (
@@ -114,11 +133,21 @@ const Dashboard = () => {
   const { stats, revenueByDay, orderStatusCounts, topProducts, recentOrders, featuredProducts } = data!;
 
   const statCards = [
-    { label: "Tổng doanh thu",   value: fmtCurrency(stats.totalRevenue),          sub: `${fmtPercent(stats.revenueGrowthPercent)} so tháng trước`, icon: "💰", color: "emerald", trend: stats.revenueGrowthPercent },
-    { label: "Đơn hàng hôm nay", value: stats.todayOrders.toString(),              sub: `${stats.pendingOrders} đơn đang xử lý`,                   icon: "🛒", color: "cyan",    trend: stats.orderGrowthPercent    },
-    { label: "Sản phẩm",         value: stats.totalProducts.toLocaleString(),      sub: `${stats.lowStockProducts} sắp hết hàng`,                  icon: "📦", color: "amber",   trend: 0                           },
-    { label: "Khách hàng mới",   value: stats.newCustomersThisWeek.toString(),     sub: "Tuần này",                                                 icon: "👥", color: "violet",  trend: stats.customerGrowthPercent },
+    { label: "Tổng doanh thu", value: fmtCurrency(stats.totalRevenue), sub: `${fmtPercent(stats.revenueGrowthPercent)} so tháng trước`, icon: "💰", color: "emerald", trend: stats.revenueGrowthPercent, path: "/admin/orders" },
+    { label: "Đơn hàng hôm nay", value: stats.todayOrders.toString(), sub: `${stats.pendingOrders} đơn đang xử lý`, icon: "🛒", color: "cyan", trend: stats.orderGrowthPercent, path: "/admin/orders?status=PENDING" },
+    { label: "Sản phẩm", value: stats.totalProducts.toLocaleString(), sub: `${stats.lowStockProducts} sắp hết hàng`, icon: "📦", color: "amber", trend: 0, path: "/admin/products" },
+    { label: "Khách hàng mới", value: stats.newCustomersThisWeek.toString(), sub: "Tuần này", icon: "👥", color: "violet", trend: stats.customerGrowthPercent, path: null, onClick: () => setNewUsersModalOpen(true) },
   ];
+
+  const handleOrderClick = (order: RecentOrderDTO) => {
+    setSelectedOrderId(order.id);
+    setOrderModalOpen(true);
+  };
+
+  const handleProductClick = (productId: number) => {
+    setSelectedProductId(productId);
+    setProductModalOpen(true);
+  };
 
   const orderColumns: ColumnsType<RecentOrderDTO> = [
     {
@@ -188,7 +217,15 @@ const Dashboard = () => {
 
       <div className="stat-grid">
         {statCards.map((card, i) => (
-          <div key={i} className={`stat-card stat-card--${card.color}`} style={{ animationDelay: `${i * 80}ms` }}>
+          <div
+            key={i}
+            className={`stat-card stat-card--${card.color}`}
+            style={{ animationDelay: `${i * 80}ms` }}
+            onClick={() => {
+              if (card.path) navigate(card.path);
+              else if (card.onClick) card.onClick();
+            }}
+          >
             <div className="stat-card__icon">{card.icon}</div>
             <div className="stat-card__body">
               <div className="stat-card__label">{card.label}</div>
@@ -216,7 +253,7 @@ const Dashboard = () => {
           <div className="glass-card__header"><h3>Top bán chạy</h3></div>
           <div className="top-products">
             {topProducts.map((p, i) => (
-              <div key={p.id} className="top-products__item">
+              <div key={p.id} className="top-products__item" onClick={() => handleProductClick(p.id)}>
                 <span className={`top-products__rank top-products__rank--${i + 1}`}>#{i + 1}</span>
                 <span className="top-products__img">
                   {p.mainImage
@@ -240,7 +277,17 @@ const Dashboard = () => {
           <h3>Đơn hàng gần đây</h3>
           <a className="glass-card__link" href="/admin/orders">Xem tất cả →</a>
         </div>
-        <Table dataSource={recentOrders} columns={orderColumns} rowKey="id" pagination={false} size="small" className="dark-table" />
+        <Table
+          dataSource={recentOrders}
+          columns={orderColumns}
+          rowKey="id"
+          pagination={false}
+          size="small"
+          className="dark-table clickable-rows"
+          onRow={(record) => ({
+            onClick: () => handleOrderClick(record),
+          })}
+        />
       </div>
 
       <div className="glass-card">
@@ -248,8 +295,48 @@ const Dashboard = () => {
           <h3>Sản phẩm nổi bật</h3>
           <a className="glass-card__link" href="/admin/products">Xem tất cả →</a>
         </div>
-        <Table dataSource={featuredProducts} columns={productColumns} rowKey="id" pagination={false} size="small" className="dark-table" />
+        <Table
+          dataSource={featuredProducts}
+          columns={productColumns}
+          rowKey="id"
+          pagination={false}
+          size="small"
+          className="dark-table clickable-rows"
+          onRow={(record) => ({
+            onClick: () => handleProductClick(record.id),
+          })}
+        />
       </div>
+
+      {/* Detail Modals */}
+      {fullOrderData && (
+        <OrderDetailModal
+          open={orderModalOpen}
+          order={fullOrderData}
+          onClose={() => {
+            setOrderModalOpen(false);
+            setSelectedOrderId(null);
+          }}
+          onUpdateStatus={(order, newStatus, reason, internalNote) =>
+            updateStatus({ id: order.id, status: newStatus, reason: reason || "", internalNote: internalNote || "" })
+          }
+        />
+      )}
+
+      <ProductDetailModal
+        productId={selectedProductId}
+        open={productModalOpen}
+        onClose={() => {
+          setProductModalOpen(false);
+          setSelectedProductId(null);
+        }}
+      />
+
+      <NewUsersModal
+        open={newUsersModalOpen}
+        onClose={() => setNewUsersModalOpen(false)}
+        users={newUsersData || []}
+      />
     </div>
   );
 };

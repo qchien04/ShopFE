@@ -35,6 +35,8 @@ import ProfilePage from "../pages/Client/Dashboard/Profile/Profile";
 import PaymentSuccess from "../pages/Client/PaymentStatus/Success";
 import ReviewManagePage from "../pages/Admin/Review/ReviewManagePage";
 import WishlistPage from "../pages/Client/WishListPage/WishlistPage";
+import CouponPage from "../pages/Admin/Coupon";
+import VoucherPage from "../pages/Client/VoucherPage";
 
 export const router = createBrowserRouter([
   {
@@ -105,6 +107,10 @@ export const router = createBrowserRouter([
         element: <CheckoutPage />,
       },
       {
+        path: "/vouchers",
+        element: <VoucherPage />,
+      },
+      {
         path: "/user",
         element: <PrivateRoute>
                     <ClientLayout/>
@@ -163,6 +169,10 @@ export const router = createBrowserRouter([
       {
         path: "configs",
         element: <BannerManager />,
+      },
+      {
+        path: "coupons",
+        element: <CouponPage />,
       },
       {
         path: "reviews",

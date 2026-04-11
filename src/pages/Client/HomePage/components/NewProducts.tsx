@@ -10,15 +10,15 @@ import { useNavigate } from 'react-router-dom';
 
 
 const NewProducts = () => {
-  const {data:categories}=useCategoryList();
-  const nav=useNavigate();
-  const [selectedCategory,setSelectedCategory]= useState<Category|null>(null);
+  const { data: categories } = useCategoryList();
+  const nav = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const { data: products } = useProductList<Product[]>({
     type: 'new',
     mainCategoryId: selectedCategory?.id
-    });
+  });
 
-  const handleChangeCat=(cat:Category|null)=>{
+  const handleChangeCat = (cat: Category | null) => {
     setSelectedCategory(cat)
   }
   return (
@@ -31,17 +31,17 @@ const NewProducts = () => {
       {/* Category Tabs */}
       <div className="category-tabs">
         <button
-            key={0}
-            className={`category-tab ${selectedCategory==null ? 'active' : ''}`}
-            onClick={()=>handleChangeCat(null)}
-          >
-            {"Tất cả"}
-          </button>
-        {categories?.slice(0,6).map((cat) => (
+          key={0}
+          className={`category-tab ${selectedCategory == null ? 'active' : ''}`}
+          onClick={() => handleChangeCat(null)}
+        >
+          {"Tất cả"}
+        </button>
+        {categories?.slice(0, 6).map((cat) => (
           <button
             key={cat.id}
-            className={`category-tab ${cat.id==selectedCategory?.id ? 'active' : ''}`}
-            onClick={()=>handleChangeCat(cat)}
+            className={`category-tab ${cat.id == selectedCategory?.id ? 'active' : ''}`}
+            onClick={() => handleChangeCat(cat)}
           >
             {cat.name}
           </button>
@@ -49,7 +49,7 @@ const NewProducts = () => {
       </div>
 
       {/* Products Grid */}
-      <div className="products-grid"> 
+      <div className="products-grid">
         {products?.map((product) => (
           <NewProductCard key={product.id} product={product}></NewProductCard>
         ))}
@@ -57,10 +57,10 @@ const NewProducts = () => {
 
       {/* View More Button */}
       <div className="view-more">
-        {selectedCategory!=null&&
-        <Button size="large" className="view-more-btn" onClick={()=>nav(`category/${selectedCategory?.id}`)}>
-          Xem thêm
-        </Button>}
+        {selectedCategory != null &&
+          <Button size="large" className="view-more-btn" onClick={() => nav(`category/${selectedCategory?.id}`)}>
+            Xem thêm
+          </Button>}
       </div>
     </section>
   );

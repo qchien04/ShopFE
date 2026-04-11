@@ -78,6 +78,12 @@ export const OrderCard=({order,setPaymentOpen,setSelectedOrder,setDetailOpen,han
           <Text strong style={{ color: '#e53935', fontSize: 15 }}>
             {order.total.toLocaleString('vi-VN')}₫
           </Text>
+          {order.discount > 0 && (
+            <Tag color="success" style={{ margin: 0, border: 'none', background: 'transparent', padding: 0 }}>
+              - {order.discount.toLocaleString('vi-VN')}₫
+              {order.couponCode && ` (${order.couponCode})`}
+            </Tag>
+          )}
         </div>
 
         {/* Actions */}

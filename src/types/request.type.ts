@@ -80,6 +80,7 @@ export interface CreateOrderRequest {
   addressId: number;
   paymentMethod: PaymentMethod;
   items:OrderRequestItem[];
+  couponCode?: string;
 }
 
 

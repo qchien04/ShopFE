@@ -1,7 +1,7 @@
 import {  deleteData, getData, postData } from "../app/axiosClient"
 import type { PromoPost } from "../pages/Admin/Banner/PromoPostsSlot"
 import type { Review } from "../types";
-import type { BannerConfig, BannerSlot, DashboardDTO } from "../types/entity.type"
+import type { BannerConfig, BannerSlot, DashboardDTO, UserAccountDTO } from "../types/entity.type"
 import type { PageResponse } from "../types/response.type";
 
 export const adminApi = {
@@ -38,5 +38,7 @@ export const adminApi = {
   deleteReview: (reviewId:number): Promise<PageResponse<Review>> => 
     deleteData<PageResponse<Review>>(`/admin/reviews/${reviewId}`,{}),
   
+  getNewUsersInWeek: (): Promise<UserAccountDTO[]> => 
+    getData<UserAccountDTO[]>('/admin/users/new-this-week'),
 }
 

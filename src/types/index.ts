@@ -1,13 +1,13 @@
-export interface UserAccount{
-  id?:number,
-  username?:string,
-  password?:string,
-  fullName?:string,
-  email?:string,
-  roles?:string[],
-  avt?:string,
-  dob?:string,
-  phoneNumber?:string,
+export interface UserAccount {
+  id?: number,
+  username?: string,
+  password?: string,
+  fullName?: string,
+  email?: string,
+  roles?: string[],
+  avt?: string,
+  dob?: string,
+  phoneNumber?: string,
 }
 
 
@@ -16,10 +16,10 @@ export interface AuthState {
   isAuthenticated: boolean
 }
 
-export interface Role{
-    id?:number,
-    name: string,
-    description:string
+export interface Role {
+  id?: number,
+  name: string,
+  description: string
 }
 
 
@@ -38,78 +38,99 @@ export interface ApiResponse {
   status: boolean
 }
 
-export interface UserRegisterPayLoad{
-  username?:string,
-  password?:string,
-  fullName?:string,
-  email?:string,
-  avt?:string,
-  dob?:string,
-  phoneNumber?:string,
+export interface UserRegisterPayLoad {
+  username?: string,
+  password?: string,
+  fullName?: string,
+  email?: string,
+  avt?: string,
+  dob?: string,
+  phoneNumber?: string,
 }
 
-export interface Review{
-  id?:number,
-  prroductName:string,
-  userAvatar?:string,
-  userName?:string,
-  rating?:number,
-  comment?:string,
-  reviewStatus?:string,
-  createdAt?:string,
+export interface Review {
+  id?: number,
+  prroductName: string,
+  userAvatar?: string,
+  userName?: string,
+  rating?: number,
+  comment?: string,
+  reviewStatus?: string,
+  createdAt?: string,
 }
 
-export interface ReviewSummary{
-  averageRating?:number,
-  totalReviews?:number,
-  reviews?:Review[],
+export interface ReviewSummary {
+  averageRating?: number,
+  totalReviews?: number,
+  reviews?: Review[],
 }
 
-export interface Wishlist{
-  id:number,
-  productId:number,
-  productName:string,
-  mainImage?:string,
-  price:number,
-  salePrice?:number,
-  status:string,
-  addedAt:string,
+export interface Wishlist {
+  id: number,
+  productId: number,
+  productName: string,
+  mainImage?: string,
+  price: number,
+  salePrice?: number,
+  status: string,
+  addedAt: string,
+}
+
+export interface AiVariant {
+  variantId: number;
+  name: string;
+  price: number;
+  stock: number;
 }
 
 export interface AiProduct {
-  name: string;
-  reason: string;
+  productId: number;
+  productName: string;
   price: number;
-  link: string;
+  description?: string;
+  imageUrl?: string;
+  variants: AiVariant[];
 }
 
 export interface AiResponse {
   message: string;
   products: AiProduct[];
   note?: string;
+  action?: {
+    type: string;
+    params: any;
+  };
+  availableAddresses?: {
+    id: number;
+    fullName: string;
+    phone: string;
+    detailAddress: string;
+    isDefault: boolean;
+  }[];
+  availablePaymentMethods?: string[];
 }
 
 export interface VariantStats {
-  variantId:    number;
-  soldToday:    number;
+  variantId: number;
+  soldToday: number;
   soldThisWeek: number;
-  soldThisMonth:number;
+  soldThisMonth: number;
   soldThisYear: number;
-  soldTotal:    number;
+  soldTotal: number;
   revenueTotal: number;
 }
 
 export interface ProductStats {
-  productId:      number;
-  productName:    string;
+  productId: number;
+  productName: string;
   totalViewCount: number;
   totalSoldCount: number;
-  soldToday:      number;
-  soldThisWeek:   number;
-  soldThisMonth:  number;
-  soldThisYear:   number;
-  revenueToday:   number;
-  variantStats:   VariantStats[];
+  soldToday: number;
+  soldThisWeek: number;
+  soldThisMonth: number;
+  soldThisYear: number;
+  revenueToday: number;
+  variantStats: VariantStats[];
 }
 
 

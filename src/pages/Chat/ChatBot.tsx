@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Input, Button, Avatar, Tooltip, Upload, message } from 'antd';
+import { useState, useRef, useEffect } from 'react';
+import { Input, Button, Avatar, Tooltip, Upload, message, Select, Space } from 'antd';
 import {
   SendOutlined, PaperClipOutlined, SmileOutlined, DeleteOutlined,
   CopyOutlined, RobotOutlined, UserOutlined, CloseOutlined,
@@ -8,8 +8,11 @@ import {
 import type { UploadFile } from 'antd';
 import './ChatBot.scss';
 import { aiApi } from '../../api/ai.api';
+import { orderApi } from '../../api/order.api';
 import type { AiResponse } from '../../types';
+import { PaymentMethod } from '../../types/entity.type';
 import { Link } from 'react-router-dom';
+import { ShoppingCartOutlined, CheckCircleOutlined } from '@ant-design/icons';
 interface Message {
   id: string;
   type: 'user' | 'bot';
@@ -22,9 +25,24 @@ interface Message {
 const WELCOME = '💬 Chào bạn, tôi có thể giúp gì cho bạn?';
 
 // ── Render bot message ───────────────────────────────────
-const BotMessage = ({ msg }: { msg: Message }) => {
+const BotMessage = ({ msg, onAction }: { msg: Message, onAction: (type: string, params: any, msgId: string) => void }) => {
+  const [selectedAddr, setSelectedAddr] = useState<number | undefined>(msg.aiResponse?.action?.params?.addressId);
+  const [selectedPayment, setSelectedPayment] = useState<string | undefined>(msg.aiResponse?.action?.params?.paymentMethod);
+  const [selectedVariantId, setSelectedVariantId] = useState<number | undefined>(msg.aiResponse?.action?.params?.variantId);
+
   if (msg.aiResponse) {
-    const { message: intro, products, note } = msg.aiResponse;
+    const { message: intro, products, note, action, availableAddresses, availablePaymentMethods } = msg.aiResponse;
+
+    // Auto-select default address if not set
+    if (!selectedAddr && availableAddresses && availableAddresses.length > 0) {
+      const def = availableAddresses.find(a => a.isDefault) || availableAddresses[0];
+      setSelectedAddr(def.id);
+    }
+    // Auto-select COD if not set
+    if (!selectedPayment && availablePaymentMethods && availablePaymentMethods.length > 0) {
+      setSelectedPayment('COD');
+    }
+
     return (
       <div className="ai-response">
         {intro && <p className="ai-intro">{intro}</p>}
@@ -32,14 +50,105 @@ const BotMessage = ({ msg }: { msg: Message }) => {
         {products && products.length > 0 && (
           <div className="ai-products">
             {products.map((p, i) => (
-             <Link key={i} to={p.link} className="ai-product-card">
-                <div className="ai-product-name">{p.name}</div>
-                <div className="ai-product-reason">{p.reason}</div>
-                <div className="ai-product-price">
-                  {p.price?.toLocaleString('vi-VN')}₫
-                </div>
-              </Link>
+              <div key={i} className="ai-product-card-wrapper">
+                <Link to={`/products/${p.productId}`} className="ai-product-card">
+                  {p.imageUrl && <img src={p.imageUrl} alt={p.productName} className="ai-p-image" />}
+                  <div className="ai-p-info">
+                    <div className="ai-product-name">{p.productName}</div>
+                    <div className="ai-product-price">
+                      {p.price?.toLocaleString('vi-VN')}₫
+                    </div>
+                    {p.description && <div className="ai-product-desc">{p.description}</div>}
+                  </div>
+                </Link>
+                {p.variants && p.variants.length > 0 && (
+                  <div className="ai-variants-list">
+                    <Space wrap>
+                      {p.variants.map(v => (
+                        <span key={v.variantId} className="ai-variant-tag">
+                          {v.name} - {v.price?.toLocaleString('vi-VN')}₫
+                          {v.stock <= 3 && v.stock > 0 && <small style={{ color: 'red' }}> (Còn {v.stock})</small>}
+                          {v.stock === 0 && <small style={{ color: 'gray' }}> (Hết hàng)</small>}
+                        </span>
+                      ))}
+                    </Space>
+                  </div>
+                )}
+              </div>
             ))}
+          </div>
+        )}
+
+        {action && action.type === 'ORDER' && (
+          <div className="ai-order-confirm">
+            <div className="order-item">
+              <ShoppingCartOutlined className="order-icon" />
+              <div className="order-details">
+                <div className="order-name">{action.params.productName}</div>
+                <div className="order-qty">Số lượng: {action.params.quantity}</div>
+
+                <Space direction="vertical" style={{ width: '100%', marginTop: 12 }} size={4}>
+                  <div className="order-label">📍 Địa chỉ giao hàng:</div>
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder="Chọn địa chỉ"
+                    value={selectedAddr}
+                    onChange={setSelectedAddr}
+                    size="small"
+                  >
+                    {availableAddresses?.map(a => (
+                      <Select.Option key={a.id} value={a.id}>
+                        {a.fullName} - {a.detailAddress}
+                      </Select.Option>
+                    ))}
+                  </Select>
+
+                  <div className="order-label" style={{ marginTop: 8 }}>🏷️ Loại sản phẩm:</div>
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder="Chọn loại (Size/Màu)"
+                    value={selectedVariantId}
+                    onChange={setSelectedVariantId}
+                    size="small"
+                  >
+                    {products?.flatMap(p => p.variants).map(v => (
+                      <Select.Option key={v.variantId} value={v.variantId}>
+                        {v.name} - {v.price?.toLocaleString('vi-VN')}₫
+                      </Select.Option>
+                    ))}
+                  </Select>
+
+                  <div className="order-label" style={{ marginTop: 8 }}>💳 Phương thức thanh toán:</div>
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder="Chọn thanh toán"
+                    value={selectedPayment}
+                    onChange={setSelectedPayment}
+                    size="small"
+                  >
+                    {availablePaymentMethods?.map(m => (
+                      <Select.Option key={m} value={m}>{m}</Select.Option>
+                    ))}
+                  </Select>
+                </Space>
+              </div>
+            </div>
+            <Button
+              type="primary"
+              block
+              icon={<CheckCircleOutlined />}
+              onClick={() => onAction(action.type, {
+                ...action.params,
+                variantId: selectedVariantId,
+                addressId: selectedAddr,
+                paymentMethod: selectedPayment
+              }, msg.id)}
+              className="confirm-order-btn"
+              disabled={action.params.isOrdered || !selectedAddr || !selectedPayment || !selectedVariantId}
+              style={{ marginTop: 12, borderRadius: 8, height: 40, fontWeight: 600 }}
+            >
+              {action.params.isOrdered ? 'Đã đặt hàng' : 'Xác nhận đặt hàng'}
+            </Button>
           </div>
         )}
 
@@ -75,7 +184,8 @@ const ChatBot = () => {
   const RealResponse = async (userMessage: string) => {
     setIsTyping(true);
     try {
-      const res: AiResponse = await aiApi.ask(userMessage);
+      // History tự quản lý ở Agent Server qua redis/cache, không cần truyền thủ công nữa
+      const res: AiResponse = await aiApi.ask(userMessage, []);
 
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
@@ -111,7 +221,51 @@ const ChatBot = () => {
     setInputValue('');
     setFileList([]);
     inputRef.current?.focus();
+
     await RealResponse(q);
+  };
+
+  const handleAction = async (type: string, params: any, msgId: string) => {
+    if (type === 'ORDER') {
+      try {
+        setIsTyping(true);
+        const res = await orderApi.createOrder({
+          addressId: params.addressId,
+          paymentMethod: params.paymentMethod as PaymentMethod,
+          items: [{
+            productVariantId: params.variantId,
+            quantity: params.quantity
+          }]
+        });
+
+        const orderNum = res.orderNumber || res.id;
+        message.success(`Đã đặt hàng thành công! Mã đơn hàng: ${orderNum}`);
+
+        // 1. Cập nhật trạng thái tin nhắn hiện tại (disable nút)
+        setMessages(prev => prev.map(m => {
+          if (m.id === msgId && m.aiResponse) {
+            return {
+              ...m,
+              aiResponse: {
+                ...m.aiResponse,
+                action: undefined, // Xóa action để không bấm được nữa
+                note: `Đơn hàng ${orderNum} đã được tạo thành công!`
+              }
+            };
+          }
+          return m;
+        }));
+
+        // 2. Thông báo cho AI là đã đặt hàng xong để cập nhật history
+        await RealResponse(`Tôi đã nhấn nút xác nhận và đặt hàng thành công đơn hàng số ${orderNum}. Hãy cập nhật trạng thái này.`);
+
+      } catch (err: any) {
+        console.error("order.create_failed", err);
+        message.error(err.response?.data?.message || 'Không thể đặt hàng. Vui lòng thử lại.');
+      } finally {
+        setIsTyping(false);
+      }
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -124,10 +278,10 @@ const ChatBot = () => {
   const handleCopy = (msg: Message) => {
     const text = msg.aiResponse
       ? [
-          msg.aiResponse.message,
-          ...(msg.aiResponse.products?.map(p => `${p.name} - ${p.price?.toLocaleString('vi-VN')}₫\n${p.reason}`) ?? []),
-          msg.aiResponse.note ?? ''
-        ].filter(Boolean).join('\n\n')
+        msg.aiResponse.message,
+        ...(msg.aiResponse.products?.map(p => `${p.productName} - ${p.price?.toLocaleString('vi-VN')}₫`) ?? []),
+        msg.aiResponse.note ?? ''
+      ].filter(Boolean).join('\n\n')
       : (msg.content ?? '');
     navigator.clipboard.writeText(text);
     message.success('Đã copy');
@@ -191,7 +345,7 @@ const ChatBot = () => {
                 )}
 
                 {msg.type === 'bot'
-                  ? <BotMessage msg={msg} />
+                  ? <BotMessage msg={msg} onAction={handleAction} />
                   : <div className="message-text">{msg.content}</div>
                 }
 

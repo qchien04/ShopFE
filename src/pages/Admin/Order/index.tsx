@@ -110,10 +110,18 @@ const OrdersPage = () => {
       title: 'Tổng tiền',
       dataIndex: 'total',
       align: 'right',
-      render: (total) => (
-        <span style={{ fontWeight: 700, color: '#ff4444', fontSize: 15 }}>
-          {total.toLocaleString('vi-VN')}₫
-        </span>
+      render: (total, record) => (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+          <span style={{ fontWeight: 700, color: '#ff4444', fontSize: 15 }}>
+            {total.toLocaleString('vi-VN')}₫
+          </span>
+          {record.discount > 0 && (
+            <span style={{ fontSize: 12, color: '#52c41a' }}>
+              - {record.discount.toLocaleString('vi-VN')}₫ 
+              {record.couponCode && ` (${record.couponCode})`}
+            </span>
+          )}
+        </div>
       )
     },
     {

@@ -68,10 +68,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.05);
     opacity: 0.9;
@@ -124,12 +127,13 @@
       .products-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
-        
-        > *:last-child:nth-child(odd) {
+
+        >*:last-child:nth-child(odd) {
           grid-column: 1 / -1;
           max-width: 70%;
           margin: 0 auto;
         }
+
         .product-card {
           .product-image-wrapper {
             height: 150px;
