@@ -1,4 +1,4 @@
-import { Card, Typography, Space, Button, Modal, Radio, Divider, message, Spin, Row, Col, Tag, QRCode, Input } from "antd";
+import { Card, Typography, Space, Button, Modal, Radio, Divider, message, Spin, Row, Col, Tag, Input } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import {
