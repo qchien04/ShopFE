@@ -1,4 +1,3 @@
-sao agent lại là none
 pipeline {
     agent none
 
