@@ -6,31 +6,31 @@ import type { ProductFormValues } from "../types/request.type"
 import type { PageResponse } from "../types/response.type"
 
 export const productApi = {
-  getAll: (param:ParamSearch): Promise<PageResponse<Product>> =>
-    getData<PageResponse<Product>>("/products",param),
+  getAll: (param: ParamSearch): Promise<PageResponse<Product>> =>
+    getData<PageResponse<Product>>("/products", param),
 
-  createProduct: (payload:ProductFormValues): Promise<Product> =>
+  createProduct: (payload: ProductFormValues): Promise<Product> =>
     postData<Product>("/products", payload),
 
-  updateProduct: (payload:Product): Promise<Product> =>
+  updateProduct: (payload: Product): Promise<Product> =>
     putData<Product>(`/products/${payload.id}`, payload),
 
-  getById: (id:number): Promise<Product> =>
+  getById: (id: number): Promise<Product> =>
     getData<Product>(`/products/${id}`),
 
-  getProductStats: (productId:number): Promise<ProductStats> =>
+  getProductStats: (productId: number): Promise<ProductStats> =>
     getData<ProductStats>(`/products/${productId}/stats`),
 
   getByIds: (ids: number[]): Promise<PageResponse<Product>> =>
-  getData<PageResponse<Product>>(`/products?ids=${ids.join(",")}`),
+    getData<PageResponse<Product>>(`/products?ids=${ids.join(",")}`),
 
   getVariantByIds: (ids: number[]): Promise<ProductVariant[]> =>
-  getData<ProductVariant[]>(`/products/variant?ids=${ids.join(",")}`),
+    getData<ProductVariant[]>(`/products/variant?ids=${ids.join(",")}`),
 
-  getBySlug: (slug:string): Promise<Product> =>
+  getBySlug: (slug: string): Promise<Product> =>
     getData<Product>(`/products/slug/${slug}`),
 
-  getByCategory: (params:ParamSearch): Promise<Product[]> =>
+  getByCategory: (params: ParamSearch): Promise<Product[]> =>
     getData<Product[]>(
       `/products/category/${params.mainCategoryId}`,
       {
@@ -45,7 +45,7 @@ export const productApi = {
     ),
   getByBrand: (params: ParamSearch): Promise<Product[]> =>
     getData<Product[]>(
-      `/products/brand/${params.brandIds?params.brandIds[0]:0}`,
+      `/products/brand/${params.brandIds ? params.brandIds[0] : 0}`,
       {
         subCategoryIds: params.subCategoryIds,
         sort: params.sort,
@@ -56,22 +56,22 @@ export const productApi = {
       }
     ),
 
-  getNew: (categoryId:number|null): Promise<Product[]> =>
-    getData<Product[]>(`/products/new`,{categoryId}),
+  getNew: (categoryId: number | null): Promise<Product[]> =>
+    getData<Product[]>(`/products/new`, { categoryId }),
 
   getFeaturedProducts: (): Promise<Product[]> =>
     getData<Product[]>(`/products/featured`),
 
-  getByKeyword: (params:ParamSearch): Promise<PageResponse<Product>> =>
+  getByKeyword: (params: ParamSearch): Promise<PageResponse<Product>> =>
     getData<PageResponse<Product>>(`/products/search`, {
       ...params
     }),
 
-  deleteById: (id:number): Promise<ApiResponse> =>
+  deleteById: (id: number): Promise<ApiResponse> =>
     deleteDataNoBody<ApiResponse>(`/products/${id}`),
 
-  increaseViewCount: (id:number): Promise<ApiResponse> =>
-    postData<ApiResponse>(`/products/${id}/view`,{}),
+  increaseViewCount: (id: number): Promise<ApiResponse> =>
+    postData<ApiResponse>(`/products/${id}/view`, {}),
 
 }
 

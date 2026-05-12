@@ -12,6 +12,18 @@ const RegisterPage: React.FC = () => {
       message: "Vui lòng nhập !",
     },
   ];
+
+  const phoneRules = [
+    ...rules,
+    {
+      pattern: /^[0-9]+$/,
+      message: "Số điện thoại chỉ được chứa chữ số!",
+    },
+    {
+      len: 10,
+      message: "Số điện thoại phải đủ 10 số!",
+    },
+  ];
   const handleSubmit = (values: any) => {
     const { password2, dob, ...rest } = values;
     const payload = {
@@ -56,7 +68,7 @@ const RegisterPage: React.FC = () => {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item label="Số điện thoại" name="phoneNumber" rules={rules}>
+                  <Form.Item label="Số điện thoại" name="phoneNumber" rules={phoneRules}>
                     <Input size="large" placeholder="Nhập SDT" />
                   </Form.Item>
                 </Col>

@@ -1,6 +1,13 @@
 // Dashboard.tsx
 import { useNavigate } from "react-router-dom";
 import { Table, Tag, Progress, Tooltip, Spin, Alert } from "antd";
+import { 
+  DollarOutlined, 
+  ShoppingCartOutlined, 
+  AppstoreOutlined, 
+  UsergroupAddOutlined,
+  PictureOutlined
+} from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import type {
@@ -133,10 +140,10 @@ const Dashboard = () => {
   const { stats, revenueByDay, orderStatusCounts, topProducts, recentOrders, featuredProducts } = data!;
 
   const statCards = [
-    { label: "Tổng doanh thu", value: fmtCurrency(stats.totalRevenue), sub: `${fmtPercent(stats.revenueGrowthPercent)} so tháng trước`, icon: "💰", color: "emerald", trend: stats.revenueGrowthPercent, path: "/admin/orders" },
-    { label: "Đơn hàng hôm nay", value: stats.todayOrders.toString(), sub: `${stats.pendingOrders} đơn đang xử lý`, icon: "🛒", color: "cyan", trend: stats.orderGrowthPercent, path: "/admin/orders?status=PENDING" },
-    { label: "Sản phẩm", value: stats.totalProducts.toLocaleString(), sub: `${stats.lowStockProducts} sắp hết hàng`, icon: "📦", color: "amber", trend: 0, path: "/admin/products" },
-    { label: "Khách hàng mới", value: stats.newCustomersThisWeek.toString(), sub: "Tuần này", icon: "👥", color: "violet", trend: stats.customerGrowthPercent, path: null, onClick: () => setNewUsersModalOpen(true) },
+    { label: "Tổng doanh thu", value: fmtCurrency(stats.totalRevenue), sub: `${fmtPercent(stats.revenueGrowthPercent)} so tháng trước`, icon: <DollarOutlined />, color: "emerald", trend: stats.revenueGrowthPercent, path: "/admin/orders" },
+    { label: "Đơn hàng hôm nay", value: stats.todayOrders.toString(), sub: `${stats.pendingOrders} đơn đang xử lý`, icon: <ShoppingCartOutlined />, color: "cyan", trend: stats.orderGrowthPercent, path: "/admin/orders?status=PENDING" },
+    { label: "Sản phẩm", value: stats.totalProducts.toLocaleString(), sub: `${stats.lowStockProducts} sắp hết hàng`, icon: <AppstoreOutlined />, color: "amber", trend: 0, path: "/admin/products" },
+    { label: "Khách hàng mới", value: stats.newCustomersThisWeek.toString(), sub: "Tuần này", icon: <UsergroupAddOutlined />, color: "violet", trend: stats.customerGrowthPercent, path: null, onClick: () => setNewUsersModalOpen(true) },
   ];
 
   const handleOrderClick = (order: RecentOrderDTO) => {
@@ -173,7 +180,7 @@ const Dashboard = () => {
           <span className="product-cell__img">
             {r.mainImage
               ? <img src={r.mainImage} alt={r.name} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-              : <span className="product-cell__img-fallback">📦</span>
+              : <span className="product-cell__img-fallback"><PictureOutlined /></span>
             }
           </span>
           <div>
@@ -258,7 +265,7 @@ const Dashboard = () => {
                 <span className="top-products__img">
                   {p.mainImage
                     ? <img src={p.mainImage} alt={p.name} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                    : "📦"
+                    : <PictureOutlined />
                   }
                 </span>
                 <div className="top-products__info">

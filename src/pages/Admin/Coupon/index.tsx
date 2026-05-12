@@ -180,7 +180,24 @@ const CouponPage = () => {
                 <Option value="FIXED_AMOUNT">Tiền cố định (₫)</Option>
               </Select>
             </Form.Item>
-            <Form.Item name="discountValue" label="Mức giảm" rules={[{ required: true }]} style={{ flex: 1 }}>
+            <Form.Item
+              name="discountValue"
+              label="Mức giảm"
+              dependencies={['discountType']}
+              rules={[
+                { required: true, message: "Vui lòng nhập mức giảm" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const type = getFieldValue('discountType');
+                    if (type === 'PERCENTAGE' && value > 100) {
+                      return Promise.reject(new Error('Phần trăm giảm giá không thể quá 100%'));
+                    }
+                    return Promise.resolve();
+                  },
+                }),
+              ]}
+              style={{ flex: 1 }}
+            >
               <InputNumber style={{ width: "100%" }} min={0} />
             </Form.Item>
           </Space>

@@ -1,14 +1,14 @@
 // ProductsPage.tsx
 import { Table, Button, Space, Input, Modal, Spin } from "antd";
 import { useState } from "react";
-import { useProductList }   from "../../../hooks/Product/useProductList";
+import { useProductList } from "../../../hooks/Product/useProductList";
 import { useDeleteProduct } from "../../../hooks/Product/useDeleteProduct";
 import { useCreateProduct } from "../../../hooks/Product/useCreateProduct";
 import { useUpdateProduct } from "../../../hooks/Product/useUpdateProduct";
 import { useProductDetail } from "../../../hooks/Product/useProduct";
-import type { Product }      from "../../../types/product.type";
+import type { Product } from "../../../types/product.type";
 import type { PageResponse } from "../../../types/response.type";
-import ProductForm           from "./ProductFormProps";
+import ProductForm from "./ProductFormProps";
 import { buildColumns } from "./Column";
 import ProductDetailModal from "./ProductDetailModal";
 
@@ -36,37 +36,37 @@ export const toPayload = (values: any) => ({
 // ─── Component ───────────────────────────────────────────────────────────────
 
 const ProductsPage = () => {
-  const [page,       setPage]       = useState(1);
-  const [pageSize,   setPageSize]   = useState(10);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
-  const [keyword,    setKeyword]    = useState("");
-  const [open,       setOpen]       = useState(false);
-  const [mode,       setMode]       = useState<"create" | "edit">("create");
-  const [editingId,  setEditingId]  = useState<number | null>(null);
-  const [viewOpen,    setViewOpen]    = useState(false);
-  const [viewingId,   setViewingId]   = useState<number | null>(null);
+  const [keyword, setKeyword] = useState("");
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"create" | "edit">("create");
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
+  const [viewingId, setViewingId] = useState<number | null>(null);
 
   const { data, isLoading } = useProductList<PageResponse<Product>>({
     type: "all", page: page - 1, size: pageSize, keyword,
   });
 
-  const openViewModal  = (id: number) => { setViewingId(id); setViewOpen(true); };
+  const openViewModal = (id: number) => { setViewingId(id); setViewOpen(true); };
   const closeViewModal = () => { setViewOpen(false); setViewingId(null); };
 
-  const { mutate: deleteProduct, isPending: deleting  } = useDeleteProduct();
-  const { mutate: createProduct, isPending: creating  } = useCreateProduct();
-  const { mutate: updateProduct, isPending: updating  } = useUpdateProduct();
+  const { mutate: deleteProduct, isPending: deleting } = useDeleteProduct();
+  const { mutate: createProduct, isPending: creating } = useCreateProduct();
+  const { mutate: updateProduct, isPending: updating } = useUpdateProduct();
 
-  // ✅ Chỉ fetch khi đang edit
+  //  Chỉ fetch khi đang edit
   const { data: productDetail, isLoading: loadingDetail } =
     useProductDetail(editingId ?? 0);
 
   const openCreateModal = () => { setMode("create"); setEditingId(null); setOpen(true); };
-  const openEditModal   = (id: number) => { setMode("edit"); setEditingId(id); setOpen(true); };
-  const closeModal      = () => { setOpen(false); setEditingId(null); };
+  const openEditModal = (id: number) => { setMode("edit"); setEditingId(id); setOpen(true); };
+  const closeModal = () => { setOpen(false); setEditingId(null); };
 
   const handleSearch = (value: string) => { setKeyword(value); setPage(1); };
-  const handleClear  = () => { setKeyword(""); setPage(1); setSearchText(""); };
+  const handleClear = () => { setKeyword(""); setPage(1); setSearchText(""); };
 
   const handleSubmit = (values: any) => {
     const payload = toPayload(values);
@@ -77,7 +77,7 @@ const ProductsPage = () => {
     }
   };
 
-  const columns = buildColumns(openEditModal,deleteProduct,openViewModal, deleting);
+  const columns = buildColumns(openEditModal, deleteProduct, openViewModal, deleting);
 
   // ── Nội dung Modal ──
   const modalContent = () => {
@@ -103,7 +103,7 @@ const ProductsPage = () => {
 
     return (
       <ProductForm
-        productDetail={productDetail}  // ✅ truyền thẳng productDetail, không cần transform ở đây
+        productDetail={productDetail}  //  truyền thẳng productDetail, không cần transform ở đây
         onSubmit={handleSubmit}
         loading={updating}
         submitText="Lưu thay đổi"
@@ -152,11 +152,11 @@ const ProductsPage = () => {
         loading={isLoading}
         scroll={{ x: 1400 }}
         pagination={{
-          current:         page,
-          pageSize:        pageSize,
-          total:           data?.totalElements ?? 0,
+          current: page,
+          pageSize: pageSize,
+          total: data?.totalElements ?? 0,
           showSizeChanger: true,
-          showTotal:       (total) => `Tổng ${total} sản phẩm`,
+          showTotal: (total) => `Tổng ${total} sản phẩm`,
           onChange: (p, ps) => { setPage(p); setPageSize(ps); },
         }}
       />

@@ -15,7 +15,7 @@ import "./Promopostsslot.scss";
 
 export interface PromoPost {
   id: number;
-  label: string; 
+  label: string;
   link: string;
 }
 
@@ -36,7 +36,7 @@ const PromoPostsSlot = ({
   onChange,
   max = 10,
 }: PromoPostsSlotProps) => {
-  const [open, setOpen]     = useState(false);
+  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
   const getPost = (id: number) => posts.find((p) => p.id === id);
@@ -129,7 +129,7 @@ const PromoPostsSlot = ({
         {/* ── Phần 1: Bài đã chọn → chỉnh label & link ── */}
         {selected.length > 0 && (
           <div className="promo-modal-config">
-            <div className="promo-modal-config__heading">✅ Bài đã chọn — chỉnh label &amp; link</div>
+            <div className="promo-modal-config__heading"> Bài đã chọn — chỉnh label &amp; link</div>
 
             {/* Column header */}
             <div className="promo-config-header">
@@ -184,7 +184,7 @@ const PromoPostsSlot = ({
           ) : (
             <div className="promo-modal-list">
               {filtered.map((post) => {
-                const checked  = !!selected.find((s) => s.id === post.id);
+                const checked = !!selected.find((s) => s.id === post.id);
                 const disabled = !checked && selected.length >= max;
                 return (
                   <div

@@ -1,4 +1,4 @@
-import {  deleteData, getData, postData } from "../app/axiosClient"
+import { deleteData, getData, postData } from "../app/axiosClient"
 import type { PromoPost } from "../pages/Admin/Banner/PromoPostsSlot"
 import type { Review } from "../types";
 import type { BannerConfig, BannerSlot, DashboardDTO, UserAccountDTO } from "../types/entity.type"
@@ -9,36 +9,39 @@ export const adminApi = {
   //   getData<Order[]>("/orders/user"),
 
   payUpdate: (): Promise<any> =>
-    postData<any>(`/admin`,{}),
+    postData<any>(`/admin`, {}),
 
-  confirmWebhook: (cfDomain:string): Promise<any> =>
+  confirmWebhook: (cfDomain: string): Promise<any> =>
     postData<any>(`/payments/confirm-webhook`, { domain: cfDomain }),
 
-  getDashboard: (): Promise<DashboardDTO> => 
+  getDashboard: (): Promise<DashboardDTO> =>
     getData<DashboardDTO>("/admin/dashboard"),
 
-  setConfigBanner: (banners:BannerSlot[],categories:BannerSlot[],
-    quickTopOption:BannerSlot[],quickBottomOption:BannerSlot[], 
-    featuredPostIds:number[],featuredPopularIds:number[],
-    saleEvents: PromoPost[], ): Promise<BannerConfig> => 
-    postData<BannerConfig>('/admin/configs/banner', { banners, categories,quickTopOption,quickBottomOption,featuredPostIds,featuredPopularIds,saleEvents }),
+  setConfigBanner: (banners: BannerSlot[], categories: BannerSlot[],
+    quickTopOption: BannerSlot[], quickBottomOption: BannerSlot[],
+    featuredPostIds: number[], featuredPopularIds: number[],
+    saleEvents: PromoPost[],): Promise<BannerConfig> =>
+    postData<BannerConfig>('/admin/configs/banner', { banners, categories, quickTopOption, quickBottomOption, featuredPostIds, featuredPopularIds, saleEvents }),
 
-  getConfigBanner: (): Promise<BannerConfig> => 
+  saveFullConfig: (config: BannerConfig): Promise<BannerConfig> =>
+    postData<BannerConfig>('/admin/configs/banner', config),
+
+  getConfigBanner: (): Promise<BannerConfig> =>
     getData<BannerConfig>('/admin/configs/banner'),
 
-  getAllAdminReview: (status:string, page:number): Promise<PageResponse<Review>> => 
+  getAllAdminReview: (status: string, page: number): Promise<PageResponse<Review>> =>
     getData<PageResponse<Review>>(`/admin/reviews?status=${status}&page=${page}`),
 
-  approveReview: (reviewId:number): Promise<PageResponse<Review>> => 
-    postData<PageResponse<Review>>(`/admin/reviews/${reviewId}/approve`,{}),
+  approveReview: (reviewId: number): Promise<PageResponse<Review>> =>
+    postData<PageResponse<Review>>(`/admin/reviews/${reviewId}/approve`, {}),
 
-  rejectReview: (reviewId:number): Promise<PageResponse<Review>> => 
-    postData<PageResponse<Review>>(`/admin/reviews/${reviewId}/reject`,{}),
+  rejectReview: (reviewId: number): Promise<PageResponse<Review>> =>
+    postData<PageResponse<Review>>(`/admin/reviews/${reviewId}/reject`, {}),
 
-  deleteReview: (reviewId:number): Promise<PageResponse<Review>> => 
-    deleteData<PageResponse<Review>>(`/admin/reviews/${reviewId}`,{}),
-  
-  getNewUsersInWeek: (): Promise<UserAccountDTO[]> => 
+  deleteReview: (reviewId: number): Promise<PageResponse<Review>> =>
+    deleteData<PageResponse<Review>>(`/admin/reviews/${reviewId}`, {}),
+
+  getNewUsersInWeek: (): Promise<UserAccountDTO[]> =>
     getData<UserAccountDTO[]>('/admin/users/new-this-week'),
 }
 

@@ -42,7 +42,7 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
-  const nav=useNavigate()
+  const nav = useNavigate()
   const { data: wishlistCheck } = useWishlistCheck(product?.id)
   const { mutate: addWishlist, isPending: adding } = useAddWishlist();
   const { mutate: removeWishlist, isPending: removing } = useRemoveWishlist();
@@ -72,18 +72,18 @@ const ProductDetail = () => {
       });
     }
   };
-  
+
   const currentProduct = product;
   if (!currentProduct) return <div>Đang tải...</div>;
-  
+
   const variants = currentProduct.productVariants ?? [];
   const selectedVariant = variants.find((v: any) => v.id === selectedVariantId) ?? variants[0] ?? null;
 
-  // ✅ Giá/tồn kho ưu tiên từ variant, fallback về sản phẩm
+  //  Giá/tồn kho ưu tiên từ variant, fallback về sản phẩm
   const displayPrice = selectedVariant?.price ?? currentProduct.price;
   const displaySalePrice = selectedVariant?.salePrice ?? currentProduct.salePrice;
   const displayStock = selectedVariant?.stockQuantity ?? currentProduct.stockQuantity;
- 
+
 
   const discountPercent = displaySalePrice
     ? Math.round(((displayPrice - displaySalePrice) / displayPrice) * 100)
@@ -123,7 +123,7 @@ const ProductDetail = () => {
         <div className="product-info-content">
           <div dangerouslySetInnerHTML={{ __html: currentProduct.fullDescription?.replace(/\n/g, "<br />") ?? '' }} />
 
-          {/* ✅ Hiển thị attributes của variant đang chọn */}
+          {/*  Hiển thị attributes của variant đang chọn */}
           {selectedVariant?.attributes && Object.keys(selectedVariant.attributes).length > 0 && (
             <div className="specifications" style={{ marginTop: 16 }}>
               <h3>Thông số variant</h3>
@@ -146,8 +146,8 @@ const ProductDetail = () => {
       key: '2',
       label: `Đánh giá (${reviewSummary?.totalReviews ?? 0})`,
       children: product.id && !isNaN(product.id)
-          ? <ReviewSection productId={product.id} />
-          : <></>,
+        ? <ReviewSection productId={product.id} />
+        : <></>,
     },
   ];
 
@@ -168,13 +168,13 @@ const ProductDetail = () => {
   ];
 
   const displayImage =
-  allImages.find((img) =>
-    selectedVariantId
-      ? img.variantId === selectedVariantId
-      : img.variantId === null && allImages.indexOf(img) === selectedImage
-  )?.imageUrl ?? currentProduct.mainImage;
-  
-  
+    allImages.find((img) =>
+      selectedVariantId
+        ? img.variantId === selectedVariantId
+        : img.variantId === null && allImages.indexOf(img) === selectedImage
+    )?.imageUrl ?? currentProduct.mainImage;
+
+
 
   return (
     <div className="product-detail">
@@ -188,14 +188,14 @@ const ProductDetail = () => {
             },
             ...(currentProduct.category
               ? [
-                  {
-                    title: (
-                      <a href={`/category/${currentProduct.category.id}`}>
-                        {currentProduct.category.name}
-                      </a>
-                    ),
-                  },
-                ]
+                {
+                  title: (
+                    <a href={`/category/${currentProduct.category.id}`}>
+                      {currentProduct.category.name}
+                    </a>
+                  ),
+                },
+              ]
               : []),
             {
               title: currentProduct.name,
@@ -284,7 +284,7 @@ const ProductDetail = () => {
             <div className="product-meta">
               <div className="meta-item">
                 <span className="meta-label">Mã sản phẩm:</span>
-                {/* ✅ Hiển thị SKU của variant nếu có */}
+                {/*  Hiển thị SKU của variant nếu có */}
                 <span className="meta-value">{selectedVariant?.sku ?? currentProduct.sku}</span>
               </div>
               <div className="meta-item">
@@ -316,7 +316,7 @@ const ProductDetail = () => {
               )}
             </div>
 
-            {/* ✅ Variants từ API thay vì hardcode */}
+            {/*  Variants từ API thay vì hardcode */}
             {variants.length > 0 && (
               <div className="product-variants">
                 <div className="variant-label">Phiên bản:</div>

@@ -26,7 +26,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
       { rating, comment },
       {
         onSuccess: () => {
-          message.success("Đánh giá của bạn đang chờ duyệt");
+          message.success("Đánh giá thành công!");
           setRating(0);
           setComment("");
         },

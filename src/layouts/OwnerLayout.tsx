@@ -3,31 +3,48 @@ import { Outlet, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./OwnerLayout.scss";
 import { useAppSelector, type RootState } from "../app/store";
+import {
+  DashboardOutlined,
+  SkinOutlined,
+  AppstoreOutlined,
+  TagOutlined,
+  ShoppingCartOutlined,
+  FileTextOutlined,
+  CommentOutlined,
+  MessageOutlined,
+  SettingOutlined,
+  ExperimentOutlined,
+  SearchOutlined,
+  BellOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  CodeSandboxOutlined
+} from "@ant-design/icons";
 
 interface NavItem {
   key: string;
   label: string;
-  icon: string;
+  icon: React.ReactNode;
   path: string;
 }
 
 const navItems: NavItem[] = [
-  { key: "dashboard", label: "Tổng quan", icon: "⚙️", path: "/admin/dashboard" },
-  { key: "products", label: "Sản phẩm", icon: "📦", path: "/admin/products" },
-  { key: "categories", label: "Danh mục", icon: "🗂️", path: "/admin/categories" },
-  { key: "brands", label: "Thương hiệu", icon: "🏷️", path: "/admin/brands" },
-  { key: "orders", label: "Đơn hàng", icon: "🛒", path: "/admin/orders" },
-  { key: "coupons", label: "Voucher", icon: "🎟️", path: "/admin/coupons" },
-  { key: "post", label: "Bài viết", icon: "📝", path: "/admin/post" },
-  { key: "reviews", label: "Bình luận", icon: "⚙️", path: "/admin/reviews" },
-  { key: "chat-manager", label: "Chat", icon: "📝", path: "/admin/chat-manager" },
-  { key: "configs", label: "Cài đặt", icon: "⚙️", path: "/admin/configs" },
-  { key: "test", label: "test", icon: "⚙️", path: "/admin/test" },
+  { key: "dashboard", label: "Tổng quan", icon: <DashboardOutlined />, path: "/admin/dashboard" },
+  { key: "products", label: "Sản phẩm", icon: <SkinOutlined />, path: "/admin/products" },
+  { key: "categories", label: "Danh mục", icon: <AppstoreOutlined />, path: "/admin/categories" },
+  { key: "brands", label: "Thương hiệu", icon: <TagOutlined />, path: "/admin/brands" },
+  { key: "orders", label: "Đơn hàng", icon: <ShoppingCartOutlined />, path: "/admin/orders" },
+  { key: "coupons", label: "Voucher", icon: <ExperimentOutlined />, path: "/admin/coupons" },
+  { key: "post", label: "Bài viết", icon: <FileTextOutlined />, path: "/admin/post" },
+  { key: "reviews", label: "Bình luận", icon: <CommentOutlined />, path: "/admin/reviews" },
+  { key: "chat-manager", label: "Chat", icon: <MessageOutlined />, path: "/admin/chat-manager" },
+  { key: "configs", label: "Cài đặt", icon: <SettingOutlined />, path: "/admin/configs" },
+  // { key: "test", label: "Test", icon: <ExperimentOutlined />, path: "/admin/test" },
 ];
 
 const OwnerLayout = () => {
   const navigate = useNavigate();
-  const {isAuthenticated,userAccount}= useAppSelector(
+  const { isAuthenticated, userAccount } = useAppSelector(
     (state: RootState) => state.auth
   );
   const location = useLocation();
@@ -65,7 +82,7 @@ const OwnerLayout = () => {
         {/* Brand */}
         <div className="admin-sidebar__brand">
           <div className="admin-sidebar__logo">
-            <span className="admin-sidebar__logo-icon">◈</span>
+            <span className="admin-sidebar__logo-icon"><CodeSandboxOutlined /></span>
             {!collapsed && <span className="admin-sidebar__logo-text">AdminHub</span>}
           </div>
           <button
@@ -73,7 +90,7 @@ const OwnerLayout = () => {
             onClick={() => setCollapsed((v) => !v)}
             aria-label="Toggle sidebar"
           >
-            {collapsed ? "»" : "«"}
+            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           </button>
         </div>
 
@@ -89,9 +106,8 @@ const OwnerLayout = () => {
             {navItems.map((item) => (
               <li
                 key={item.key}
-                className={`admin-sidebar__item ${
-                  activeKey === item.key ? "admin-sidebar__item--active" : ""
-                }`}
+                className={`admin-sidebar__item ${activeKey === item.key ? "admin-sidebar__item--active" : ""
+                  }`}
                 onClick={() => handleNav(item)}
                 title={collapsed ? item.label : undefined}
               >
@@ -109,10 +125,10 @@ const OwnerLayout = () => {
 
         {/* User */}
         <div className="admin-sidebar__user">
-          <div className="admin-sidebar__avatar">A</div>
+          <div className="admin-sidebar__avatar">{userAccount.fullName?.charAt(0).toUpperCase() || "A"}</div>
           {!collapsed && (
             <div className="admin-sidebar__user-info">
-              <span className="admin-sidebar__user-name">Admin</span>
+              <span className="admin-sidebar__user-name">{userAccount.fullName || "Admin"}</span>
               <span className="admin-sidebar__user-role">Owner</span>
             </div>
           )}
@@ -132,13 +148,13 @@ const OwnerLayout = () => {
           </div>
           <div className="admin-topbar__actions">
             <div className="admin-topbar__search">
-              <span className="admin-topbar__search-icon">🔍</span>
+              <span className="admin-topbar__search-icon"><SearchOutlined /></span>
               <input
                 className="admin-topbar__search-input"
                 placeholder="Tìm kiếm..."
               />
             </div>
-            <div className="admin-topbar__notif">🔔</div>
+            <div className="admin-topbar__notif"><BellOutlined /></div>
           </div>
         </header>
 

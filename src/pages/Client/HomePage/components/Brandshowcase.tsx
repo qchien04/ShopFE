@@ -3,23 +3,44 @@ import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import './Brandshowcase.scss';
 import { useNavigate } from 'react-router-dom';
 import { useBrandList } from '../../../../hooks/Brand/useBrand';
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { Grid } from "antd";
+import type { ProductSectionConfig } from '../../../../types/entity.type';
 
 const { useBreakpoint } = Grid;
 
 
-const BrandShowcase = () => {
+const BrandShowcase = ({ section, brandIds }: { section?: ProductSectionConfig, brandIds?: number[] }) => {
   const nav = useNavigate();
-  const { data: brands } = useBrandList();
-  
+  const { data: allBrands } = useBrandList();
+
+  const brands = useMemo(() => {
+    if (!allBrands) return [];
+
+    // Sử dụng brandIds từ prop (top-level) hoặc fallback từ section (nếu có)
+    const activeBrandIds = brandIds && brandIds.length > 0 ? brandIds : (section as any)?.brandIds || [];
+
+    if (activeBrandIds.length === 0) return allBrands.slice(0, section?.productCount || 10);
+
+    // Ghim thương hiệu được chọn lên đầu
+    const pinned = activeBrandIds
+      .map((id: number) => allBrands.find(b => b.id === id))
+      .filter((b: any): b is any => !!b);
+
+    // Nếu muốn bù thêm cho đủ số lượng
+    const others = allBrands.filter(b => !activeBrandIds.includes(b.id!));
+    const result = [...pinned, ...others].slice(0, section?.productCount || 10);
+
+    return result;
+  }, [allBrands, section, brandIds]);
+
   const screens = useBreakpoint();
 
   const slides =
     screens.xl ? 5 :
-    screens.lg ? 4 :
-    screens.md ? 3 :
-    screens.sm ? 2 : 1;
+      screens.lg ? 4 :
+        screens.md ? 3 :
+          screens.sm ? 2 : 1;
   const carouselRef = useRef<any>(null);
 
   const handlePrev = (e: React.MouseEvent) => {
@@ -38,7 +59,7 @@ const BrandShowcase = () => {
     <section className="brand-showcase">
       <div className="section-header">
         <div className="section-icon"></div>
-        <h2 className="section-title">Mua Nhiều Giá Sỉ</h2>
+        <h2 className="section-title">{section?.title || "Mua Nhiều Giá Sỉ"}</h2>
         <a href="#" className="view-all-link">Xem tất cả →</a>
       </div>
 
@@ -56,12 +77,12 @@ const BrandShowcase = () => {
             ref={carouselRef}
             autoplay
             autoplaySpeed={3000}
-            pauseOnHover 
+            pauseOnHover
             pauseOnDotsHover
             slidesToShow={slides}
             slidesToScroll={1}
             arrows={false}
-            dots={false}  
+            dots={false}
             responsive={[
               {
                 breakpoint: 1400,

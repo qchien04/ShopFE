@@ -32,18 +32,18 @@ interface FilterState {
 
 
 const PRICE_PRESETS = [
-  { label: "Dưới 50k",       min: 0,       max: 50000   },
-  { label: "50k – 200k",     min: 50000,   max: 200000  },
-  { label: "200k – 500k",    min: 200000,  max: 500000  },
-  { label: "500k – 1 triệu", min: 500000,  max: 1000000 },
-  { label: "Trên 1 triệu",   min: 1000000, max: null    },
+  { label: "Dưới 50k", min: 0, max: 50000 },
+  { label: "50k – 200k", min: 50000, max: 200000 },
+  { label: "200k – 500k", min: 200000, max: 500000 },
+  { label: "500k – 1 triệu", min: 500000, max: 1000000 },
+  { label: "Trên 1 triệu", min: 1000000, max: null },
 ];
 
 const SORT_OPTIONS = [
-  { value: "newest",       label: "Mới nhất"          },
-  { value: "price_asc",    label: "Giá thấp → cao"    },
-  { value: "price_desc",   label: "Giá cao → thấp"    },
-  { value: "best_seller",  label: "Bán chạy nhất"     },
+  { value: "newest", label: "Mới nhất" },
+  { value: "price_asc", label: "Giá thấp → cao" },
+  { value: "price_desc", label: "Giá cao → thấp" },
+  { value: "best_seller", label: "Bán chạy nhất" },
 ];
 
 const ProductSkeleton = () => <Card loading style={{ width: "100%" }} />;
@@ -253,7 +253,7 @@ const ActiveFilters = ({
     if (brand) tags.push({ key: "brand", label: `🏷️ ${brand.name}`, value: id });
   });
 
-  if (filters.inStock) tags.push({ key: "inStock", label: "✅ Còn hàng" });
+  if (filters.inStock) tags.push({ key: "inStock", label: " Còn hàng" });
 
   if (tags.length === 0) return null;
 
@@ -299,15 +299,15 @@ export default function SearchPage() {
   const { data: brands = [] } = useBrandList();
 
   const { data, isLoading } = useProductList<PageResponse<Product>>({
-    type:"search", 
-    keyword:keyword||"",
+    type: "search",
+    keyword: keyword || "",
     page: page - 1,
     size: pageSize,
     minPrice: filters.minPrice ?? undefined,
     maxPrice: filters.maxPrice ?? undefined,
     brandIds: filters.brandIds,
     subCategoryIds: filters.categoryIds,
-    sort: filters.sortBy, 
+    sort: filters.sortBy,
     inStock: filters.inStock,
   });
 
@@ -326,8 +326,8 @@ export default function SearchPage() {
   const removeFilter = (key: string, value?: any) => {
     if (key === "price") updateFilter({ minPrice: null, maxPrice: null });
     else if (key === "category") updateFilter({ categoryIds: filters.categoryIds.filter((id) => id !== value) });
-    else if (key === "brand")    updateFilter({ brandIds: filters.brandIds.filter((id) => id !== value) });
-    else if (key === "inStock")  updateFilter({ inStock: false });
+    else if (key === "brand") updateFilter({ brandIds: filters.brandIds.filter((id) => id !== value) });
+    else if (key === "inStock") updateFilter({ inStock: false });
   };
 
   return (
@@ -355,8 +355,8 @@ export default function SearchPage() {
                 {isLoading
                   ? "Đang tìm kiếm..."
                   : total > 0
-                  ? <>Tìm thấy <strong>{total}</strong> kết quả cho <em>"{keyword}"</em></>
-                  : <>Không tìm thấy kết quả cho <em>"{keyword}"</em></>}
+                    ? <>Tìm thấy <strong>{total}</strong> kết quả cho <em>"{keyword}"</em></>
+                    : <>Không tìm thấy kết quả cho <em>"{keyword}"</em></>}
               </Title>
             </div>
 
@@ -370,27 +370,27 @@ export default function SearchPage() {
             <Row gutter={[12, 12]} className="search-page__grid">
               {isLoading
                 ? Array.from({ length: pageSize }).map((_, i) => (
-                    <Col xs={12} sm={12} md={8} lg={6} key={i}>
-                      <ProductSkeleton />
-                    </Col>
-                  ))
+                  <Col xs={12} sm={12} md={8} lg={6} key={i}>
+                    <ProductSkeleton />
+                  </Col>
+                ))
                 : products.length > 0
-                ? products.map((product) => (
+                  ? products.map((product) => (
                     <Col xs={12} sm={12} md={8} lg={6} key={product.id}>
                       <FeaturedProductCard product={product} />
                     </Col>
                   ))
-                : (
-                  <Col span={24}>
-                    <div className="empty-result">
-                      <div className="empty-result__icon">🔍</div>
-                      <div className="empty-result__text">Không có sản phẩm phù hợp</div>
-                      <button className="empty-result__reset" onClick={resetFilters}>
-                        Xóa bộ lọc
-                      </button>
-                    </div>
-                  </Col>
-                )}
+                  : (
+                    <Col span={24}>
+                      <div className="empty-result">
+                        <div className="empty-result__icon">🔍</div>
+                        <div className="empty-result__text">Không có sản phẩm phù hợp</div>
+                        <button className="empty-result__reset" onClick={resetFilters}>
+                          Xóa bộ lọc
+                        </button>
+                      </div>
+                    </Col>
+                  )}
             </Row>
 
             {!isLoading && total > pageSize && (

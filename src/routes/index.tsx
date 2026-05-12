@@ -78,7 +78,7 @@ export const router = createBrowserRouter([
         path: "/products/:id",
         element: <ProductDetail />,
       },
-       {
+      {
         path: "/post/:id",
         element: <PostDetailPage />,
       },
@@ -113,8 +113,8 @@ export const router = createBrowserRouter([
       {
         path: "/user",
         element: <PrivateRoute>
-                    <ClientLayout/>
-                  </PrivateRoute>,
+          <ClientLayout />
+        </PrivateRoute>,
         children: [
           {
             path: "profile",

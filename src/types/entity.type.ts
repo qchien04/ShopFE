@@ -1,19 +1,19 @@
 import type { PromoPost } from "../pages/Admin/Banner/PromoPostsSlot";
 import type { ProductStatus, ProductVariant } from "./product.type";
 
-export interface CartItem{
-  id:number;
-  cartId:number;
-  productVariant:ProductVariant;
-  quantity:number;
-  price:number;
-  addedAt:string;
+export interface CartItem {
+  id: number;
+  cartId: number;
+  productVariant: ProductVariant;
+  quantity: number;
+  price: number;
+  addedAt: string;
 }
 
-export interface Cart{
-  id?:number;
-  items:CartItem[];
-  updatedAt:string;
+export interface Cart {
+  id?: number;
+  items: CartItem[];
+  updatedAt: string;
 }
 
 export interface CustomerAddress {
@@ -34,77 +34,77 @@ export interface OrderItem {
   id?: number;
   orderId?: number;
   productId: number;
-  productImage:string;
+  productImage: string;
   productName: string;
   productSku: string;
   quantity: number;
   price: number;
-  subtotal:number;
-  attributes:string;
+  subtotal: number;
+  attributes: string;
 }
 
 
 export enum OrderStatus {
-  PENDING          = 'PENDING',
-  CONFIRMED        = 'CONFIRMED',
-  PROCESSING       = 'PROCESSING',
-  SHIPPING         = 'SHIPPING',
-  DELIVERED        = 'DELIVERED',
-  DELIVERY_FAILED  = 'DELIVERY_FAILED',
-  CANCELLED        = 'CANCELLED',
-  RETURNED         = 'RETURNED',
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  PROCESSING = 'PROCESSING',
+  SHIPPING = 'SHIPPING',
+  DELIVERED = 'DELIVERED',
+  DELIVERY_FAILED = 'DELIVERY_FAILED',
+  CANCELLED = 'CANCELLED',
+  RETURNED = 'RETURNED',
 }
 
 
-export enum PaymentMethod{
-  BANK_TRANSFER="BANK_TRANSFER",
+export enum PaymentMethod {
+  BANK_TRANSFER = "BANK_TRANSFER",
   // MOMO="MOMO",
   // VNPAY="VNPAY",
   // ZALOPAY="ZALOPAY",
   COD = "COD",
 }
 
-export enum PaymentStatus{
-  UNPAID="UNPAID",
-  PAID="PAID",
-  REFUNDED="REFUNDED",
+export enum PaymentStatus {
+  UNPAID = "UNPAID",
+  PAID = "PAID",
+  REFUNDED = "REFUNDED",
 }
 
 
-export interface Order{
+export interface Order {
   id: number;
-  customerName:String;
-  customerPhone:String;
-  shippingAddress:String;
-  shippingFee:number;
-  orderNumber:string;
+  customerName: String;
+  customerPhone: String;
+  shippingAddress: String;
+  shippingFee: number;
+  orderNumber: string;
   items: OrderItem[];
-  total:number;
+  total: number;
   status: OrderStatus;
-  paymentMethod:PaymentMethod;
-  paymentStatus:PaymentStatus;
-  note:string;
-  discount:number;
-  couponCode?:string;
-  couponDetails?:string;
-  createdAt:string;
-  deliveredAt:string;
-  deliveryAttempts?: number;  
-  cancelReason?:     string; 
-  internalNote?:     string;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
+  note: string;
+  discount: number;
+  couponCode?: string;
+  couponDetails?: string;
+  createdAt: string;
+  deliveredAt: string;
+  deliveryAttempts?: number;
+  cancelReason?: string;
+  internalNote?: string;
 }
 
 
-export interface Brand{
+export interface Brand {
   id?: number;
-  name:string;
+  name: string;
   slug: string;
-  description:string;
+  description: string;
   website: string;
-  logo:string;
-  active:boolean;
-  createdAt:string;
-  updateAt:string;
+  logo: string;
+  active: boolean;
+  createdAt: string;
+  updateAt: string;
 }
 
 
@@ -227,14 +227,24 @@ export interface BannerSlotChild {
 }
 
 
+export interface ProductSectionConfig {
+  id: string;
+  title: string;
+  productIds: number[];
+  active: boolean;
+  productCount: number;
+}
+
 export interface BannerConfig {
   banners: BannerSlot[];
   categories: BannerSlot[];
   quickTopOption: BannerSlot[];
   quickBottomOption: BannerSlot[];
-  featuredPostIds:number[];
-  featuredPopularIds:number[];
-  saleEvents: PromoPost[], 
+  featuredPostIds: number[];
+  featuredPopularIds: number[];
+  saleEvents: PromoPost[],
+  productSections?: ProductSectionConfig[];
+  brandIds?: number[];
 }
 
 export type DiscountType = "PERCENTAGE" | "FIXED_AMOUNT";

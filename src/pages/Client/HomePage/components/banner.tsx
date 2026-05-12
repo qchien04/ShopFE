@@ -22,29 +22,29 @@ import { adminApi } from '../../../../api/admin.api';
 
 // ─── Fallback data (ảnh tĩnh cũ) ─────────────────────────────────────────────
 const FALLBACK_BANNERS: BannerSlot[] = [
-  { id: 'main-1', type: 'main',  label: 'Banner chính', image: slide1,      link: '/' },
-  { id: 'main-2', type: 'main',  label: 'Banner chính', image: slide2,      link: '/' },
-  { id: 'side-1', type: 'side',  label: 'Banner phụ 1', image: sideBanner,  link: '/' },
-  { id: 'side-2', type: 'side',  label: 'Banner phụ 2', image: slide1,      link: '/' },
+  { id: 'main-1', type: 'main', label: 'Banner chính', image: slide1, link: '/' },
+  { id: 'main-2', type: 'main', label: 'Banner chính', image: slide2, link: '/' },
+  { id: 'side-1', type: 'side', label: 'Banner phụ 1', image: sideBanner, link: '/' },
+  { id: 'side-2', type: 'side', label: 'Banner phụ 2', image: slide1, link: '/' },
 ];
 
 const FALLBACK_CATEGORIES: BannerSlot[] = [
-  { id: 'cat-1', type: 'category', label: 'Shopee Xử Lý',         icon: 'shop',    link: '/' },
-  { id: 'cat-2', type: 'category', label: 'Deal Hot\nGiờ Vàng',   icon: 'thunder', link: '/' },
+  { id: 'cat-1', type: 'category', label: 'Shopee Xử Lý', icon: 'shop', link: '/' },
+  { id: 'cat-2', type: 'category', label: 'Deal Hot\nGiờ Vàng', icon: 'thunder', link: '/' },
   { id: 'cat-3', type: 'category', label: 'Shopee Style\nVoucher 30%', icon: 'skin', link: '/' },
-  { id: 'cat-4', type: 'category', label: 'Săn Ngay\n100.000 Xu', icon: 'gift',    link: '/' },
+  { id: 'cat-4', type: 'category', label: 'Săn Ngay\n100.000 Xu', icon: 'gift', link: '/' },
   { id: 'cat-5', type: 'category', label: 'Khách Hàng\nThân Thiết', icon: 'smile', link: '/' },
-  { id: 'cat-6', type: 'category', label: 'Mã Giảm Giá',           icon: 'dollar', link: '/' },
+  { id: 'cat-6', type: 'category', label: 'Mã Giảm Giá', icon: 'dollar', link: '/' },
 ];
 
 // Map icon string -> Ant Design icon (dùng cho fallback và khi admin chọn preset)
 const ICON_MAP: Record<string, React.ReactNode> = {
-  shop:    <ShopOutlined />,
+  shop: <ShopOutlined />,
   thunder: <ThunderboltOutlined />,
-  skin:    <SkinOutlined />,
-  gift:    <GiftOutlined />,
-  smile:   <SmileOutlined />,
-  dollar:  <DollarCircleOutlined />,
+  skin: <SkinOutlined />,
+  gift: <GiftOutlined />,
+  smile: <SmileOutlined />,
+  dollar: <DollarCircleOutlined />,
 };
 
 const renderCategoryIcon = (slot: BannerSlot) => {
@@ -74,7 +74,7 @@ const Banner: React.FC = () => {
   // Dùng data từ API nếu có, fallback về ảnh tĩnh
   const mainSlides = (data?.banners ?? FALLBACK_BANNERS).filter(b => b.type === 'main');
   const sideBanners = (data?.banners ?? FALLBACK_BANNERS).filter(b => b.type === 'side');
-  const categories  = data?.categories ?? FALLBACK_CATEGORIES;
+  const categories = data?.categories ?? FALLBACK_CATEGORIES;
 
   if (isLoading) {
     return (
@@ -102,7 +102,7 @@ const Banner: React.FC = () => {
           >
             {mainSlides.map((slide) => (
               <a key={slide.id} href={slide.link ?? '#'} className={styles.slide}>
-                <img src={slide.image||"/"} alt={slide.label} />
+                <img src={slide.image || "/"} alt={slide.label} />
               </a>
             ))}
           </Carousel>
@@ -112,7 +112,7 @@ const Banner: React.FC = () => {
         <div className={styles.sideBanners}>
           {sideBanners.slice(0, 2).map((s) => (
             <a key={s.id} href={s.link ?? '#'}>
-              <img src={s.image||"/"} alt={s.label} />
+              <img src={s.image || "/"} alt={s.label} />
             </a>
           ))}
         </div>

@@ -6,24 +6,24 @@
 
 // ─── Tokens ────────────────────────────────────────────────────────────────────
 :root {
-  --sidebar-bg:        #0f1117;
-  --sidebar-bg-hover:  #1a1d27;
-  --sidebar-border:    #1e2130;
+  --sidebar-bg:        #ffffff;
+  --sidebar-bg-hover:  #f3f4f6;
+  --sidebar-border:    #e5e7eb;
   --sidebar-w:         240px;
   --sidebar-w-sm:       68px;
-  --sidebar-text:      #8b92a8;
-  --sidebar-text-head: #c4c9d9;
-  --sidebar-accent:    #f0b429;        // gold
-  --sidebar-active-bg: #1e2436;
+  --sidebar-text:      #4b5563;
+  --sidebar-text-head: #111827;
+  --sidebar-accent:    #10b981;        // emerald green
+  --sidebar-active-bg: #10b981;
 
   --topbar-h:          60px;
   --topbar-bg:         #ffffff;
-  --topbar-border:     #e8eaf0;
+  --topbar-border:     #e5e7eb;
 
-  --content-bg:        #f4f5f8;
+  --content-bg:        #f9fafb;
   --content-pad:       28px;
 
-  --radius:            10px;
+  --radius:            16px;
   --transition:        0.22s cubic-bezier(0.4, 0, 0.2, 1);
 
   --font-heading: 'Sora', sans-serif;
@@ -65,16 +65,8 @@
   transition: width var(--transition), min-width var(--transition);
   z-index: 100;
 
-  // subtle grain texture
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    background-size: 128px;
-    pointer-events: none;
-    opacity: 0.6;
-  }
+  // subtle grain texture removed for clean white theme
+
 
   // gold accent bar on left edge
   &::after {
@@ -116,14 +108,14 @@
   &__logo-text {
     font-family: var(--font-heading);
     font-size: 17px;
-    font-weight: 700;
-    color: #ffffff;
+    font-weight: 800;
+    color: #111827;
     letter-spacing: -0.3px;
     white-space: nowrap;
   }
 
   &__toggle {
-    background: var(--sidebar-bg-hover);
+    background: #f9fafb;
     border: 1px solid var(--sidebar-border);
     color: var(--sidebar-text);
     width: 28px;
@@ -138,9 +130,9 @@
     transition: background var(--transition), color var(--transition), border-color var(--transition);
 
     &:hover {
-      background: var(--sidebar-active-bg);
+      background: #ecfdf5;
       color: var(--sidebar-accent);
-      border-color: var(--sidebar-accent);
+      border-color: #a7f3d0;
     }
   }
 
@@ -172,7 +164,7 @@
     font-weight: 600;
     letter-spacing: 1.2px;
     text-transform: uppercase;
-    color: #3d4157;
+    color: #9ca3af;
     padding: 4px 20px 8px;
   }
 
@@ -255,8 +247,8 @@
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--sidebar-accent), #e07b00);
-    color: #000;
+    background: linear-gradient(135deg, var(--sidebar-accent), #059669);
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -274,8 +266,8 @@
 
   &__user-name {
     font-size: 13px;
-    font-weight: 600;
-    color: #e0e3ee;
+    font-weight: 700;
+    color: #111827;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

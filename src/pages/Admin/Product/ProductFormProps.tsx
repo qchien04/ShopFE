@@ -6,25 +6,25 @@ import {
 import { PlusOutlined, DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { useEffect } from "react";
 import { useCategoryList } from "../../../hooks/Category/useCategotyList";
-import { useBrandList }    from "../../../hooks/Brand/useBrand";
-import { uploadProps }     from "../../../utils/uploadProps";
+import { useBrandList } from "../../../hooks/Brand/useBrand";
+import { uploadProps } from "../../../utils/uploadProps";
 import type { ProductFormValues } from "../../../types/request.type";
 
 const { TextArea } = Input;
 
 
 const toFormValues = (p: any): Partial<ProductFormValues> => ({
-  name:             p.name,
-  sku:              p.sku,
-  categoryId:       p.category?.id,
-  brandId:          p.brand?.id,
-  price:            p.price,
-  salePrice:        p.salePrice,
-  stockQuantity:    p.stockQuantity,
-  status:           p.status,
-  featured:         p.featured,
+  name: p.name,
+  sku: p.sku,
+  categoryId: p.category?.id,
+  brandId: p.brand?.id,
+  price: p.price,
+  salePrice: p.salePrice,
+  stockQuantity: p.stockQuantity,
+  status: p.status,
+  featured: p.featured,
   shortDescription: p.shortDescription,
-  fullDescription:  p.fullDescription,
+  fullDescription: p.fullDescription,
   mainImage: p.mainImage
     ? [{ uid: "-1", name: "main-image", status: "done", url: p.mainImage }]
     : [],
@@ -32,11 +32,11 @@ const toFormValues = (p: any): Partial<ProductFormValues> => ({
     uid: img.id, name: img.name ?? "image", status: "done", url: img.imageUrl,
   })),
   variants: (p.productVariants ?? []).map((v: any) => ({
-    id:            v.id,
-    name:          v.name,
-    sku:           v.sku,
-    price:         v.price,
-    salePrice:     v.salePrice,
+    id: v.id,
+    name: v.name,
+    sku: v.sku,
+    price: v.price,
+    salePrice: v.salePrice,
     stockQuantity: v.stockQuantity,
     mainImage: v.mainImage
       ? [{ uid: `v-${v.id}`, name: "image", status: "done", url: v.mainImage }]
@@ -55,8 +55,8 @@ const DEFAULT_VALUES = {
 
 interface ProductFormProps {
   productDetail?: any;   // truyền khi edit
-  onSubmit:  (values: ProductFormValues) => void;
-  loading?:  boolean;
+  onSubmit: (values: ProductFormValues) => void;
+  loading?: boolean;
   submitText?: string;
 }
 
@@ -65,9 +65,9 @@ interface ProductFormProps {
 const ProductForm = ({ productDetail, onSubmit, loading, submitText = "Lưu" }: ProductFormProps) => {
   const [form] = Form.useForm<ProductFormValues>();
   const { data: categories } = useCategoryList();
-  const { data: brands }     = useBrandList();
+  const { data: brands } = useBrandList();
 
-  // ✅ Set values khi productDetail thay đổi
+  //  Set values khi productDetail thay đổi
   useEffect(() => {
     if (productDetail) {
       form.setFieldsValue({ ...DEFAULT_VALUES, ...toFormValues(productDetail) });
@@ -126,7 +126,22 @@ const ProductForm = ({ productDetail, onSubmit, loading, submitText = "Lưu" }: 
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item name="salePrice" label="Giá khuyến mãi (₫)">
+            <Form.Item
+              name="salePrice"
+              label="Giá khuyến mãi (₫)"
+              dependencies={['price']}
+              rules={[
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const price = getFieldValue('price');
+                    if (!value || !price || value < price) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Giá khuyến mãi phải nhỏ hơn giá gốc!'));
+                  },
+                }),
+              ]}
+            >
               <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
             </Form.Item>
           </Col>
@@ -142,9 +157,9 @@ const ProductForm = ({ productDetail, onSubmit, loading, submitText = "Lưu" }: 
           <Col span={12}>
             <Form.Item name="status" label="Trạng thái">
               <Select options={[
-                { label: "Nháp",             value: "DRAFT"        },
-                { label: "Đã xuất bản",      value: "PUBLISHED"    },
-                { label: "Hết hàng",         value: "OUT_OF_STOCK" },
+                { label: "Nháp", value: "DRAFT" },
+                { label: "Đã xuất bản", value: "PUBLISHED" },
+                { label: "Hết hàng", value: "OUT_OF_STOCK" },
                 { label: "Ngừng kinh doanh", value: "DISCONTINUED" },
               ]} />
             </Form.Item>
@@ -226,7 +241,22 @@ const ProductForm = ({ productDetail, onSubmit, loading, submitText = "Lưu" }: 
                       </Form.Item>
                     </Col>
                     <Col span={8}>
-                      <Form.Item name={[name, "salePrice"]} label="Giá KM (₫)">
+                      <Form.Item
+                        name={[name, "salePrice"]}
+                        label="Giá KM (₫)"
+                        dependencies={[['variants', name, 'price']]}
+                        rules={[
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              const price = getFieldValue(['variants', name, 'price']);
+                              if (!value || !price || value < price) {
+                                return Promise.resolve();
+                              }
+                              return Promise.reject(new Error('Giá KM phải nhỏ hơn giá gốc!'));
+                            },
+                          }),
+                        ]}
+                      >
                         <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
                       </Form.Item>
                     </Col>

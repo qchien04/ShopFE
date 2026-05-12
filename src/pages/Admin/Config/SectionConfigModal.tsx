@@ -1,265 +1,311 @@
-// // components/Admin/Homepage/SectionConfigModal.tsx
-// import { useState } from 'react';
-// import { 
-//   Modal, 
-//   Form, 
-//   Input, 
-//   InputNumber, 
-//   Switch, 
-//   Button,
-//   Select,
-//   message,
-//   Tabs
-// } from 'antd';
-// import { PlusOutlined } from '@ant-design/icons';
-// import './SectionConfigModal.scss';
-// import type { HomepageSection } from './homepage.type';
-// import ProductSelectorModal from './Productselectormodal';
+// components/Admin/Homepage/SectionConfigModal.tsx
+import { useState, useEffect } from 'react';
+import { 
+  Modal, 
+  Form, 
+  Input, 
+  InputNumber, 
+  Switch, 
+  Button,
+  message,
+  Tabs,
+  Table
+} from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import type { ProductSectionConfig } from '../../../types/entity.type';
+import ProductSelectorModal from './Productselectormodal';
+import BrandSelectorModal from './BrandSelectorModal';
+import { productApi } from '../../../api/product.api';
+import { brandApi } from '../../../api/brand.api';
+import type { Product } from '../../../types/product.type';
+import type { Brand } from '../../../types/entity.type';
 
-// interface Props {
-//   open: boolean;
-//   section: HomepageSection | null;
-//   onCancel: () => void;
-//   onSave: (section: HomepageSection) => void;
-// }
+interface Props {
+  open: boolean;
+  section: ProductSectionConfig | null;
+  onCancel: () => void;
+  onSave: (section: ProductSectionConfig, brandIds?: number[]) => void;
+  currentBrandIds?: number[];
+}
 
-// const SectionConfigModal = ({ open, section, onCancel, onSave }: Props) => {
-//   const [form] = Form.useForm();
-//   const [productSelectorOpen, setProductSelectorOpen] = useState(false);
-//   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
+const SectionConfigModal = ({ open, section, onCancel, onSave, currentBrandIds }: Props) => {
+  const [form] = Form.useForm();
+  const [productSelectorOpen, setProductSelectorOpen] = useState(false);
+  const [brandSelectorOpen, setBrandSelectorOpen] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<Brand[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingBrands, setLoadingBrands] = useState(false);
 
-//   if (!section) return null;
-
-//   const sectionConfigs: Record<string, any> = {
-//     banner: {
-//       fields: [
-//         { name: 'slideCount', label: 'Số lượng slide', type: 'number', min: 1, max: 10 },
-//         { name: 'autoplay', label: 'Tự động chuyển', type: 'switch' },
-//         { name: 'autoplaySpeed', label: 'Tốc độ chuyển (ms)', type: 'number', min: 1000, max: 10000 }
-//       ]
-//     },
-//     featured_products: {
-//       fields: [
-//         { name: 'actionCount', label: 'Số lượng quick actions', type: 'number', min: 3, max: 8 }
-//       ]
-//     },
-//     new_products: {
-//       fields: [
-//         { name: 'productCount', label: 'Số sản phẩm hiển thị', type: 'number', min: 5, max: 20 },
-//         { name: 'categoryId', label: 'Lọc theo danh mục', type: 'select', options: [
-//           { value: null, label: 'Tất cả' },
-//           { value: 1, label: 'Điện gia dụng' },
-//           { value: 2, label: 'Linh kiện' }
-//         ]},
-//         { name: 'sortBy', label: 'Sắp xếp theo', type: 'select', options: [
-//           { value: 'newest', label: 'Mới nhất' },
-//           { value: 'bestseller', label: 'Bán chạy' },
-//           { value: 'price_asc', label: 'Giá tăng dần' },
-//           { value: 'price_desc', label: 'Giá giảm dần' }
-//         ]}
-//       ]
-//     },
-//     brand_showcase: {
-//       fields: [
-//         { name: 'brandCount', label: 'Số thương hiệu hiển thị', type: 'number', min: 4, max: 10 },
-//         { name: 'autoplay', label: 'Tự động chuyển', type: 'switch' }
-//       ]
-//     },
-//     hot_deals: {
-//       fields: [
-//         { name: 'hotProducts', label: 'Số sản phẩm nổi bật', type: 'number', min: 3, max: 12 },
-//         { name: 'dealProducts', label: 'Số deal hot', type: 'number', min: 3, max: 10 }
-//       ]
-//     },
-//     category_news: {
-//       fields: [
-//         { name: 'categories', label: 'Số danh mục hiển thị', type: 'number', min: 8, max: 20 },
-//         { name: 'news', label: 'Số tin tức hiển thị', type: 'number', min: 4, max: 8 }
-//       ]
-//     }
-//   };
-
-//   const currentConfig = sectionConfigs[section.type] || { fields: [] };
-
-//   const renderField = (field: any) => {
-//     switch (field.type) {
-//       case 'number':
-//         return (
-//           <Form.Item
-//             key={field.name}
-//             name={['config', field.name]}
-//             label={field.label}
-//             rules={[{ required: true }]}
-//           >
-//             <InputNumber 
-//               min={field.min} 
-//               max={field.max} 
-//               style={{ width: '100%' }}
-//             />
-//           </Form.Item>
-//         );
+  useEffect(() => {
+    if (open && section) {
+      form.setFieldsValue({
+        title: section.title,
+        active: section.active,
+        productCount: section.productCount || 10
+      });
+      if (section.productIds && section.productIds.length > 0) {
+        fetchProducts(section.productIds);
+      } else {
+        setSelectedProducts([]);
+      }
       
-//       case 'switch':
-//         return (
-//           <Form.Item
-//             key={field.name}
-//             name={['config', field.name]}
-//             label={field.label}
-//             valuePropName="checked"
-//           >
-//             <Switch />
-//           </Form.Item>
-//         );
-      
-//       case 'select':
-//         return (
-//           <Form.Item
-//             key={field.name}
-//             name={['config', field.name]}
-//             label={field.label}
-//             rules={[{ required: true }]}
-//           >
-//             <Select options={field.options} />
-//           </Form.Item>
-//         );
-      
-//       default:
-//         return (
-//           <Form.Item
-//             key={field.name}
-//             name={['config', field.name]}
-//             label={field.label}
-//           >
-//             <Input />
-//           </Form.Item>
-//         );
-//     }
-//   };
+      if (currentBrandIds && currentBrandIds.length > 0) {
+        fetchBrands(currentBrandIds);
+      } else {
+        setSelectedBrands([]);
+      }
+    }
+  }, [open, section, form, currentBrandIds]);
 
-//   const handleSave = async () => {
-//     try {
-//       const values = await form.validateFields();
-//       onSave({
-//         ...section,
-//         ...values,
-//         config: {
-//           ...section.config,
-//           ...values.config,
-//           selectedProducts
-//         }
-//       });
-//       message.success('Đã lưu cấu hình section');
-//     } catch (error) {
-//       console.error('Validation failed:', error);
-//     }
-//   };
+  const fetchBrands = async (ids: number[]) => {
+    setLoadingBrands(true);
+    try {
+      // Vì brandApi.getAll() trả về tất cả, ta filter lại hoặc dùng getById nếu có
+      const all = await brandApi.getAll();
+      const filtered = all.filter(b => ids.includes(b.id!));
+      setSelectedBrands(filtered);
+    } catch (error) {
+      console.error('Failed to fetch brands', error);
+    } finally {
+      setLoadingBrands(false);
+    }
+  };
 
-//   const handleProductSelect = (products: any[]) => {
-//     setSelectedProducts(products);
-//     setProductSelectorOpen(false);
-//     message.success(`Đã chọn ${products.length} sản phẩm`);
-//   };
+  const fetchProducts = async (ids: number[]) => {
+    setLoadingProducts(true);
+    try {
+      const resp = await productApi.getByIds(ids);
+      setSelectedProducts(resp.content);
+    } catch (error) {
+      console.error('Failed to fetch products', error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
 
-//   return (
-//     <>
-//       <Modal
-//         open={open}
-//         title={`⚙️ Cấu hình: ${section.title}`}
-//         onCancel={onCancel}
-//         onOk={handleSave}
-//         width={700}
-//         okText="Lưu"
-//         cancelText="Hủy"
-//         className="section-config-modal"
-//       >
-//         <Form
-//           form={form}
-//           layout="vertical"
-//           initialValues={{
-//             title: section.title,
-//             active: section.active,
-//             config: section.config
-//           }}
-//         >
-//           <Tabs
-//             items={[
-//               {
-//                 key: 'basic',
-//                 label: '🎨 Cơ bản',
-//                 children: (
-//                   <>
-//                     <Form.Item
-//                       name="title"
-//                       label="Tiêu đề section"
-//                       rules={[{ required: true, message: 'Vui lòng nhập tiêu đề' }]}
-//                     >
-//                       <Input placeholder="VD: Sản Phẩm Nổi Bật" />
-//                     </Form.Item>
+  if (!section) return null;
 
-//                     <Form.Item
-//                       name="active"
-//                       label="Hiển thị trên trang chủ"
-//                       valuePropName="checked"
-//                     >
-//                       <Switch />
-//                     </Form.Item>
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      onSave({
+        ...section,
+        ...values,
+        productIds: selectedProducts.map(p => p.id)
+      }, selectedBrands.map(b => b.id!));
+    } catch (error) {
+      console.error('Validation failed:', error);
+    }
+  };
 
-//                     {currentConfig.fields.map((field: any) => renderField(field))}
-//                   </>
-//                 )
-//               },
-//               {
-//                 key: 'products',
-//                 label: '🎁 Sản phẩm',
-//                 children: (
-//                   <div className="product-selection-tab">
-//                     <p className="help-text">
-//                       💡 Chọn sản phẩm cụ thể để hiển thị trong section này. 
-//                       Nếu không chọn, hệ thống sẽ tự động lấy sản phẩm theo cấu hình.
-//                     </p>
+  const handleProductSelect = (products: Product[]) => {
+    setSelectedProducts(products);
+    setProductSelectorOpen(false);
+  };
 
-//                     <Button
-//                       type="primary"
-//                       icon={<PlusOutlined />}
-//                       onClick={() => setProductSelectorOpen(true)}
-//                       block
-//                       size="large"
-//                     >
-//                       Chọn sản phẩm ({selectedProducts.length})
-//                     </Button>
+  // Ẩn tab Ghim sản phẩm cho các Section không phải là product-list (ví dụ: category_news, brand_showcase)
+  const isProductSection = ['featured_products', 'new_products', 'hot_deals'].includes(section.id);
+  const isBrandSection = section.id === 'brand_showcase';
 
-//                     {selectedProducts.length > 0 && (
-//                       <div className="selected-products-list">
-//                         <h4>Sản phẩm đã chọn:</h4>
-//                         <ul>
-//                           {selectedProducts.map((p) => (
-//                             <li key={p.id}>
-//                               <img src={p.mainImage} alt={p.name} />
-//                               <span>{p.name}</span>
-//                               <small>{p.salePrice.toLocaleString()}₫</small>
-//                             </li>
-//                           ))}
-//                         </ul>
-//                       </div>
-//                     )}
-//                   </div>
-//                 )
-//               }
-//             ]}
-//           />
-//         </Form>
-//       </Modal>
+  return (
+    <>
+      <Modal
+        open={open}
+        title={`⚙️ Cấu hình: ${section.title || 'Section'}`}
+        onCancel={onCancel}
+        onOk={handleSave}
+        width={800}
+        okText="Lưu lại"
+        cancelText="Hủy"
+        destroyOnClose
+      >
+        <Form
+          form={form}
+          layout="vertical"
+        >
+          <Tabs
+            items={[
+              {
+                key: 'basic',
+                label: '🎨 Thông tin chung',
+                children: (
+                  <div style={{ paddingTop: 16 }}>
+                    <Form.Item
+                      name="title"
+                      label="Tiêu đề section"
+                      rules={[{ required: true, message: 'Vui lòng nhập tiêu đề' }]}
+                    >
+                      <Input placeholder="VD: Sản Phẩm Bán Chạy" />
+                    </Form.Item>
 
-//       <ProductSelectorModal
-//         open={productSelectorOpen}
-//         onCancel={() => setProductSelectorOpen(false)}
-//         onConfirm={handleProductSelect}
-//         initialSelected={selectedProducts.map(p => p.id)}
-//         maxProducts={section.config?.productCount || 10}
-//         sectionTitle={section.title}
-//       />
-//     </>
-//   );
-// };
+                    <Form.Item
+                      name="active"
+                      label="Cho phép hiển thị"
+                      valuePropName="checked"
+                    >
+                      <Switch />
+                    </Form.Item>
 
-// export default SectionConfigModal;
+                    {isProductSection && (
+                        <Form.Item
+                            name="productCount"
+                            label="Số lượng sản phẩm hiển thị trên trang chủ"
+                            initialValue={10}
+                            help="Nếu bạn chỉ ghim 3 sản phẩm, hệ thống sẽ tự động bù thêm sản phẩm mới để đủ số lượng này."
+                        >
+                            <InputNumber min={1} max={30} style={{ width: '100%' }} />
+                        </Form.Item>
+                    )}
+                  </div>
+                )
+              },
+              ...(isProductSection ? [{
+                key: 'products',
+                label: `🎁 Ghim sản phẩm (${selectedProducts.length})`,
+                children: (
+                  <div className="product-selection-tab" style={{ paddingTop: 16 }}>
+                    <div style={{ marginBottom: 16, color: '#666' }}>
+                      💡 Những sản phẩm bạn chọn ở đây sẽ được ưu tiên hiển thị đầu tiên trong danh sách.
+                    </div>
+                    <Button
+                      type="dashed"
+                      icon={<PlusOutlined />}
+                      onClick={() => setProductSelectorOpen(true)}
+                      block
+                      style={{ marginBottom: 16 }}
+                    >
+                      Bấm để chọn/thay đổi sản phẩm
+                    </Button>
+
+                    {selectedProducts.length > 0 && (
+                        <Table
+                            size="small"
+                            dataSource={selectedProducts}
+                            rowKey="id"
+                            pagination={false}
+                            loading={loadingProducts}
+                            scroll={{ y: 300 }}
+                            columns={[
+                                {
+                                    title: 'Ảnh',
+                                    dataIndex: 'mainImage',
+                                    width: 70,
+                                    render: (img) => <img src={img} width={40} style={{ borderRadius: 4 }} />
+                                },
+                                {
+                                    title: 'Tên sản phẩm',
+                                    dataIndex: 'name',
+                                    ellipsis: true
+                                },
+                                {
+                                    title: 'Giá',
+                                    dataIndex: 'salePrice',
+                                    width: 120,
+                                    render: (val) => <span style={{color: 'red'}}>{val?.toLocaleString()}₫</span>
+                                },
+                                {
+                                    title: 'Gỡ ghim',
+                                    width: 80,
+                                    align: 'center',
+                                    render: (_, record) => (
+                                        <Button 
+                                            type="text" 
+                                            danger 
+                                            icon={<DeleteOutlined />} 
+                                            onClick={() => setSelectedProducts(prev => prev.filter(p => p.id !== record.id))}
+                                        />
+                                    )
+                                }
+                            ]}
+                        />
+                    )}
+                  </div>
+                )
+              }] : []),
+              ...(isBrandSection ? [{
+                key: 'brands',
+                label: `🏷️ Ghim thương hiệu (${selectedBrands.length})`,
+                children: (
+                  <div className="brand-selection-tab" style={{ paddingTop: 16 }}>
+                    <Button
+                      type="dashed"
+                      icon={<PlusOutlined />}
+                      onClick={() => setBrandSelectorOpen(true)}
+                      block
+                      style={{ marginBottom: 16 }}
+                    >
+                      Bấm để chọn/thay đổi thương hiệu
+                    </Button>
+
+                    {selectedBrands.length > 0 && (
+                      <Table
+                        size="small"
+                        dataSource={selectedBrands}
+                        rowKey="id"
+                        pagination={false}
+                        loading={loadingBrands}
+                        scroll={{ y: 300 }}
+                        columns={[
+                          {
+                            title: 'Logo',
+                            dataIndex: 'logo',
+                            width: 80,
+                            render: (img) => <img src={img} width={40} style={{ borderRadius: 4 }} />
+                          },
+                          {
+                            title: 'Tên thương hiệu',
+                            dataIndex: 'name',
+                            ellipsis: true
+                          },
+                          {
+                            title: 'Gỡ ghim',
+                            width: 80,
+                            align: 'center',
+                            render: (_, record) => (
+                              <Button 
+                                type="text" 
+                                danger 
+                                icon={<DeleteOutlined />} 
+                                onClick={() => setSelectedBrands(prev => prev.filter(b => b.id !== record.id))}
+                              />
+                            )
+                          }
+                        ]}
+                      />
+                    )}
+                  </div>
+                )
+              }] : [])
+            ]}
+          />
+        </Form>
+      </Modal>
+
+      {isProductSection && (
+          <ProductSelectorModal
+            open={productSelectorOpen}
+            onCancel={() => setProductSelectorOpen(false)}
+            onConfirm={handleProductSelect}
+            initialSelected={selectedProducts.map(p => p.id)}
+            maxProducts={form.getFieldValue('productCount') || 10}
+            sectionTitle={form.getFieldValue('title')}
+          />
+      )}
+
+      {isBrandSection && (
+        <BrandSelectorModal
+          open={brandSelectorOpen}
+          onCancel={() => setBrandSelectorOpen(false)}
+          onConfirm={(brands) => {
+            setSelectedBrands(brands);
+            setBrandSelectorOpen(false);
+          }}
+          initialSelected={selectedBrands.map(b => b.id!)}
+        />
+      )}
+    </>
+  );
+};
+
+export default SectionConfigModal;
