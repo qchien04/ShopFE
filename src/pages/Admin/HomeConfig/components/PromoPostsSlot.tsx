@@ -8,7 +8,7 @@ import {
   PlusOutlined,
   FileTextOutlined
 } from "@ant-design/icons";
-import "./Promopostsslot.scss";
+import "./PromopostsSlot.scss";
 import type { Post } from "../../../../types/entity.type";
 
 const { Text } = Typography;
