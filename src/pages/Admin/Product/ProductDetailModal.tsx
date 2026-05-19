@@ -1,15 +1,8 @@
 import { Modal, Button, Spin, Image, Tag }  from "antd";
 import { useProductDetail, useProductStats }                 from "../../../hooks/Product/useProduct";
-import type { ProductStatus }               from "../../../types/product.type";
 
-const STATUS_COLOR: Record<ProductStatus, string> = {
-  DRAFT: "default", PUBLISHED: "success",
-  OUT_OF_STOCK: "warning", DISCONTINUED: "error",
-};
-const STATUS_TEXT: Record<ProductStatus, string> = {
-  DRAFT: "Nháp", PUBLISHED: "Đã xuất bản",
-  OUT_OF_STOCK: "Hết hàng", DISCONTINUED: "Ngừng kinh doanh",
-};
+
+
 
 const money = (val?: number) =>
   val != null ? val.toLocaleString("vi-VN") + "₫" : "—";
@@ -91,10 +84,6 @@ const ProductDetailModal = ({ productId, open, onClose }: Props) => {
                 SKU: {p.sku}
               </div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                <Tag color={STATUS_COLOR[p.status as ProductStatus]}>
-                  {STATUS_TEXT[p.status as ProductStatus]}
-                </Tag>
-                {p.featured       && <Tag color="gold">{p.featured ? "Nổi bật" : ""}</Tag>}
                 {p.brand?.name    && <Tag>{p.brand.name}</Tag>}
                 {p.category?.name && <Tag>{p.category.name}</Tag>}
               </div>

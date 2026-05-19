@@ -1,0 +1,161 @@
+.promo-manager-v2 {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1e293b;
+
+      svg {
+        color: #3b82f6;
+      }
+    }
+  }
+
+  .promo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .promo-card-inline {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+      
+      .btn-remove {
+        opacity: 1;
+      }
+    }
+
+    &__icon {
+      width: 40px;
+      height: 40px;
+      background: #eff6ff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3b82f6;
+      font-size: 18px;
+    }
+
+    &__content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .field-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .field-label {
+          min-width: 90px;
+          font-size: 12px;
+        }
+
+        .inline-input {
+          padding: 0;
+          font-size: 14px;
+          height: 24px;
+          
+          &:focus {
+            background: #f8fafc;
+            padding: 0 4px;
+          }
+        }
+
+        .link-input {
+          color: #3b82f6;
+          font-family: monospace;
+        }
+      }
+    }
+
+    .btn-remove {
+      opacity: 0.3;
+      transition: opacity 0.2s;
+    }
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    padding: 48px;
+    background: #f8fafc;
+    border: 2px dashed #e2e8f0;
+    border-radius: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #eff6ff;
+      border-color: #3b82f6;
+    }
+
+    .empty-icon {
+      font-size: 32px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+  }
+}
+
+.selectable-post-item {
+  transition: background 0.2s;
+  border-radius: 8px;
+  margin-bottom: 4px;
+
+  &:hover {
+    background: #f1f5f9;
+  }
+
+  &.is-selected {
+    background: #eff6ff;
+    border-left: 3px solid #3b82f6;
+  }
+
+  &.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.modal-title-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.search-input-modern {
+  border-radius: 8px;
+  padding: 8px 12px;
+}

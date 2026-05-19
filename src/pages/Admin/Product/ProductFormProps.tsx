@@ -1,9 +1,17 @@
 // ProductForm.tsx
 import {
-  Button, Form, Input, InputNumber, Select,
-  Card, Row, Col, Upload, Switch, Space
+  Button, Form, Input, InputNumber, Select, Row, Col, Upload
 } from "antd";
-import { PlusOutlined, DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  PlusCircleOutlined,
+  ProfileOutlined,
+  DollarOutlined,
+  EditOutlined,
+  PictureOutlined,
+  AppstoreOutlined
+} from "@ant-design/icons";
 import { useEffect } from "react";
 import { useCategoryList } from "../../../hooks/Category/useCategotyList";
 import { useBrandList } from "../../../hooks/Brand/useBrand";
@@ -21,8 +29,6 @@ const toFormValues = (p: any): Partial<ProductFormValues> => ({
   price: p.price,
   salePrice: p.salePrice,
   stockQuantity: p.stockQuantity,
-  status: p.status,
-  featured: p.featured,
   shortDescription: p.shortDescription,
   fullDescription: p.fullDescription,
   mainImage: p.mainImage
@@ -48,7 +54,7 @@ const toFormValues = (p: any): Partial<ProductFormValues> => ({
 });
 
 const DEFAULT_VALUES = {
-  status: "DRAFT", featured: false, stockQuantity: 0, images: [], variants: [],
+  stockQuantity: 0, images: [], variants: [],
 };
 
 // ─── Props ───────────────────────────────────────────────────────────────────
@@ -80,259 +86,267 @@ const ProductForm = ({ productDetail, onSubmit, loading, submitText = "Lưu" }: 
   const moneyFormatter = (v: any) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   return (
-    <div style={{ padding: 24 }}>
+    <div className="premium-product-form">
       <Form form={form} layout="vertical" onFinish={onSubmit}>
 
-        {/* ── Thông tin cơ bản ── */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item name="name" label="Tên sản phẩm"
-              rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}>
-              <Input placeholder="VD: Arduino Uno R3" />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="sku" label="Mã SKU"
-              rules={[{ required: true, message: "Vui lòng nhập SKU" }]}>
-              <Input placeholder="VD: ARD-UNO-R3" />
-            </Form.Item>
-          </Col>
-        </Row>
+        {/* ── Section 1: Thông tin cơ bản & Định danh ── */}
+        <div className="form-section-card">
+          <div className="section-header">
+            <span className="section-icon"><ProfileOutlined /></span>
+            <h3>Thông tin cơ bản & Định danh</h3>
+          </div>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="name" label="Tên sản phẩm"
+                rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}>
+                <Input placeholder="VD: Arduino Uno R3" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="sku" label="Mã SKU"
+                rules={[{ required: true, message: "Vui lòng nhập SKU" }]}>
+                <Input placeholder="VD: ARD-UNO-R3" />
+              </Form.Item>
+            </Col>
+          </Row>
 
-        {/* ── Danh mục & Thương hiệu ── */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item name="categoryId" label="Danh mục"
-              rules={[{ required: true, message: "Chọn danh mục" }]}>
-              <Select showSearch placeholder="Chọn danh mục"
-                options={(categories ?? []).map(c => ({ label: c.name, value: c.id }))} />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="brandId" label="Thương hiệu"
-              rules={[{ required: true, message: "Chọn thương hiệu" }]}>
-              <Select showSearch placeholder="Chọn thương hiệu"
-                options={(brands ?? []).map(b => ({ label: b.name, value: b.id }))} />
-            </Form.Item>
-          </Col>
-        </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="categoryId" label="Danh mục"
+                rules={[{ required: true, message: "Chọn danh mục" }]}>
+                <Select showSearch placeholder="Chọn danh mục"
+                  options={(categories ?? []).map(c => ({ label: c.name, value: c.id }))} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="brandId" label="Thương hiệu"
+                rules={[{ required: true, message: "Chọn thương hiệu" }]}>
+                <Select showSearch placeholder="Chọn thương hiệu"
+                  options={(brands ?? []).map(b => ({ label: b.name, value: b.id }))} />
+              </Form.Item>
+            </Col>
+          </Row>
+        </div>
 
-        {/* ── Giá & Tồn kho ── */}
-        <Row gutter={16}>
-          <Col span={8}>
-            <Form.Item name="price" label="Giá gốc (₫)"
-              rules={[{ required: true, message: "Nhập giá" }]}>
-              <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item
-              name="salePrice"
-              label="Giá khuyến mãi (₫)"
-              dependencies={['price']}
-              rules={[
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    const price = getFieldValue('price');
-                    if (!value || !price || value < price) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error('Giá khuyến mãi phải nhỏ hơn giá gốc!'));
-                  },
-                }),
-              ]}
-            >
-              <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item name="stockQuantity" label="Tồn kho" rules={[{ required: true }]}>
-              <InputNumber min={0} style={{ width: "100%" }} />
-            </Form.Item>
-          </Col>
-        </Row>
+        {/* ── Section 2: Giá & Tồn kho ── */}
+        <div className="form-section-card">
+          <div className="section-header">
+            <span className="section-icon"><DollarOutlined /></span>
+            <h3>Thiết lập Giá & Tồn kho</h3>
+          </div>
+          <Row gutter={16}>
+            <Col span={8}>
+              <Form.Item name="price" label="Giá gốc (₫)"
+                rules={[{ required: true, message: "Nhập giá" }]}>
+                <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                name="salePrice"
+                label="Giá khuyến mãi (₫)"
+                dependencies={['price']}
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const price = getFieldValue('price');
+                      if (!value || !price || value < price) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error('Giá khuyến mãi phải nhỏ hơn giá gốc!'));
+                    },
+                  }),
+                ]}
+              >
+                <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="stockQuantity" label="Tồn kho" rules={[{ required: true }]}>
+                <InputNumber min={0} style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+          </Row>
+        </div>
 
-        {/* ── Trạng thái & Nổi bật ── */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item name="status" label="Trạng thái">
-              <Select options={[
-                { label: "Nháp", value: "DRAFT" },
-                { label: "Đã xuất bản", value: "PUBLISHED" },
-                { label: "Hết hàng", value: "OUT_OF_STOCK" },
-                { label: "Ngừng kinh doanh", value: "DISCONTINUED" },
-              ]} />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="featured" label="Sản phẩm nổi bật" valuePropName="checked">
-              <Switch />
-            </Form.Item>
-          </Col>
-        </Row>
 
-        {/* ── Hình ảnh ── */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item name="mainImage" label="Ảnh chính"
-              valuePropName="fileList"
-              getValueFromEvent={e => Array.isArray(e) ? e : e?.fileList}
-              rules={[{ required: true, message: "Upload ảnh chính" }]}>
-              <Upload listType="picture-card" maxCount={1} {...uploadProps(form, "mainPicture")}>
-                <div><PlusOutlined /><div style={{ marginTop: 8 }}>Upload</div></div>
-              </Upload>
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="images" label="Ảnh phụ"
-              valuePropName="fileList"
-              getValueFromEvent={e => Array.isArray(e) ? e : e?.fileList}>
-              <Upload listType="picture-card" multiple {...uploadProps(form, "images")}>
-                <div><PlusOutlined /><div style={{ marginTop: 8 }}>Upload</div></div>
-              </Upload>
-            </Form.Item>
-          </Col>
-        </Row>
 
-        {/* ── Mô tả ── */}
-        <Form.Item name="shortDescription" label="Mô tả ngắn" rules={[{ required: true }]}>
-          <TextArea rows={3} placeholder="Mô tả ngắn gọn về sản phẩm..." />
-        </Form.Item>
-        <Form.Item name="fullDescription" label="Mô tả chi tiết">
-          <TextArea rows={6} placeholder="Mô tả đầy đủ về sản phẩm..." />
-        </Form.Item>
+        {/* ── Section 4: Mô tả ── */}
+        <div className="form-section-card">
+          <div className="section-header">
+            <span className="section-icon"><EditOutlined /></span>
+            <h3>Mô tả sản phẩm</h3>
+          </div>
+          <Form.Item name="shortDescription" label="Mô tả ngắn" rules={[{ required: true }]}>
+            <TextArea rows={3} placeholder="Mô tả ngắn gọn về sản phẩm..." />
+          </Form.Item>
+          <Form.Item name="fullDescription" label="Mô tả chi tiết">
+            <TextArea rows={6} placeholder="Mô tả đầy đủ về sản phẩm..." />
+          </Form.Item>
+        </div>
 
-        {/* ── Variants ── */}
-        <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 12 }}>Variants sản phẩm</div>
+        {/* ── Section 5: Hình ảnh ── */}
+        <div className="form-section-card">
+          <div className="section-header">
+            <span className="section-icon"><PictureOutlined /></span>
+            <h3>Bộ sưu tập hình ảnh</h3>
+          </div>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="mainImage" label="Ảnh chính"
+                valuePropName="fileList"
+                getValueFromEvent={e => Array.isArray(e) ? e : e?.fileList}
+                rules={[{ required: true, message: "Upload ảnh chính" }]}>
+                <Upload listType="picture-card" maxCount={1} {...uploadProps(form, "mainPicture")}>
+                  <div><PlusOutlined /><div style={{ marginTop: 8 }}>Upload</div></div>
+                </Upload>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="images" label="Ảnh phụ"
+                valuePropName="fileList"
+                getValueFromEvent={e => Array.isArray(e) ? e : e?.fileList}>
+                <Upload listType="picture-card" multiple {...uploadProps(form, "images")}>
+                  <div><PlusOutlined /><div style={{ marginTop: 8 }}>Upload</div></div>
+                </Upload>
+              </Form.Item>
+            </Col>
+          </Row>
+        </div>
 
-        <Form.List name="variants">
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map(({ key, name }) => (
-                <Card key={key} size="small"
-                  style={{ marginBottom: 12, border: "1px solid #d9d9d9", borderRadius: 8 }}
-                  title={<span style={{ fontWeight: 600 }}>Variant #{name + 1}</span>}
-                  extra={
-                    <Button danger size="small" icon={<DeleteOutlined />} onClick={() => remove(name)}>
-                      Xóa
-                    </Button>
-                  }
-                >
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Form.Item name={[name, "name"]} label="Tên variant"
-                        rules={[{ required: true, message: "Nhập tên variant" }]}>
-                        <Input placeholder="VD: Đỏ - XL" />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item name={[name, "sku"]} label="SKU"
-                        rules={[{ required: true, message: "Nhập SKU" }]}>
-                        <Input placeholder="VD: SP001-RED-XL" />
-                      </Form.Item>
-                    </Col>
-                  </Row>
+        {/* ── Section 6: Các phiên bản (Variants) ── */}
+        <div className="form-section-card">
+          <div className="section-header">
+            <span className="section-icon"><AppstoreOutlined /></span>
+            <h3>Các phiên bản sản phẩm (Variants)</h3>
+          </div>
 
-                  <Row gutter={16}>
-                    <Col span={8}>
-                      <Form.Item name={[name, "price"]} label="Giá (₫)"
-                        rules={[{ required: true, message: "Nhập giá" }]}>
-                        <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                      <Form.Item
-                        name={[name, "salePrice"]}
-                        label="Giá KM (₫)"
-                        dependencies={[['variants', name, 'price']]}
-                        rules={[
-                          ({ getFieldValue }) => ({
-                            validator(_, value) {
-                              const price = getFieldValue(['variants', name, 'price']);
-                              if (!value || !price || value < price) {
-                                return Promise.resolve();
-                              }
-                              return Promise.reject(new Error('Giá KM phải nhỏ hơn giá gốc!'));
-                            },
-                          }),
-                        ]}
-                      >
-                        <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                      <Form.Item name={[name, "stockQuantity"]} label="Tồn kho"
-                        rules={[{ required: true }]}>
-                        <InputNumber min={0} style={{ width: "100%" }} />
-                      </Form.Item>
-                    </Col>
-                  </Row>
+          <Form.List name="variants">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name }) => (
+                  <div key={key} className="variant-card-container">
+                    <div className="variant-header">
+                      <span className="variant-title-text">Phiên bản #{name + 1}</span>
+                      <Button danger size="small" icon={<DeleteOutlined />} onClick={() => remove(name)}>
+                        Xóa phiên bản
+                      </Button>
+                    </div>
 
-                  <Form.Item name={[name, "mainImage"]} label="Ảnh variant"
-                    valuePropName="fileList"
-                    getValueFromEvent={e => Array.isArray(e) ? e : e?.fileList}>
-                    <Upload listType="picture-card" maxCount={1}
-                      {...uploadProps(form, `variant_${name}`)}>
-                      <div><PlusOutlined /><div style={{ marginTop: 8 }}>Upload</div></div>
-                    </Upload>
-                  </Form.Item>
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <Form.Item name={[name, "name"]} label="Tên variant"
+                          rules={[{ required: true, message: "Nhập tên variant" }]}>
+                          <Input placeholder="VD: Đỏ - XL" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item name={[name, "sku"]} label="SKU"
+                          rules={[{ required: true, message: "Nhập SKU" }]}>
+                          <Input placeholder="VD: SP001-RED-XL" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
 
-                  <Form.List name={[name, "attributes"]}>
-                    {(attrFields, { add: addAttr, remove: removeAttr }) => (
-                      <>
-                        <div style={{ fontWeight: 500, marginBottom: 8 }}>
-                          Attributes
-                          <Button type="dashed" size="small" icon={<PlusCircleOutlined />}
-                            onClick={() => addAttr()} style={{ marginLeft: 8 }}>
-                            Thêm
-                          </Button>
-                        </div>
-                        {attrFields.map(({ key: ak, name: an }) => (
-                          <Row key={ak} gutter={8} style={{ marginBottom: 8 }}>
-                            <Col span={10}>
-                              <Form.Item name={[an, "key"]} noStyle
-                                rules={[{ required: true, message: "Nhập key" }]}>
-                                <Input placeholder="VD: màu sắc" />
-                              </Form.Item>
-                            </Col>
-                            <Col span={10}>
-                              <Form.Item name={[an, "value"]} noStyle
-                                rules={[{ required: true, message: "Nhập value" }]}>
-                                <Input placeholder="VD: đỏ" />
-                              </Form.Item>
-                            </Col>
-                            <Col span={4}>
-                              <Button danger size="small" icon={<DeleteOutlined />}
-                                onClick={() => removeAttr(an)} />
-                            </Col>
-                          </Row>
-                        ))}
-                      </>
-                    )}
-                  </Form.List>
-                </Card>
-              ))}
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <Form.Item name={[name, "price"]} label="Giá (₫)"
+                          rules={[{ required: true, message: "Nhập giá" }]}>
+                          <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
+                        </Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <Form.Item
+                          name={[name, "salePrice"]}
+                          label="Giá KM (₫)"
+                          dependencies={[['variants', name, 'price']]}
+                          rules={[
+                            ({ getFieldValue }) => ({
+                              validator(_, value) {
+                                const price = getFieldValue(['variants', name, 'price']);
+                                if (!value || !price || value < price) {
+                                  return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('Giá KM phải nhỏ hơn giá gốc!'));
+                              },
+                            }),
+                          ]}
+                        >
+                          <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
+                        </Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <Form.Item name={[name, "stockQuantity"]} label="Tồn kho"
+                          rules={[{ required: true }]}>
+                          <InputNumber min={0} style={{ width: "100%" }} />
+                        </Form.Item>
+                      </Col>
+                    </Row>
 
-              <Button type="dashed" block icon={<PlusOutlined />} style={{ marginBottom: 16 }}
-                onClick={() => add({ stockQuantity: 0, attributes: [] })}>
-                Thêm variant
-              </Button>
-            </>
-          )}
-        </Form.List>
+                    <Form.Item name={[name, "mainImage"]} label="Ảnh variant"
+                      valuePropName="fileList"
+                      getValueFromEvent={e => Array.isArray(e) ? e : e?.fileList}>
+                      <Upload listType="picture-card" maxCount={1}
+                        {...uploadProps(form, `variant_${name}`)}>
+                        <div><PlusOutlined /><div style={{ marginTop: 8 }}>Upload</div></div>
+                      </Upload>
+                    </Form.Item>
 
-        {/* ── Submit ── */}
-        <Form.Item>
-          <Space>
-            <Button type="primary" htmlType="submit" loading={loading} size="large">
-              {submitText}
-            </Button>
-            <Button size="large"
-              onClick={() => { form.resetFields(); form.setFieldsValue(DEFAULT_VALUES); }}>
-              Làm mới
-            </Button>
-          </Space>
-        </Form.Item>
+                    <Form.List name={[name, "attributes"]}>
+                      {(attrFields, { add: addAttr, remove: removeAttr }) => (
+                        <>
+                          <div style={{ fontWeight: 650, fontSize: 13, color: "#595959", marginBottom: 12, display: "flex", alignItems: "center", gap: 10 }}>
+                            Thuộc tính Variant
+                            <Button type="dashed" size="small" icon={<PlusCircleOutlined />}
+                              onClick={() => addAttr()} style={{ borderColor: "#00c853", color: "#00c853" }}>
+                              Thêm thuộc tính
+                            </Button>
+                          </div>
+                          {attrFields.map(({ key: ak, name: an }) => (
+                            <Row key={ak} gutter={8} style={{ marginBottom: 12, alignItems: "center" }}>
+                              <Col span={10}>
+                                <Form.Item name={[an, "key"]} noStyle
+                                  rules={[{ required: true, message: "Nhập key" }]}>
+                                  <Input placeholder="Tên thuộc tính (màu sắc, dung lượng,...)" />
+                                </Form.Item>
+                              </Col>
+                              <Col span={10}>
+                                <Form.Item name={[an, "value"]} noStyle
+                                  rules={[{ required: true, message: "Nhập value" }]}>
+                                  <Input placeholder="Giá trị thuộc tính (đỏ, 64GB,...)" />
+                                </Form.Item>
+                              </Col>
+                              <Col span={4}>
+                                <Button danger size="small" icon={<DeleteOutlined />}
+                                  onClick={() => removeAttr(an)} style={{ display: "flex", alignItems: "center", justifyContent: "center" }} />
+                              </Col>
+                            </Row>
+                          ))}
+                        </>
+                      )}
+                    </Form.List>
+                  </div>
+                ))}
+
+                <Button type="dashed" block icon={<PlusOutlined />} className="add-variant-btn"
+                  onClick={() => add({ stockQuantity: 0, attributes: [] })}>
+                  Thêm phiên bản mới (Variant)
+                </Button>
+              </>
+            )}
+          </Form.List>
+        </div>
+
+        {/* ── Submit & Actions ── */}
+        <div className="form-actions">
+          <Button size="large" className="btn-reset"
+            onClick={() => { form.resetFields(); form.setFieldsValue(DEFAULT_VALUES); }}>
+            Nhập lại từ đầu
+          </Button>
+          <Button type="primary" htmlType="submit" loading={loading} size="large" className="btn-submit">
+            {submitText}
+          </Button>
+        </div>
       </Form>
     </div>
   );

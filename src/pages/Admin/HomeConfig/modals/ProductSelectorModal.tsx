@@ -1,27 +1,27 @@
-// components/Admin/Homepage/ProductSelectorModal.tsx
-import React, { useState } from 'react';
-import { 
-  Modal, 
-  Table, 
-  Input, 
-  Select, 
-  Space, 
-  Tag, 
+import React, { useState, useEffect } from 'react';
+import {
+  Modal,
+  Table,
+  Input,
+  Select,
+  Space,
+  Tag,
   Image,
-  message 
+  message
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import type { Product } from '../../../types/product.type';
-import { useProductList } from '../../../hooks/Product/useProductList';
-import type { PageResponse } from '../../../types/response.type';
-import { useCategoryList } from '../../../hooks/Category/useCategotyList';
+import type { Product } from '../../../../types/product.type';
+import { useProductList } from '../../../../hooks/Product/useProductList';
+import type { PageResponse } from '../../../../types/response.type';
+import { useCategoryList } from '../../../../hooks/Category/useCategotyList';
 
 interface Props {
   open: boolean;
   onCancel: () => void;
   onConfirm: (selectedProducts: Product[]) => void;
-  initialSelected?: number[]; 
-  maxProducts?: number; 
+  initialSelected?: number[];
+  initialSelectedProducts?: Product[];
+  maxProducts?: number;
   sectionTitle?: string;
 }
 
@@ -30,18 +30,30 @@ const ProductSelectorModal = ({
   onCancel,
   onConfirm,
   initialSelected = [],
-  maxProducts = 10,
+  initialSelectedProducts = [],
+  maxProducts,
   sectionTitle = 'Section'
 }: Props) => {
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>(undefined);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(initialSelected);
-  const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<Product[]>(initialSelectedProducts);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // Synchronize states when modal is opened
+  useEffect(() => {
+    if (open) {
+      setSearchText('');
+      setSelectedCategory(undefined);
+      setPage(1);
+      setSelectedRowKeys(initialSelected);
+      setSelectedProducts(initialSelectedProducts);
+    }
+  }, [open, initialSelected, initialSelectedProducts]);
+
   const { data: categories } = useCategoryList();
-  
+
   const { data, isLoading } = useProductList<PageResponse<Product>>({
     type: "all",
     page: page - 1,
@@ -109,18 +121,19 @@ const ProductSelectorModal = ({
   const rowSelection = {
     selectedRowKeys,
     onChange: (newSelectedRowKeys: React.Key[], newSelectedRows: Product[]) => {
-      if (newSelectedRowKeys.length > maxProducts) {
+      if (maxProducts !== undefined && newSelectedRowKeys.length > maxProducts) {
         message.warning(`Chỉ được chọn tối đa ${maxProducts} sản phẩm`);
         return;
       }
       setSelectedRowKeys(newSelectedRowKeys);
-      
+
       setSelectedProducts(prev => {
-          const combined = [...prev, ...newSelectedRows];
-          const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
-          return unique.filter(p => newSelectedRowKeys.includes(p.id));
+        const combined = [...(prev || []), ...(newSelectedRows || [])].filter(Boolean);
+        const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
+        return unique.filter(p => p && newSelectedRowKeys.includes(p.id));
       });
     },
+    preserveSelectedRowKeys: true,
   };
 
   const handleConfirm = () => {
@@ -158,7 +171,7 @@ const ProductSelectorModal = ({
             onChange={setSelectedCategory}
           />
           <Tag color="cyan" style={{ fontSize: 13, padding: '4px 8px' }}>
-            Đang ghim: {selectedRowKeys.length}/{maxProducts}
+            Đang ghim: {selectedRowKeys.length}{maxProducts ? `/${maxProducts}` : ''}
           </Tag>
         </Space>
       </div>

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Breadcrumb,
   Rate,
@@ -7,6 +6,7 @@ import {
   Image,
   Tabs,
   Tag,
+  Spin,
 } from 'antd';
 import {
   HeartOutlined,
@@ -17,26 +17,30 @@ import {
   FacebookFilled,
   TwitterCircleFilled,
   ShareAltOutlined,
-  SafetyCertificateOutlined,
-  TruckOutlined,
-  DollarOutlined
 } from '@ant-design/icons';
 import './ProductDetailPage.scss';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useProductDetail } from '../../../hooks/Product/useProduct';
+import { useProductDetail, useRelatedProducts } from '../../../hooks/Product/useProduct';
 import { useAddToCart } from '../../../hooks/Cart/useAddToCart';
 import ReviewSection from './ReviewSection';
 import { useReviews } from '../../../hooks/Review';
 import type { ProductImage, ProductVariant } from '../../../types/product.type';
 import { useAddWishlist, useRemoveWishlist, useWishlistCheck } from '../../../hooks/Wishlist/useWishlist';
-import { useEffect } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { message } from 'antd';
+import { productApi } from '../../../api/product.api';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { data: product } = useProductDetail(id);
   const { data: reviewSummary } = useReviews(Number(id));
   const { mutate: AddToCart } = useAddToCart();
+  const { data: relatedProducts, isLoading: loadingRelated } = useRelatedProducts(Number(product?.id || id), 10);
+
+  const displayedRelatedProducts = useMemo(() => {
+    if (!relatedProducts || relatedProducts.length === 0) return [];
+    return [...relatedProducts].sort(() => 0.5 - Math.random()).slice(0, 5);
+  }, [relatedProducts]);
 
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -52,6 +56,14 @@ const ProductDetail = () => {
       setIsFavorite(wishlistCheck.isInWishlist);
     }
   }, [wishlistCheck]);
+
+  useEffect(() => {
+    if (id) {
+      productApi.increaseViewCount(Number(id)).catch((err) => {
+        console.error("Lỗi tăng lượt xem sản phẩm:", err);
+      });
+    }
+  }, [id]);
 
   const handleToggleWishlist = () => {
     if (isFavorite) {
@@ -108,12 +120,6 @@ const ProductDetail = () => {
     handleAddToCart();
     nav("/cart");
   };
-
-  const features = [
-    { icon: <SafetyCertificateOutlined />, title: 'Ưu Đãi Khi Mua Sỉ', description: 'Lượng - Liên Hệ Hotline' },
-    { icon: <TruckOutlined />, title: 'Hình Ảnh Sản Phẩm Thật', description: '' },
-    { icon: <DollarOutlined />, title: 'Đơn Trên 500K Được', description: 'Miễn Phí Vận Chuyển' },
-  ];
 
   const tabItems = [
     {
@@ -399,26 +405,61 @@ const ProductDetail = () => {
                 <span>Đã bán {currentProduct.soldCount ?? 0}</span>
               </div>
             </div>
-
-            <div className="product-features">
-              <div className="features-title">Quyền lợi & chính sách:</div>
-              <div className="features-grid">
-                {features.map((feature, index) => (
-                  <div key={index} className="feature-item">
-                    <div className="feature-icon">{feature.icon}</div>
-                    <div className="feature-content">
-                      <div className="feature-title">{feature.title}</div>
-                      {feature.description && <div className="feature-desc">{feature.description}</div>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
 
         <div className="product-tabs">
           <Tabs defaultActiveKey="1" items={tabItems} />
+        </div>
+
+        {/* Related Products Section */}
+        <div className="related-products-section">
+          <div className="section-header">
+            <div className="title-left">
+              <h2>Sản Phẩm Liên Quan</h2>
+            </div>
+          </div>
+
+          {loadingRelated ? (
+            <div className="related-loading">
+              <Spin size="large" />
+              <p>Đang phân tích sản phẩm tương tự bằng AI Vector Search...</p>
+            </div>
+          ) : displayedRelatedProducts && displayedRelatedProducts.length > 0 ? (
+            <div className="related-grid">
+              {displayedRelatedProducts.map((p) => {
+                const discount = p.salePrice ? Math.round(((p.price - p.salePrice) / p.price) * 100) : 0;
+                return (
+                  <div key={p.id} className="related-card" onClick={() => {
+                    nav(`/products/${p.id}`);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}>
+                    <div className="card-image-box">
+                      <img src={p.mainImage} alt={p.name} />
+                      {discount > 0 && <span className="discount-tag">-{discount}%</span>}
+                    </div>
+                    <div className="card-info">
+                      <span className="brand-label">{p.brand?.name || p.brandName || "Linh kiện"}</span>
+                      <h4 className="product-name">{p.name}</h4>
+                      <div className="price-row">
+                        <span className="sale-price">{(p.salePrice || p.price).toLocaleString('vi-VN')}₫</span>
+                        {p.salePrice && p.price > p.salePrice && (
+                          <span className="original-price">{p.price.toLocaleString('vi-VN')}₫</span>
+                        )}
+                      </div>
+                      <div className="meta-row">
+                        <span className="sold-count">Đã bán {p.soldCount || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="related-empty">
+              <p>Không có sản phẩm gợi ý nào phù hợp.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

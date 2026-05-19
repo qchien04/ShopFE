@@ -2,7 +2,7 @@ import { Carousel } from "antd";
 import { ArrowRightOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useRef, useState, useEffect } from "react";
 import type { Product } from "../../../../types/product.type";
-import type { ProductSectionConfig } from "../../../../types/entity.type";
+import type { FeaturedProductConfig } from "../../../../types/entity.type";
 import FeaturedProductCard from "../../../../components/FeaturedProductCard";
 import { useProductList } from "../../../../hooks/Product/useProductList";
 import { productApi } from "../../../../api/product.api";
@@ -11,7 +11,7 @@ import { Grid } from "antd";
 
 const { useBreakpoint } = Grid;
 
-const FeaturedProducts = ({ title = "Sản Phẩm Nổi Bật", section }: { title?: string, section?: ProductSectionConfig }) => {
+const FeaturedProducts = ({ title = "Sản Phẩm Nổi Bật", section }: { title?: string, section?: FeaturedProductConfig }) => {
   const carouselRef = useRef<any>(null);
 
   const { data: defaultProducts } = useProductList<Product[]>({ type: "featured" });

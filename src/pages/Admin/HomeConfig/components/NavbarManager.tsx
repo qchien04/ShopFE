@@ -36,35 +36,34 @@ export interface NavItem {
 // ─── Defaults ─────────────────────────────────────────────────────────────────
 
 export const defaultNavItems: NavItem[] = [
-  { id: "nav-1", label: "Trang Chủ",               link: "/",                  visible: true,  hasDropdown: false, children: [] },
-  { id: "nav-2", label: "Giới Thiệu",              link: "/gioi-thieu",        visible: true,  hasDropdown: false, children: [] },
+  { id: "nav-1", label: "Trang Chủ", link: "/", visible: true, hasDropdown: false, children: [] },
+  { id: "nav-2", label: "Giới Thiệu", link: "/gioi-thieu", visible: true, hasDropdown: false, children: [] },
   {
     id: "nav-3", label: "Sản Phẩm", link: "/san-pham", visible: true, hasDropdown: true,
     children: [
       { id: "nav-3-1", label: "Linh kiện điện tử", link: "/san-pham/linh-kien", visible: true },
-      { id: "nav-3-2", label: "Bo mạch & Module",  link: "/san-pham/bo-mach",  visible: true },
+      { id: "nav-3-2", label: "Bo mạch & Module", link: "/san-pham/bo-mach", visible: true },
     ],
   },
-  { id: "nav-4", label: "Kiểm Tra Đơn Hàng",       link: "/kiem-tra-don-hang", visible: true,  hasDropdown: false, children: [] },
   {
-    id: "nav-5", label: "Sàn Thương Mại Điện Tử",  link: "/san-tmdt", visible: true, hasDropdown: true,
+    id: "nav-5", label: "Sàn Thương Mại Điện Tử", link: "/san-tmdt", visible: true, hasDropdown: true,
     children: [
       { id: "nav-5-1", label: "Shopee", link: "https://shopee.vn", visible: true },
       { id: "nav-5-2", label: "Lazada", link: "https://lazada.vn", visible: true },
     ],
   },
   {
-    id: "nav-6", label: "Chương Trình Khuyến Mãi",  link: "/khuyen-mai", visible: true, hasDropdown: true,
+    id: "nav-6", label: "Chương Trình Khuyến Mãi", link: "/khuyen-mai", visible: true, hasDropdown: true,
     children: [
-      { id: "nav-6-1", label: "Flash Sale",    link: "/khuyen-mai/flash-sale",  visible: true },
-      { id: "nav-6-2", label: "Mã giảm giá",  link: "/khuyen-mai/ma-giam-gia", visible: true },
+      { id: "nav-6-1", label: "Flash Sale", link: "/khuyen-mai/flash-sale", visible: true },
+      { id: "nav-6-2", label: "Mã giảm giá", link: "/khuyen-mai/ma-giam-gia", visible: true },
     ],
   },
   {
     id: "nav-7", label: "Bài Viết", link: "/bai-viet", visible: true, hasDropdown: true,
     children: [
-      { id: "nav-7-1", label: "Tin tức",   link: "/bai-viet/tin-tuc",   visible: true },
-      { id: "nav-7-2", label: "Mẹo vặt",   link: "/bai-viet/meo-vat",   visible: true },
+      { id: "nav-7-1", label: "Tin tức", link: "/bai-viet/tin-tuc", visible: true },
+      { id: "nav-7-2", label: "Mẹo vặt", link: "/bai-viet/meo-vat", visible: true },
       { id: "nav-7-3", label: "Hướng dẫn", link: "/bai-viet/huong-dan", visible: true },
     ],
   },
@@ -116,9 +115,9 @@ const NavItemRow = ({
       <div className="nav-item-row__main">
         {/* Order controls */}
         <div className="nav-item-row__order">
-          <button className="nav-order-btn" disabled={index === 0}           onClick={onMoveUp}>▲</button>
+          <button className="nav-order-btn" disabled={index === 0} onClick={onMoveUp}>▲</button>
           <span className="nav-order-num">{index + 1}</span>
-          <button className="nav-order-btn" disabled={index === total - 1}   onClick={onMoveDown}>▼</button>
+          <button className="nav-order-btn" disabled={index === total - 1} onClick={onMoveDown}>▼</button>
         </div>
 
         {/* Label */}
@@ -238,8 +237,8 @@ const NavbarSection = ({ initialItems, onChange }: NavbarSectionProps) => {
     id: genId(), label: "Menu mới", link: "/", visible: true, hasDropdown: false, children: [],
   }]);
 
-  const moveUp   = (i: number) => { const a = [...items]; [a[i-1], a[i]] = [a[i], a[i-1]]; update(a); };
-  const moveDown = (i: number) => { const a = [...items]; [a[i], a[i+1]] = [a[i+1], a[i]]; update(a); };
+  const moveUp = (i: number) => { const a = [...items];[a[i - 1], a[i]] = [a[i], a[i - 1]]; update(a); };
+  const moveDown = (i: number) => { const a = [...items];[a[i], a[i + 1]] = [a[i + 1], a[i]]; update(a); };
 
   return (
     <div className="navbar-section">

@@ -1,70 +1,66 @@
 import { useState, useEffect } from 'react';
 import { Modal, Table, Input, message } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { brandApi } from '../../../api/brand.api';
-import type { Brand } from '../../../types/entity.type';
+import { categoryApi } from '../../../../api/categories.api';
+import type { Category } from '../../../../types/categories.type';
 
 interface Props {
   open: boolean;
   onCancel: () => void;
-  onConfirm: (brands: Brand[]) => void;
+  onConfirm: (categories: Category[]) => void;
   initialSelected: number[];
 }
 
-const BrandSelectorModal = ({ open, onCancel, onConfirm, initialSelected }: Props) => {
-  const [brands, setBrands] = useState<Brand[]>([]);
+const CategorySelectorModal = ({ open, onCancel, onConfirm, initialSelected }: Props) => {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     if (open) {
-      fetchBrands();
+      fetchCategories();
       setSelectedRowKeys(initialSelected);
     }
   }, [open, initialSelected]);
 
-  const fetchBrands = async () => {
+  const fetchCategories = async () => {
     setLoading(true);
     try {
-      const data = await brandApi.getAll();
-      setBrands(data);
+      const data = await categoryApi.getAll();
+      setCategories(data);
     } catch (error) {
-      message.error('Lỗi khi tải danh sách thương hiệu');
+      message.error('Lỗi khi tải danh sách danh mục');
     } finally {
       setLoading(false);
     }
   };
 
   const handleConfirm = () => {
-    const selectedBrands = brands.filter(b => selectedRowKeys.includes(b.id!));
-    onConfirm(selectedBrands);
+    const selectedCategories = categories.filter(c => selectedRowKeys.includes(c.id as number));
+    onConfirm(selectedCategories);
   };
 
-  const filteredBrands = brands.filter(b => 
-    b.name.toLowerCase().includes(searchText.toLowerCase())
+  const filteredCategories = categories.filter(c => 
+    c.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const columns = [
     {
-      title: 'Logo',
-      dataIndex: 'logo',
+      title: 'Hình ảnh',
+      dataIndex: 'image',
       width: 80,
-      render: (logo: string) => <img src={logo} alt="logo" style={{ width: 40, height: 40, objectFit: 'contain' }} />,
+      render: (image: string) => <img src={image || '/placeholder.png'} alt="img" style={{ width: 40, height: 40, objectFit: 'contain', borderRadius: 4 }} />,
     },
     {
-      title: 'Tên thương hiệu',
+      title: 'Tên danh mục',
       dataIndex: 'name',
-    },
-    {
-        title: 'Website',
-        dataIndex: 'website',
     }
   ];
 
   return (
     <Modal
-      title="Chọn Thương Hiệu Nổi Bật"
+      title="Chọn Danh Mục"
       open={open}
       onCancel={onCancel}
       onOk={handleConfirm}
@@ -73,7 +69,7 @@ const BrandSelectorModal = ({ open, onCancel, onConfirm, initialSelected }: Prop
       cancelText="Hủy"
     >
       <Input
-        placeholder="Tìm kiếm thương hiệu..."
+        placeholder="Tìm kiếm danh mục..."
         prefix={<SearchOutlined />}
         value={searchText}
         onChange={e => setSearchText(e.target.value)}
@@ -86,7 +82,7 @@ const BrandSelectorModal = ({ open, onCancel, onConfirm, initialSelected }: Prop
           onChange: (keys) => setSelectedRowKeys(keys),
         }}
         columns={columns}
-        dataSource={filteredBrands}
+        dataSource={filteredCategories}
         rowKey="id"
         loading={loading}
         pagination={{ pageSize: 10 }}
@@ -97,4 +93,4 @@ const BrandSelectorModal = ({ open, onCancel, onConfirm, initialSelected }: Prop
   );
 };
 
-export default BrandSelectorModal;
+export default CategorySelectorModal;

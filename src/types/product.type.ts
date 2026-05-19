@@ -18,8 +18,7 @@ export interface ProductVariant{
   attributes:string;
 }
 
-export type ProductStatus =
-  | "DRAFT" | "PUBLISHED" | "OUT_OF_STOCK" | "DISCONTINUED";
+
 
 
 export interface Product {
@@ -31,7 +30,7 @@ export interface Product {
   salePrice: number;
   stockQuantity: number;
   mainImage: string;
-  status: ProductStatus;
+
   category?: Category;
   brand?:Brand;
   brandName: string;
@@ -40,6 +39,6 @@ export interface Product {
   images:ProductImage[];
   shortDescription:string;
   fullDescription:string;
-  featured:boolean;
+
   productVariants:ProductVariant[];
 }

@@ -1,20 +1,8 @@
 import type { ColumnsType } from "antd/es/table"
-import type { Product, ProductStatus } from "../../../types/product.type"
-import { Button, Image, Popconfirm, Space, Tag } from "antd";
+import type { Product } from "../../../types/product.type"
+import { Button, Image, Popconfirm, Space } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
-const STATUS_COLOR: Record<ProductStatus, string> = {
-  DRAFT: "default",
-  PUBLISHED: "success",
-  OUT_OF_STOCK: "warning",
-  DISCONTINUED: "error",
-};
 
-const STATUS_TEXT: Record<ProductStatus, string> = {
-  DRAFT: "Nháp",
-  PUBLISHED: "Đã xuất bản",
-  OUT_OF_STOCK: "Hết hàng",
-  DISCONTINUED: "Ngừng kinh doanh",
-};
 
 export const buildColumns = (
   onEdit: (id: number) => void,
@@ -57,12 +45,7 @@ export const buildColumns = (
     // },
     // { title: "Đã bán",   dataIndex: "soldCount",  width: 90 },
     // { title: "Lượt xem", dataIndex: "viewCount",  width: 90 },
-    {
-      title: "Trạng thái", dataIndex: "status", width: 140,
-      render: (status: ProductStatus) => (
-        <Tag color={STATUS_COLOR[status]}>{STATUS_TEXT[status]}</Tag>
-      ),
-    },
+
     {
       title: "Hành động", fixed: "right", width: 130,
       render: (_, record) => (

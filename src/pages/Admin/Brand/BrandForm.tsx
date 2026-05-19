@@ -1,5 +1,5 @@
 // BrandForm.tsx
-import { Form, Input, Upload } from "antd";
+import { Form, Input, Upload, Row, Col } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import type { BrandFormValues } from "../../../types/request.type";
 import { uploadProps } from "../../../utils/uploadProps";
@@ -38,59 +38,79 @@ const BrandForm = ({ form, initialValues, onSubmit }: Props) => {
     };
   };
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      initialValues={normalizeInitialValues()}
-      onFinish={onSubmit}
-    >
-      <Form.Item
-        name="name"
-        label="Tên brand"
-        rules={[{ required: true }]}
+    <div className="premium-product-form" style={{ padding: "24px 24px 12px 24px" }}>
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={normalizeInitialValues()}
+        onFinish={onSubmit}
       >
-        <Input />
-      </Form.Item>
+        <div className="form-section-card" style={{ padding: 24, margin: 0 }}>
+          <Row gutter={24}>
+            {/* Left side: Brand Fields */}
+            <Col span={16}>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="name"
+                    label="Tên thương hiệu"
+                    rules={[{ required: true, message: "Vui lòng nhập tên thương hiệu" }]}
+                  >
+                    <Input placeholder="VD: Arduino / Espressif" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="slug"
+                    label="Slug thương hiệu"
+                    rules={[{ required: true, message: "Vui lòng nhập slug" }]}
+                  >
+                    <Input placeholder="VD: arduino" />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-      <Form.Item
-        name="slug"
-        label="Slug"
-        rules={[{ required: true }]}
-      >
-        <Input />
-      </Form.Item>
+              <Form.Item
+                name="website"
+                label="Địa chỉ Website"
+                rules={[{ required: true, message: "Vui lòng nhập URL website" }]}
+              >
+                <Input placeholder="VD: https://www.arduino.cc" />
+              </Form.Item>
 
-       <Form.Item
-        name="website"
-        label="Website"
-        rules={[{ required: true }]}
-      >
-        <Input />
-      </Form.Item>
+              <Form.Item name="description" label="Mô tả thông tin" style={{ marginBottom: 0 }}>
+                <TextArea rows={3} placeholder="Mô tả ngắn gọn về thương hiệu..." />
+              </Form.Item>
+            </Col>
 
-      <Form.Item
-        name="logo"
-        label="Logo"
-        valuePropName="fileList"
-        getValueFromEvent={(e) => {
-          if (Array.isArray(e)) return e;
-          return e?.fileList ?? [];
-        }}
-        rules={[{ required: true }]}
-      >
-        <Upload
-          {...uploadProps(form, "image")}
-          listType="picture-card"
-          maxCount={1}
-        >
-          <PlusOutlined />
-        </Upload>
-      </Form.Item>
-
-      <Form.Item name="description" label="Mô tả">
-        <TextArea rows={3} />
-      </Form.Item>
-    </Form>
+            {/* Right side: Brand Logo */}
+            <Col span={8} style={{ borderLeft: "1px solid #f0f0f0", paddingLeft: 24 }}>
+              <Form.Item
+                name="logo"
+                label="Logo thương hiệu"
+                valuePropName="fileList"
+                getValueFromEvent={(e) => {
+                  if (Array.isArray(e)) return e;
+                  return e?.fileList ?? [];
+                }}
+                rules={[{ required: true, message: "Vui lòng tải lên logo thương hiệu" }]}
+              >
+                <Upload
+                  {...uploadProps(form, "image")}
+                  listType="picture-card"
+                  maxCount={1}
+                >
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                </Upload>
+              </Form.Item>
+            </Col>
+          </Row>
+        </div>
+      </Form>
+    </div>
   );
 };
 

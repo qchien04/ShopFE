@@ -1,9 +1,30 @@
 import { useState, useEffect } from "react";
-import { Table, Button, Space, Modal, Form, Input, Select, InputNumber, DatePicker, Switch, message, Popconfirm } from "antd";
-import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Space,
+  Modal,
+  Form,
+  Input,
+  Select,
+  InputNumber,
+  DatePicker,
+  Switch,
+  message,
+  Popconfirm,
+  Spin,
+  Pagination,
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  CalendarOutlined,
+  ClockCircleOutlined,
+} from "@ant-design/icons";
 import { couponApi } from "../../../api/coupon.api";
 import type { Coupon } from "../../../types/entity.type";
 import dayjs from "dayjs";
+import "./index.scss";
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -13,6 +34,9 @@ const CouponPage = () => {
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [searchText, setSearchText] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [form] = Form.useForm();
 
   const fetchCoupons = async () => {
@@ -91,71 +115,217 @@ const CouponPage = () => {
     }
   };
 
-  const columns = [
-    { title: "Mã", dataIndex: "code", key: "code", render: (text: string) => <strong>{text}</strong> },
-    { title: "Mô tả", dataIndex: "description", key: "description" },
-    {
-      title: "Loại giảm giá",
-      dataIndex: "discountType",
-      key: "discountType",
-      render: (val: string) => val === "PERCENTAGE" ? "Phần trăm (%)" : "Cố định (₫)"
-    },
-    {
-      title: "Giá trị",
-      dataIndex: "discountValue",
-      key: "discountValue",
-      render: (val: number, record: Coupon) =>
-        record.discountType === "PERCENTAGE" ? `${val}%` : `${val.toLocaleString("vi-VN")} ₫`
-    },
-    {
-      title: "Số lượng",
-      dataIndex: "usageLimit",
-      key: "usageLimit",
-      render: (val: number, record: Coupon) => `${record.usedCount || 0} / ${val || "∞"}`
-    },
-    {
-      title: "Ngày hết hạn",
-      dataIndex: "endDate",
-      key: "endDate",
-      render: (val: string) => dayjs(val).format("DD/MM/YYYY HH:mm")
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "active",
-      key: "active",
-      render: (active: boolean) => (
-        <span style={{ color: active ? 'green' : 'red' }}>{active ? "Hoạt động" : "Đã khóa"}</span>
-      )
-    },
-    {
-      title: "Hành động",
-      key: "action",
-      render: (_: any, record: Coupon) => (
-        <Space>
-          <Button icon={<EditOutlined />} onClick={() => handleOpenModal(record)} />
-          <Popconfirm title="Bạn có chắc muốn xóa?" onConfirm={() => handleDelete(record.id!)}>
-            <Button danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
-      )
+  const handleToggleActive = async (checked: boolean, record: Coupon) => {
+    try {
+      const payload = {
+        code: record.code,
+        description: record.description,
+        discountType: record.discountType,
+        discountValue: record.discountValue,
+        minOrderValue: record.minOrderValue,
+        maxDiscountAmount: record.maxDiscountAmount,
+        usageLimit: record.usageLimit,
+        startDate: record.startDate,
+        endDate: record.endDate,
+        active: checked,
+      };
+      await couponApi.updateCoupon(record.id!, payload);
+      message.success(`Đã ${checked ? 'kích hoạt' : 'khóa'} voucher ${record.code}!`);
+      fetchCoupons();
+    } catch (err) {
+      message.error("Lỗi khi cập nhật trạng thái voucher");
     }
-  ];
+  };
+
+  // Searching logic
+  const filteredCoupons = coupons.filter(coupon => {
+    return coupon.code.toLowerCase().includes(searchText.toLowerCase()) ||
+      (coupon.description && coupon.description.toLowerCase().includes(searchText.toLowerCase()));
+  });
+
+  // Pagination bounds
+  const totalElements = filteredCoupons.length;
+  const maxPage = Math.max(1, Math.ceil(totalElements / pageSize));
+  const currentPage = page > maxPage ? maxPage : page;
+  const paginatedCoupons = filteredCoupons.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
-    <div style={{ padding: 24, background: "#fff", minHeight: "100vh" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-        <h2>Quản lý Voucher</h2>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => handleOpenModal()}>
-          Tạo Voucher / Tặng khách hàng
-        </Button>
+    <div style={{ padding: 24, background: "#f8f9fa", minHeight: "100vh" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+        <h2 style={{ margin: 0, fontWeight: 700, fontSize: 24, color: "#1f1f1f" }}>Quản lý Voucher</h2>
+        <Space size="middle" wrap>
+          <Input.Search
+            placeholder="Tìm kiếm mã voucher, mô tả..."
+            style={{ width: 280 }}
+            size="large"
+            enterButton
+            allowClear
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+              setPage(1);
+            }}
+          />
+          <Button type="primary" size="large" icon={<PlusOutlined />} onClick={() => handleOpenModal()} style={{ borderRadius: 8, fontWeight: 600 }}>
+            Tạo Voucher mới
+          </Button>
+        </Space>
       </div>
 
-      <Table
-        columns={columns}
-        dataSource={coupons}
-        rowKey="id"
-        loading={loading}
-      />
+      {loading ? (
+        <div className="voucher-loading-container">
+          <Spin size="large" tip="Đang tải danh sách voucher..." />
+        </div>
+      ) : (
+        <div className="voucher-list-container">
+          {paginatedCoupons.length > 0 ? (
+            paginatedCoupons.map((coupon) => {
+              const isPercentage = coupon.discountType === "PERCENTAGE";
+              const now = dayjs();
+              const start = dayjs(coupon.startDate);
+              const end = dayjs(coupon.endDate);
+
+              // Expiry calculations
+              let expiryClass = "valid";
+              let expiryLabel = "Còn hiệu lực";
+
+              if (now.isBefore(start)) {
+                expiryClass = "soon";
+                expiryLabel = "Chưa diễn ra";
+              } else if (now.isAfter(end)) {
+                expiryClass = "expired";
+                expiryLabel = "Đã hết hạn";
+              } else if (end.diff(now, 'day') <= 3) {
+                expiryClass = "soon";
+                expiryLabel = "Sắp hết hạn";
+              }
+
+              // Usage statistics
+              const used = coupon.usedCount || 0;
+              const limit = coupon.usageLimit || 0;
+              const usagePercent = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+
+              return (
+                <div key={coupon.id} className="voucher-row-card">
+                  {/* Left: Ticket Punch badge */}
+                  <div className="ticket-badge-wrapper">
+                    <div className={`ticket-badge ${!isPercentage ? "fixed-type" : ""}`}>
+                      <span className="ticket-value">
+                        {isPercentage ? `${coupon.discountValue}%` : `-${Math.round(coupon.discountValue / 1000)}K`}
+                      </span>
+                      <span className="ticket-label">
+                        GIẢM GIÁ
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Middle Left: Details */}
+                  <div className="voucher-card-info">
+                    <div className="code-row">
+                      <span className={`voucher-code ${!isPercentage ? "fixed-type" : ""}`}>
+                        {coupon.code}
+                      </span>
+                      {coupon.description && (
+                        <span className="voucher-desc" title={coupon.description}>
+                          {coupon.description}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="limits-row">
+                      {coupon.minOrderValue > 0 && (
+                        <span className="limit-badge">
+                          Đơn tối thiểu: <span className="val">{coupon.minOrderValue.toLocaleString("vi-VN")}₫</span>
+                        </span>
+                      )}
+                      {!isPercentage && coupon?.maxDiscountAmount && coupon.maxDiscountAmount > 0 && (
+                        <span className="limit-badge">
+                          Giảm tối đa: <span className="val">{coupon.maxDiscountAmount.toLocaleString("vi-VN")}₫</span>
+                        </span>
+                      )}
+                      <span className="limit-badge">
+                        Mức giảm: <span className="val">{isPercentage ? `${coupon.discountValue}%` : `${coupon.discountValue.toLocaleString("vi-VN")}₫`}</span>
+                      </span>
+                    </div>
+
+                    {/* Progress limits */}
+                    <div className="usage-progress-wrapper">
+                      <div className="progress-bar-container">
+                        <div
+                          className={`progress-bar-fill ${!isPercentage ? "fixed-type" : ""}`}
+                          style={{ width: `${usagePercent}%` }}
+                        />
+                      </div>
+                      <span className="usage-text">
+                        Đã dùng: {used} / {limit > 0 ? limit : "∞"} ({usagePercent}%)
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Middle Right: Dates & Expiry */}
+                  <div className="voucher-card-dates">
+                    <span className="date-title">Hạn sử dụng</span>
+                    <span className="date-value">
+                      <CalendarOutlined style={{ color: "#00c853" }} />
+                      {end.format("DD/MM/YYYY HH:mm")}
+                    </span>
+                    <span className={`expiry-status ${expiryClass}`}>
+                      <ClockCircleOutlined /> {expiryLabel}
+                    </span>
+                  </div>
+
+                  {/* Right-Middle: Status Toggle */}
+                  <div className="voucher-card-status-wrapper">
+                    <Switch
+                      checkedChildren="Bật"
+                      unCheckedChildren="Khóa"
+                      checked={coupon.active}
+                      onChange={(checked) => handleToggleActive(checked, coupon)}
+                    />
+                  </div>
+
+                  {/* Right: Actions */}
+                  <div className="voucher-card-actions">
+                    <Button
+                      className="btn-edit"
+                      icon={<EditOutlined />}
+                      onClick={() => handleOpenModal(coupon)}
+                    />
+                    <Popconfirm
+                      title="Bạn có chắc muốn xóa voucher này?"
+                      description="Hành động này không thể hoàn tác!"
+                      onConfirm={() => handleDelete(coupon.id!)}
+                      okText="Xóa"
+                      cancelText="Hủy"
+                    >
+                      <Button danger className="btn-delete" icon={<DeleteOutlined />} />
+                    </Popconfirm>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="voucher-empty-state">
+              Không tìm thấy voucher nào phù hợp.
+            </div>
+          )}
+
+          {/* Pagination */}
+          <div className="voucher-pagination-container">
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={totalElements}
+              showSizeChanger
+              showTotal={(total) => `Tổng ${total} voucher`}
+              onChange={(p, ps) => {
+                setPage(p);
+                setPageSize(ps);
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <Modal
         title={editingId ? "Sửa Voucher" : "Tạo Voucher mới"}

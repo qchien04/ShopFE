@@ -1,7 +1,7 @@
 import { deleteData, getData, postData } from "../app/axiosClient"
-import type { PromoPost } from "../pages/Admin/Banner/PromoPostsSlot"
+import type { PromoPost } from "../pages/Admin/HomeConfig/components/PromoPostsSlot"
 import type { Review } from "../types";
-import type { BannerConfig, BannerSlot, DashboardDTO, UserAccountDTO } from "../types/entity.type"
+import type { HomePageConfig, VisualBanner, NavSlot, DashboardDTO, UserAccountDTO } from "../types/entity.type"
 import type { PageResponse } from "../types/response.type";
 
 export const adminApi = {
@@ -17,17 +17,17 @@ export const adminApi = {
   getDashboard: (): Promise<DashboardDTO> =>
     getData<DashboardDTO>("/admin/dashboard"),
 
-  setConfigBanner: (banners: BannerSlot[], categories: BannerSlot[],
-    quickTopOption: BannerSlot[], quickBottomOption: BannerSlot[],
+  setConfigBanner: (banners: VisualBanner[], categories: NavSlot[],
+    quickTopOption: NavSlot[], quickBottomOption: NavSlot[],
     featuredPostIds: number[], featuredPopularIds: number[],
-    saleEvents: PromoPost[],): Promise<BannerConfig> =>
-    postData<BannerConfig>('/admin/configs/banner', { banners, categories, quickTopOption, quickBottomOption, featuredPostIds, featuredPopularIds, saleEvents }),
+    saleEvents: PromoPost[],): Promise<HomePageConfig> =>
+    postData<HomePageConfig>('/admin/configs/banner', { banners, categories, quickTopOption, quickBottomOption, featuredPostIds, featuredPopularIds, saleEvents }),
 
-  saveFullConfig: (config: BannerConfig): Promise<BannerConfig> =>
-    postData<BannerConfig>('/admin/configs/banner', config),
+  saveFullConfig: (config: HomePageConfig): Promise<HomePageConfig> =>
+    postData<HomePageConfig>('/admin/configs/banner', config),
 
-  getConfigBanner: (): Promise<BannerConfig> =>
-    getData<BannerConfig>('/admin/configs/banner'),
+  getConfigBanner: (): Promise<HomePageConfig> =>
+    getData<HomePageConfig>('/admin/configs/banner'),
 
   getAllAdminReview: (status: string, page: number): Promise<PageResponse<Review>> =>
     getData<PageResponse<Review>>(`/admin/reviews?status=${status}&page=${page}`),

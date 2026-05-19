@@ -5,7 +5,6 @@ export interface Category {
   icon:string;
   slug: string;
   image: string;
-  active: boolean;
   parentId?: number;
   children?: Category[];
 }

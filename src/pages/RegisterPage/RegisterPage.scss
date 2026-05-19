@@ -1,7 +1,186 @@
 @use "../../styles/theme.scss";
 @use "../../styles/mixins" as m;
 
-.center-container{
-  @include m.flex-center;
-  margin-bottom: 10px;
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 16px;
+  background-color: #f8fafc; // Match clean background theme
+
+  // Overriding inline styles of the card container using class selectors
+  .ant-spin-nested-loading {
+    width: 100%;
+    max-width: 880px; // Dynamic container accommodates the form
+  }
+
+  .ant-spin-nested-loading > .ant-spin-container > div {
+    background: #ffffff !important; 
+    padding: 40px 36px !important; 
+    border-radius: 20px !important; // Perfectly matching login card shape
+    box-shadow: 0 15px 35px -10px rgba(15, 23, 42, 0.04) !important; // Soft clean depth
+    border: 1px solid #edf2f7 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  h2 {
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    margin-bottom: 24px !important;
+    letter-spacing: -0.6px;
+    text-align: center;
+  }
+
+  // FORCE Form to be fully responsive and never overflow
+  form#register-form {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  // Ant Design Form Overrides
+  .ant-form-item {
+    margin-bottom: 18px;
+    
+    .ant-form-item-label > label {
+      font-weight: 600 !important;
+      color: #334155 !important;
+      font-size: 13.5px !important;
+      margin-bottom: 4px;
+    }
+  }
+
+  // Inputs & DatePicker Styling (Matches Topbar Green Active Theme)
+  .ant-input,
+  .ant-input-password,
+  .ant-picker {
+    border-radius: 10px !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 10px 14px !important;
+    background-color: #f8fafc !important;
+    transition: all 0.2s ease;
+
+    input {
+      background: transparent !important;
+      font-size: 14.5px;
+      color: #0f172a !important;
+
+      &::placeholder {
+        color: #94a3b8 !important;
+      }
+    }
+
+    &:hover {
+      border-color: #00c853 !important;
+    }
+
+    &-focused,
+    &:focus,
+    &:focus-within {
+      border-color: #00c853 !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.12) !important;
+    }
+  }
+
+  // Special fix for datepicker height matching inputs
+  .ant-picker {
+    height: auto !important;
+    width: 100% !important;
+    padding: 10px 14px !important;
+  }
+
+  // Special rule for password suffix icon alignment
+  .ant-input-password {
+    display: inline-flex;
+    align-items: center;
+
+    .ant-input {
+      padding: 0 !important;
+    }
+  }
+
+  // Warning verification Alert banner customization
+  .ant-alert-warning {
+    border-radius: 12px !important;
+    border: 1px solid #ffe58f !important;
+    background-color: #fffbe6 !important;
+    padding: 12px 18px !important;
+    margin-top: 16px !important;
+    margin-bottom: 20px !important;
+
+    .ant-alert-message {
+      font-weight: 700 !important;
+      color: #b78103 !important;
+      font-size: 14px !important;
+    }
+
+    .ant-alert-description {
+      color: #664d03 !important;
+      font-size: 13.5px !important;
+      line-height: 1.5;
+    }
+  }
+
+  // Primary Signup Button - Topbar Signature Gradient
+  .ant-btn-primary {
+    height: 48px !important;
+    background: linear-gradient(135deg, #00c853 0%, #00e676 100%) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 200, 83, 0.15) !important;
+    transition: all 0.2s ease !important;
+
+    &:hover,
+    &:focus {
+      background: linear-gradient(135deg, #00b049 0%, #00c853 100%) !important;
+      transform: translateY(-0.5px);
+      box-shadow: 0 6px 16px rgba(0, 200, 83, 0.2) !important;
+    }
+  }
+
+  // Default Login Button
+  .ant-btn-default {
+    height: 48px !important;
+    border-radius: 10px !important;
+    border: 1px solid #cbd5e1 !important;
+    font-weight: 600 !important;
+    font-size: 14.5px !important;
+    color: #475569 !important;
+    background-color: #ffffff !important;
+    transition: all 0.2s ease !important;
+
+    &:hover {
+      background-color: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+  }
+
+  // Muted center text
+  div[style*="textAlign: 'center'"],
+  div[style*="text-align: center"] {
+    font-size: 13.5px !important;
+    color: #64748b !important;
+    margin: 16px 0 12px 0 !important;
+    font-weight: 500;
+  }
+
+  // RESPONSIVE grid fallback to prevent overflow on smaller tablets/mobiles
+  @media (max-width: 768px) {
+    .ant-col-12, .ant-col-24 {
+      display: block !important;
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+    
+    .ant-spin-nested-loading > .ant-spin-container > div {
+      padding: 28px 20px !important;
+    }
+  }
 }

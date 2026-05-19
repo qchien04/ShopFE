@@ -7,8 +7,8 @@ import { BASE_URL } from "../../app/const";
 interface Message {
   id: number;
   roomId: number;
-  senderId: number;
-  senderRole: string;
+  senderId?: number;
+  senderRole: 'CUSTOMER' | 'STAFF' | 'AI';
   content: string;
   sentAt: string;
 }

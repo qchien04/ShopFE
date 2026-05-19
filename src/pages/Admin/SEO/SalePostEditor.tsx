@@ -24,6 +24,7 @@ import {
   AlignLeftOutlined, AlignCenterOutlined, AlignRightOutlined,
   PictureOutlined, LinkOutlined, EyeOutlined,
   FontSizeOutlined, SaveOutlined, SendOutlined, LoadingOutlined,
+  ArrowLeftOutlined,
 } from '@ant-design/icons';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { antdMessage } from '../../../utils/antdMessage';
@@ -54,6 +55,7 @@ export interface PostPayload extends PostFormValues {
 interface SalePostEditorProps {
   onSave?: (payload: PostPayload) => Promise<void>;
   initialData?: Partial<PostFormValues & { content: string }>;
+  onCancel?: () => void;
 }
 
 // ========================
@@ -240,7 +242,7 @@ const EditorToolbar: React.FC<{ editor: Editor }> = ({ editor }) => {
 // ========================
 // SalePostEditor - Main
 // ========================
-const SalePostEditor: React.FC<SalePostEditorProps> = ({ onSave, initialData }) => {
+const SalePostEditor: React.FC<SalePostEditorProps> = ({ onSave, initialData, onCancel }) => {
   const [form] = Form.useForm<PostFormValues>();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -303,17 +305,36 @@ const SalePostEditor: React.FC<SalePostEditorProps> = ({ onSave, initialData }) 
       <Card
         title={
           <Space>
-            <FontSizeOutlined style={{ color: '#1890ff' }} />
-            <Title level={4} style={{ margin: 0 }}>
-              {initialData ? 'Chỉnh sửa bài viết' : 'Tạo bài viết sale mới'}
+            {onCancel && (
+              <Button 
+                icon={<ArrowLeftOutlined />} 
+                onClick={onCancel} 
+                style={{ 
+                  borderRadius: '50%', 
+                  width: 38, 
+                  height: 38, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  background: '#f5f5f5',
+                  border: 'none',
+                  color: '#595959',
+                  transition: 'all 0.2s ease',
+                }}
+                className="btn-back-post-editor"
+              />
+            )}
+            <FontSizeOutlined style={{ color: '#00c853', fontSize: 18 }} />
+            <Title level={4} style={{ margin: 0, fontWeight: 800 }}>
+              {initialData ? 'Chỉnh sửa bài viết' : 'Tạo bài viết mới'}
             </Title>
           </Space>
         }
         extra={
           <Space>
-            <Button icon={<EyeOutlined />} onClick={() => setPreviewOpen(true)}>Xem trước</Button>
-            <Button icon={<SaveOutlined />} onClick={() => handleSave('DRAFT')} loading={saving}>Lưu nháp</Button>
-            <Button type="primary" icon={<SendOutlined />} onClick={() => handleSave('PUBLISHED')} loading={saving}>Đăng bài</Button>
+            <Button icon={<EyeOutlined />} onClick={() => setPreviewOpen(true)} style={{ borderRadius: 8, height: 38 }}>Xem trước</Button>
+            <Button icon={<SaveOutlined />} onClick={() => handleSave('DRAFT')} loading={saving} style={{ borderRadius: 8, height: 38 }}>Lưu nháp</Button>
+            <Button type="primary" icon={<SendOutlined />} onClick={() => handleSave('PUBLISHED')} loading={saving} style={{ borderRadius: 8, height: 38, background: '#00c853', borderColor: '#00c853' }}>Đăng bài</Button>
           </Space>
         }
         styles={{ body: { padding: 24 } }}

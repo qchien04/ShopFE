@@ -5,22 +5,21 @@ import { useNavigate } from 'react-router-dom';
 import { useBrandList } from '../../../../hooks/Brand/useBrand';
 import { useRef, useMemo } from 'react';
 import { Grid } from "antd";
-import type { ProductSectionConfig } from '../../../../types/entity.type';
+import type { BrandsShowcaseConfig } from '../../../../types/entity.type';
 
 const { useBreakpoint } = Grid;
 
 
-const BrandShowcase = ({ section, brandIds }: { section?: ProductSectionConfig, brandIds?: number[] }) => {
+const BrandShowcase = ({ section }: { section?: BrandsShowcaseConfig }) => {
   const nav = useNavigate();
   const { data: allBrands } = useBrandList();
 
   const brands = useMemo(() => {
     if (!allBrands) return [];
 
-    // Sử dụng brandIds từ prop (top-level) hoặc fallback từ section (nếu có)
-    const activeBrandIds = brandIds && brandIds.length > 0 ? brandIds : (section as any)?.brandIds || [];
+    const activeBrandIds = section?.brandIds || [];
 
-    if (activeBrandIds.length === 0) return allBrands.slice(0, section?.productCount || 10);
+    if (activeBrandIds.length === 0) return allBrands.slice(0, section?.brandCount || 10);
 
     // Ghim thương hiệu được chọn lên đầu
     const pinned = activeBrandIds
@@ -29,10 +28,10 @@ const BrandShowcase = ({ section, brandIds }: { section?: ProductSectionConfig, 
 
     // Nếu muốn bù thêm cho đủ số lượng
     const others = allBrands.filter(b => !activeBrandIds.includes(b.id!));
-    const result = [...pinned, ...others].slice(0, section?.productCount || 10);
+    const result = [...pinned, ...others].slice(0, section?.brandCount || 10);
 
     return result;
-  }, [allBrands, section, brandIds]);
+  }, [allBrands, section]);
 
   const screens = useBreakpoint();
 
@@ -113,10 +112,18 @@ const BrandShowcase = ({ section, brandIds }: { section?: ProductSectionConfig, 
                   onClick={() => nav(`/brand/${brand.id}`)}
                 >
                   <div className="brand-image-wrapper">
-                    <img src={brand.logo} alt={brand.name} className="brand-image" />
-                    <div className="brand-overlay">
-                      <img src={brand.logo} alt={brand.name} className="brand-logo" />
-                    </div>
+                    <img
+                      src={brand.logo}
+                      alt={brand.name}
+                      className="brand-image"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+                      }}
+                    />
+                  </div>
+                  <div className="brand-info">
+                    <span className="brand-name">{brand.name}</span>
                   </div>
                 </div>
               </div>

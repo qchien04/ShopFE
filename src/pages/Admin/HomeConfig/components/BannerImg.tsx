@@ -1,7 +1,7 @@
-import type { BannerSlot } from "../../../types/entity.type";
+import type { VisualBanner } from "../../../../types/entity.type";
 import { PictureOutlined } from "@ant-design/icons";
 // ─── BannerImg ────────────────────────────────────────────────────────────────
-const BannerImg = ({ slot, className }: { slot: BannerSlot; className?: string }) => (
+const BannerImg = ({ slot, className }: { slot: VisualBanner; className?: string }) => (
   <div
     className={`banner-preview ${className ?? ""}`}
     style={slot.image ? { backgroundImage: `url(${slot.image})` } : undefined}

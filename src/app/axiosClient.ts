@@ -51,5 +51,7 @@ export const postData = <T>(url: string, body: any) =>
 export const putData = <T>(url: string, body: any) => 
   axiosClient.put<T>(url, body) as Promise<T>
 
+export const patchData = <T>(url: string, body: any) => 
+  axiosClient.patch<T>(url, body) as Promise<T>
 
-export default axiosClient;
+export default axiosClient;

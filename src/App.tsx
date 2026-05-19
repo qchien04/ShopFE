@@ -15,6 +15,10 @@ function App() {
     <ConfigProvider
       theme={{
         algorithm: theme.defaultAlgorithm,
+        token: {
+          colorPrimary: '#00c853',
+          colorLink: '#00c853',
+        }
       }}
     >
       <AntdApp>

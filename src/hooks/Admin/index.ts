@@ -28,7 +28,7 @@ export const useApproveReview = () => {
 export const useRejectReview = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (reviewId: number) =>adminApi.approveReview(reviewId),
+    mutationFn: (reviewId: number) =>adminApi.rejectReview(reviewId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-reviews"] }),
   });
 };

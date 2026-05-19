@@ -87,18 +87,20 @@ export default function ChatBox({ roomId, userId, role, room }: {
         )}
 
         {messages.map((msg, index) => {
-          const isMine = msg.senderId === userId;
+          const isAi = msg.senderRole === 'AI';
+          const isMine = !isAi && msg.senderId === userId;
           const prevMsg = messages[index - 1];
-          const showAvatar = !isMine && (!prevMsg || prevMsg.senderId !== msg.senderId);
+          const showAvatar = !isMine && (!prevMsg || prevMsg.senderId !== msg.senderId || prevMsg.senderRole !== msg.senderRole);
 
-          const avatarUrl = isMine ? null : role === "STAFF" ? room?.customerAvt : null;
-          const name = isMine ? "Tôi" : role === "STAFF" ? room?.customerName : room?.staffName;
-          const initials = getInitials(name);
+          const avatarUrl = isMine ? null : (!isAi && role === "STAFF") ? room?.customerAvt : null;
+          const name = isAi ? '🤖 AI' : isMine ? 'Tôi' : role === "STAFF" ? room?.customerName : room?.staffName;
+          const initials = isAi ? 'AI' : getInitials(name);
 
           return (
             <div
               key={msg.id}
               className={`${styles.msgRow} ${isMine ? styles.msgRowMine : styles.msgRowOther}`}
+              style={isAi ? { opacity: 0.85 } : undefined}
             >
               {/* Avatar placeholder to keep alignment */}
               {!isMine && (
@@ -119,7 +121,10 @@ export default function ChatBox({ roomId, userId, role, room }: {
                   {showAvatar && (
                     <span
                       className={styles.msgAvatarInitials}
-                      style={avatarUrl ? { display: "none" } : undefined}
+                      style={{
+                        ...(avatarUrl ? { display: "none" } : undefined),
+                        ...(isAi ? { background: 'linear-gradient(135deg,#ab47bc,#7b1fa2)', color: '#fff', fontSize: 10 } : undefined)
+                      }}
                     >
                       {initials}
                     </span>
@@ -129,9 +134,12 @@ export default function ChatBox({ roomId, userId, role, room }: {
 
               <div className={styles.msgContent}>
                 {showAvatar && !isMine && (
-                  <span className={styles.msgSenderName}>{name}</span>
+                  <span className={styles.msgSenderName} style={isAi ? { color: '#9c27b0', fontStyle: 'italic' } : undefined}>{name}</span>
                 )}
-                <div className={`${styles.bubble} ${isMine ? styles.bubbleMine : styles.bubbleOther}`}>
+                <div
+                  className={`${styles.bubble} ${isMine ? styles.bubbleMine : styles.bubbleOther}`}
+                  style={isAi ? { background: '#f3e5f5', borderLeft: '3px solid #9c27b0', color: '#4a148c', fontStyle: 'italic' } : undefined}
+                >
                   {msg.content}
                 </div>
                 <span className={`${styles.msgTime} ${isMine ? styles.msgTimeMine : styles.msgTimeOther}`}>

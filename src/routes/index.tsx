@@ -28,8 +28,7 @@ import SearchPage from "../pages/Client/SearchPage";
 import PostDetailPage from "../pages/Client/PostDetail/PostPage";
 import PostsPage from "../pages/Client/Post";
 import Dashboard from "../pages/Admin/Dashboard/Dashboard";
-import BannerManager from "../pages/Admin/Banner";
-import SupportWidget from "../components/Support";
+import HomeConfigPage from "../pages/Admin/HomeConfig/HomeConfigPage";
 import ChatManagePage from "../pages/Admin/ChatManager";
 import ProfilePage from "../pages/Client/Dashboard/Profile/Profile";
 import PaymentSuccess from "../pages/Client/PaymentStatus/Success";
@@ -45,7 +44,7 @@ export const router = createBrowserRouter([
       <AuthProvider>
         <MainLayout />
         <ChatBot></ChatBot>
-        <SupportWidget></SupportWidget>
+        {/* <SupportWidget></SupportWidget> */}
       </AuthProvider>
     ),
     children: [
@@ -168,7 +167,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "configs",
-        element: <BannerManager />,
+        element: <HomeConfigPage />,
       },
       {
         path: "coupons",

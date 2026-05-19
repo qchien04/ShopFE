@@ -135,7 +135,7 @@ const CheckoutPage = () => {
         setRedirecting(false);
       } else {
         message.success("Đặt hàng thành công!");
-        navigate("/orders");
+        navigate("/user/orders");
       }
     } catch (err: any) {
       message.error(err?.message || "Đặt hàng thất bại. Vui lòng thử lại.");

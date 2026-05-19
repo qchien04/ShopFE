@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Business Function Diagram</title>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .mermaid {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="mermaid">
+    flowchart TD
+
+    A[HỆ THỐNG BÁN HÀNG ONLINE]
+
+    A --> B[Quản lý người dùng]
+    A --> C[Quản lý sản phẩm]
+    A --> D[Quản lý đơn hàng]
+    A --> E[Thanh toán]
+    A --> F[Marketing & Content]
+    A --> G[Hỗ trợ khách hàng]
+    A --> H[Đánh giá & Bình luận]
+    A --> I[Thống kê & Báo cáo]
+
+    %% USER
+    B --> B1[Đăng ký]
+    B --> B2[Đăng nhập]
+    B --> B3[Cập nhật hồ sơ]
+    B --> B4[Phân quyền]
+    B --> B5[Sổ địa chỉ]
+    B --> B6[Danh sách yêu thích]
+
+    %% PRODUCT
+    C --> C1[Danh mục]
+    C --> C2[Sản phẩm]
+    C --> C3[Biến thể]
+    C --> C4[Thương hiệu]
+    C --> C5[Tìm kiếm & lọc]
+
+    %% ORDER
+    D --> D1[Tạo đơn hàng]
+    D --> D2[Xác nhận đơn]
+    D --> D3[Cập nhật trạng thái]
+    D --> D4[Theo dõi giao hàng]
+
+    %% PAYMENT
+    E --> E1[COD]
+    E --> E2[QR Payment]
+    E --> E3[Mã giảm giá]
+
+    %% MARKETING
+    F --> F1[Bài viết sale]
+    F --> F2[SEO]
+    F --> F3[Banner]
+    F --> F4[Tùy chỉnh giao diện]
+
+    %% SUPPORT
+    G --> G1[AI Chatbot]
+    G --> G2[Thông tin liên hệ]
+    G --> G3[Chính sách mua hàng]
+
+    %% REVIEW
+    H --> H1[Đánh giá]
+    H --> H2[Bình luận]
+    H --> H3[Kiểm duyệt]
+
+    %% REPORT
+    I --> I1[Doanh thu]
+    I --> I2[Đơn hàng]
+    I --> I3[Người dùng]
+    I --> I4[Biểu đồ]
+  </div>
+
+</body>
+
+</html>

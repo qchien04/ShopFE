@@ -13,22 +13,22 @@ import {
   SmileOutlined,
   DollarCircleOutlined,
 } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
-import type { BannerConfig, BannerSlot } from '../../../../types/entity.type';
+import type { HomePageConfig, VisualBanner, NavSlot } from '../../../../types/entity.type';
 import { adminApi } from '../../../../api/admin.api';
+import { useQuery } from '@tanstack/react-query';
 
 // ─── Types (khớp BannerManager) ──────────────────────────────────────────────
 
 
 // ─── Fallback data (ảnh tĩnh cũ) ─────────────────────────────────────────────
-const FALLBACK_BANNERS: BannerSlot[] = [
+const FALLBACK_BANNERS: VisualBanner[] = [
   { id: 'main-1', type: 'main', label: 'Banner chính', image: slide1, link: '/' },
   { id: 'main-2', type: 'main', label: 'Banner chính', image: slide2, link: '/' },
   { id: 'side-1', type: 'side', label: 'Banner phụ 1', image: sideBanner, link: '/' },
   { id: 'side-2', type: 'side', label: 'Banner phụ 2', image: slide1, link: '/' },
 ];
 
-const FALLBACK_CATEGORIES: BannerSlot[] = [
+const FALLBACK_CATEGORIES: NavSlot[] = [
   { id: 'cat-1', type: 'category', label: 'Shopee Xử Lý', icon: 'shop', link: '/' },
   { id: 'cat-2', type: 'category', label: 'Deal Hot\nGiờ Vàng', icon: 'thunder', link: '/' },
   { id: 'cat-3', type: 'category', label: 'Shopee Style\nVoucher 30%', icon: 'skin', link: '/' },
@@ -47,7 +47,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   dollar: <DollarCircleOutlined />,
 };
 
-const renderCategoryIcon = (slot: BannerSlot) => {
+const renderCategoryIcon = (slot: NavSlot) => {
   // Nếu admin nhập emoji hoặc ký tự ngắn → render thẳng
   if (slot.icon && slot.icon.length <= 4 && !ICON_MAP[slot.icon]) {
     return <span style={{ fontSize: 22 }}>{slot.icon}</span>;
@@ -57,24 +57,25 @@ const renderCategoryIcon = (slot: BannerSlot) => {
 };
 
 // ─── API fetch ────────────────────────────────────────────────────────────────
-const fetchBannerConfig = async (): Promise<BannerConfig> => {
+const fetchBannerConfig = async (): Promise<HomePageConfig> => {
   const res = await adminApi.getConfigBanner();
   return res;
 };
 
 // ─── Banner Component ─────────────────────────────────────────────────────────
-const Banner: React.FC = () => {
+const Banner: React.FC<{ banners?: VisualBanner[] }> = ({ banners }) => {
   const { data, isLoading } = useQuery({
     queryKey: ['banner-config'],
     queryFn: fetchBannerConfig,
-    staleTime: 1000 * 60 * 10,       // cache 10 phút
-    retry: false,                     // nếu API lỗi dùng fallback ngay
+    staleTime: 1000 * 60 * 10,
+    retry: false,
+    enabled: !banners
   });
 
-  // Dùng data từ API nếu có, fallback về ảnh tĩnh
-  const mainSlides = (data?.banners ?? FALLBACK_BANNERS).filter(b => b.type === 'main');
-  const sideBanners = (data?.banners ?? FALLBACK_BANNERS).filter(b => b.type === 'side');
-  const categories = data?.categories ?? FALLBACK_CATEGORIES;
+  const activeBanners = banners || data?.banners || FALLBACK_BANNERS;
+  const mainSlides = activeBanners.filter(b => b.type === 'main');
+  const sideBanners = activeBanners.filter(b => b.type === 'side');
+  const categories = data?.navCategories || FALLBACK_CATEGORIES;
 
   if (isLoading) {
     return (

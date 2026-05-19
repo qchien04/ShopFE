@@ -1,5 +1,6 @@
 // CategoryModal.tsx
-import { Modal, Form } from "antd";
+import { Modal, Form, Space } from "antd";
+import { EditOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import CategoryForm from "./CategoryForm";
 import type { Category } from "../../../types/categories.type";
 import { useEffect } from "react";
@@ -10,6 +11,7 @@ interface Props {
   onSubmit: (values: any) => void;
   loading?: boolean;
   category?: Category | null;
+  categories: Category[];
 }
 
 const CategoryModal = ({
@@ -18,6 +20,7 @@ const CategoryModal = ({
   onSubmit,
   loading,
   category,
+  categories,
 }: Props) => {
   const [form] = Form.useForm();
 
@@ -28,6 +31,7 @@ const CategoryModal = ({
         slug: category.slug,
         description: category.description,
         icon: category.icon,
+        parentId: category.parentId,
         image: category.image
           ? [
               {
@@ -47,23 +51,37 @@ const CategoryModal = ({
   return (
     <Modal
       open={open}
-      title={category ? "✏️ Sửa danh mục" : "➕ Thêm danh mục"}
-      okText={category ? "Cập nhật" : "Tạo"}
+      width={850}
+      className="premium-product-modal"
+      title={
+        <Space size={8}>
+          {category ? (
+            <EditOutlined style={{ color: "#00c853" }} />
+          ) : (
+            <PlusCircleOutlined style={{ color: "#00c853" }} />
+          )}
+          <span>{category ? "Hiệu chỉnh danh mục" : "Thêm danh mục mới"}</span>
+        </Space>
+      }
+      okText={category ? "Cập nhật" : "Tạo mới"}
       onCancel={onCancel}
       confirmLoading={loading}
       onOk={() => form.submit()}
-      destroyOnHidden
+      destroyOnClose
     >
       <CategoryForm
         form={form}
         key={category?.id ?? "create"}
         initialValues={category ? {
+          id: category.id,
           name: category.name,
           slug: category.slug,
           description: category.description,
           icon:category.icon,
-          image: category.image
+          image: category.image,
+          parentId: category.parentId
         } : {}}
+        categories={categories}
         onSubmit={onSubmit}   // ⬅ truyền xuống
       />
     </Modal>

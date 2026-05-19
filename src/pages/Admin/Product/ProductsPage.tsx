@@ -1,5 +1,5 @@
 // ProductsPage.tsx
-import { Table, Button, Space, Input, Modal, Spin } from "antd";
+import { Button, Space, Input, Modal, Spin, Pagination, Popconfirm, Image } from "antd";
 import { useState } from "react";
 import { useProductList } from "../../../hooks/Product/useProductList";
 import { useDeleteProduct } from "../../../hooks/Product/useDeleteProduct";
@@ -9,8 +9,20 @@ import { useProductDetail } from "../../../hooks/Product/useProduct";
 import type { Product } from "../../../types/product.type";
 import type { PageResponse } from "../../../types/response.type";
 import ProductForm from "./ProductFormProps";
-import { buildColumns } from "./Column";
 import ProductDetailModal from "./ProductDetailModal";
+import {
+  EyeOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  BarcodeOutlined,
+  TagOutlined,
+  FireOutlined,
+  PlusOutlined,
+  PlusCircleOutlined
+} from "@ant-design/icons";
+import "./ProductsPage.scss";
+
+
 
 export const toPayload = (values: any) => ({
   ...values,
@@ -77,8 +89,6 @@ const ProductsPage = () => {
     }
   };
 
-  const columns = buildColumns(openEditModal, deleteProduct, openViewModal, deleting);
-
   // ── Nội dung Modal ──
   const modalContent = () => {
     // Tạo mới — render thẳng, không cần chờ
@@ -118,12 +128,21 @@ const ProductsPage = () => {
         onCancel={closeModal}
         footer={null}
         width={1000}
-        destroyOnHidden
-        title={mode === "create" ? "➕ Thêm sản phẩm" : "✏️ Sửa sản phẩm"}
+        destroyOnClose
+        className="premium-product-modal"
+        title={
+          <Space size={8}>
+            {mode === "create" ? (
+              <PlusCircleOutlined style={{ color: "#00c853" }} />
+            ) : (
+              <EditOutlined style={{ color: "#00c853" }} />
+            )}
+            <span>{mode === "create" ? "Thêm sản phẩm mới" : "Cấu hình sản phẩm"}</span>
+          </Space>
+        }
       >
         {modalContent()}
       </Modal>
-
 
       <ProductDetailModal
         productId={viewingId}
@@ -132,10 +151,20 @@ const ProductsPage = () => {
       />
 
       <Space style={{ marginBottom: 16, justifyContent: "space-between", width: "100%" }}>
-        <Button type="primary" onClick={openCreateModal}>➕ Thêm sản phẩm</Button>
+        <Button
+          type="primary"
+          size="large"
+          onClick={openCreateModal}
+          icon={<PlusOutlined />}
+          style={{ borderRadius: 8, fontWeight: 600, display: "inline-flex", alignItems: "center" }}
+        >
+          Thêm sản phẩm
+        </Button>
         <Input.Search
           placeholder="Tìm kiếm sản phẩm..."
-          style={{ width: 300 }}
+          style={{ width: 320 }}
+          size="large"
+          enterButton
           value={searchText}
           onChange={e => setSearchText(e.target.value)}
           onSearch={handleSearch}
@@ -144,22 +173,145 @@ const ProductsPage = () => {
         />
       </Space>
 
-      <Table
-        bordered
-        rowKey="id"
-        columns={columns}
-        dataSource={data?.content ?? []}
-        loading={isLoading}
-        scroll={{ x: 1400 }}
-        pagination={{
-          current: page,
-          pageSize: pageSize,
-          total: data?.totalElements ?? 0,
-          showSizeChanger: true,
-          showTotal: (total) => `Tổng ${total} sản phẩm`,
-          onChange: (p, ps) => { setPage(p); setPageSize(ps); },
-        }}
-      />
+      {isLoading ? (
+        <div className="product-loading-container">
+          <Spin size="large" tip="Đang tải danh sách sản phẩm..." />
+        </div>
+      ) : (
+        <div className="product-list-container">
+          {data?.content && data.content.length > 0 ? (
+            data.content.map((product) => {
+              const hasSale = product.salePrice && product.salePrice > 0;
+              const discountPercent = hasSale && product.price
+                ? Math.round(((product.price - product.salePrice) / product.price) * 100)
+                : 0;
+
+              return (
+                <div key={product.id} className="product-row-card">
+                  {/* Left: Image */}
+                  <div className="product-card-img-wrapper">
+                    <Image
+                      width={90}
+                      height={90}
+                      style={{ objectFit: "cover", borderRadius: 8 }}
+                      src={product.mainImage}
+                      fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+                    />
+                  </div>
+
+                  {/* Middle Left: Info */}
+                  <div className="product-card-info">
+                    <h3 className="product-title" title={product.name}>
+                      {product.name}
+                    </h3>
+                    <div className="product-meta">
+                      {product.sku && (
+                        <span className="sku-badge" title="SKU">
+                          <BarcodeOutlined /> {product.sku}
+                        </span>
+                      )}
+                      {product.category?.name && (
+                        <span className="meta-tag category-tag">
+                          <TagOutlined /> {product.category.name}
+                        </span>
+                      )}
+                      {(product.brand?.name || product.brandName) && (
+                        <span className="meta-tag brand-tag">
+                          <FireOutlined /> {product.brand?.name || product.brandName}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Middle Right: Pricing & Inventory */}
+                  <div className="product-card-pricing">
+                    <div className="price-row">
+                      {hasSale ? (
+                        <>
+                          <span className="actual-price">
+                            {product.salePrice.toLocaleString()}₫
+                          </span>
+                          <span className="original-price">
+                            {product.price?.toLocaleString()}₫
+                          </span>
+                          {discountPercent > 0 && (
+                            <span className="discount-pill">-{discountPercent}%</span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="standard-price">
+                          {product.price ? product.price.toLocaleString() : 0}₫
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className={`stock-status ${product.stockQuantity > 0 ? "in" : "out"}`}>
+                      <span className={`status-dot ${product.stockQuantity > 0 ? "in-stock" : "out-of-stock"}`} />
+                      {product.stockQuantity > 0 ? `Còn hàng (${product.stockQuantity})` : "Hết hàng"}
+                    </div>
+                  </div>
+
+
+
+                  {/* Right: Actions */}
+                  <div className="product-card-actions">
+                    <Button
+                      className="btn-view"
+                      icon={<EyeOutlined />}
+                      onClick={() => openViewModal(product.id)}
+                    >
+                      Xem
+                    </Button>
+                    <Button
+                      type="primary"
+                      className="btn-edit"
+                      icon={<EditOutlined />}
+                      onClick={() => openEditModal(product.id)}
+                    >
+                      Sửa
+                    </Button>
+                    <Popconfirm
+                      title="Xóa sản phẩm này?"
+                      description="Hành động này không thể hoàn tác!"
+                      onConfirm={() => deleteProduct(product.id)}
+                      okText="Xóa"
+                      cancelText="Hủy"
+                    >
+                      <Button
+                        danger
+                        className="btn-delete"
+                        icon={<DeleteOutlined />}
+                        loading={deleting}
+                      >
+                        Xóa
+                      </Button>
+                    </Popconfirm>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="product-empty-state">
+              Không tìm thấy sản phẩm nào phù hợp.
+            </div>
+          )}
+
+          {/* Pagination */}
+          <div className="product-pagination-container">
+            <Pagination
+              current={page}
+              pageSize={pageSize}
+              total={data?.totalElements ?? 0}
+              showSizeChanger
+              showTotal={(total) => `Tổng ${total} sản phẩm`}
+              onChange={(p, ps) => {
+                setPage(p);
+                setPageSize(ps);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,5 @@
-import type { PromoPost } from "../pages/Admin/Banner/PromoPostsSlot";
-import type { ProductStatus, ProductVariant } from "./product.type";
+import type { PromoPost } from "../pages/Admin/HomeConfig/components/PromoPostsSlot";
+import type { ProductVariant } from "./product.type";
 
 export interface CartItem {
   id: number;
@@ -92,6 +92,16 @@ export interface Order {
   deliveryAttempts?: number;
   cancelReason?: string;
   internalNote?: string;
+  statusHistory?: OrderStatusHistory[];
+}
+
+export interface OrderStatusHistory {
+  id: number;
+  fromStatus?: OrderStatus;
+  toStatus: OrderStatus;
+  actionBy: string;
+  note?: string;
+  createdAt: string;
 }
 
 
@@ -102,7 +112,6 @@ export interface Brand {
   description: string;
   website: string;
   logo: string;
-  active: boolean;
   createdAt: string;
   updateAt: string;
 }
@@ -194,7 +203,6 @@ export interface FeaturedProductDTO {
   salePrice?: number;
   stockQuantity: number;
   soldCount: number;
-  status: ProductStatus;
 }
 
 export interface DashboardDTO {
@@ -207,44 +215,126 @@ export interface DashboardDTO {
 }
 
 
-export interface BannerSlot {
+export interface VisualBanner {
   id: string;
-  type: 'main' | 'side' | 'category' | 'quick-top' | 'quick-bottom';
+  type: 'main' | 'side';
   label: string;
-  image?: string;
+  image: string;
   title?: string;
   subtitle?: string;
   badge?: string;
   link?: string;
-  icon?: string;
-  children?: BannerSlotChild[];
 }
-export interface BannerSlotChild {
+
+export interface NavSlot {
   id: string;
+  type: 'category' | 'quick-top' | 'quick-bottom';
   label: string;
   link: string;
-  icon: string;
+  icon?: string;
+  children?: NavSlot[];
 }
 
 
-export interface ProductSectionConfig {
+export interface CategoryWithProducts {
+  productIds: number[];
+  categoryId: number;
+}
+
+export interface FeaturedProductConfig {
   id: string;
   title: string;
-  productIds: number[];
   active: boolean;
+  productIds: number[];
   productCount: number;
 }
 
-export interface BannerConfig {
-  banners: BannerSlot[];
-  categories: BannerSlot[];
-  quickTopOption: BannerSlot[];
-  quickBottomOption: BannerSlot[];
-  featuredPostIds: number[];
-  featuredPopularIds: number[];
-  saleEvents: PromoPost[],
-  productSections?: ProductSectionConfig[];
-  brandIds?: number[];
+export interface NewProductConfig {
+  id: string;
+  title: string;
+  active: boolean;
+  categoryOfProduct: CategoryWithProducts[];
+  productPerRow: number;
+}
+export interface BrandsShowcaseConfig {
+  id: string;
+  title: string;
+  active: boolean;
+  brandIds: number[];
+  brandCount: number;
+}
+
+export interface HotDealsSectionConfig {
+  id: string;
+  title: string;
+  active: boolean;
+  productIds: number[];
+  weeklyProductIds: number[];
+  weeklyTitle: string;
+  productPerRow: number;
+}
+
+export interface CategoryConfig {
+  id: string;
+  title: string;
+  active: boolean;
+  categoryIds: number[];
+  productPerRow: number;
+}
+
+export interface FeaturedCategoryConfig {
+  id: string;
+  title: string;
+  active: boolean;
+  categoryIds: number[];
+  categoryPerRow: number;
+}
+
+export interface NewsSectionConfig {
+  id: string;
+  title: string;
+  active: boolean;
+  postIds: number[];
+  popularPostIds: number[];
+  postPerRow: number;
+}
+
+
+export interface FooterConfig {
+  companyDescription?: string;
+  address?: string;
+  hotline?: string;
+  email?: string;
+  workingHours?: string;
+  copyright?: string;
+  facebookLink?: string;
+  twitterLink?: string;
+  instagramLink?: string;
+  youtubeLink?: string;
+  shopeeLink?: string;
+  lazadaLink?: string;
+  tiktokLink?: string;
+}
+
+export type AnySectionConfig = FeaturedProductConfig | NewProductConfig | BrandsShowcaseConfig | HotDealsSectionConfig | CategoryConfig | NewsSectionConfig | FeaturedCategoryConfig;
+
+export interface HomePageConfig {
+  banners: VisualBanner[];
+  navCategories: NavSlot[];
+  navQuickTopOption: NavSlot[];
+  navQuickBottomOption: NavSlot[];
+  saleEvents: PromoPost[];
+  footer?: FooterConfig;
+  
+  // Sections riêng biệt
+  featuredProducts?: FeaturedProductConfig;
+  newProducts?: NewProductConfig;
+  brandShowcase?: BrandsShowcaseConfig;
+  hotDeals?: HotDealsSectionConfig;
+  news?: NewsSectionConfig;
+  categorySections?: CategoryConfig[];
+  featuredCategories?: FeaturedCategoryConfig;
+  layout?: string[];
 }
 
 export type DiscountType = "PERCENTAGE" | "FIXED_AMOUNT";

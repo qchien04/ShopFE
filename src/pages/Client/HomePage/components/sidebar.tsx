@@ -9,12 +9,13 @@ import {
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import styles from './sidebar.module.scss';
-import type { BannerConfig, BannerSlot } from '../../../../types/entity.type';
+import type { HomePageConfig, NavSlot } from '../../../../types/entity.type';
 import { adminApi } from '../../../../api/admin.api';
 
 const staticMenuItems = [
   { key: 'home', icon: <HomeOutlined />, label: 'Trang Chủ' },
-  { key: 'marketplace', icon: <ShoppingOutlined />, label: 'Sàn Thương Mại Điện Tử',
+  {
+    key: 'marketplace', icon: <ShoppingOutlined />, label: 'Sàn Thương Mại Điện Tử',
     children: [
       { key: 'shopee', label: 'Shopee' },
       { key: 'lazada', label: 'Lazada' },
@@ -22,57 +23,60 @@ const staticMenuItems = [
     ],
   },
   { key: 'promotions', icon: <GiftOutlined />, label: 'Chương Trình Khuyến Mãi' },
-  { key: 'blog',       icon: <ReadOutlined />, label: 'Bài Viết' },
+  { key: 'blog', icon: <ReadOutlined />, label: 'Bài Viết' },
 ];
 
-const Sidebar = () => {
-  const { data } = useQuery<BannerConfig>({
-    queryKey: ['banner-config'],  
+const Sidebar = ({ config }: { config?: HomePageConfig }) => {
+  const { data: queryData } = useQuery<HomePageConfig>({
+    queryKey: ['banner-config'],
     queryFn: () => adminApi.getConfigBanner(),
     staleTime: 1000 * 60 * 10,
     retry: false,
+    enabled: !config // Chỉ fetch nếu chưa có config từ prop
   });
 
-  const quickTopItems = data?.quickTopOption?.filter((b) => b.type === 'quick-top') ?? [];
-  const quickBottomItems = data?.quickBottomOption?.filter((b) => b.type === 'quick-bottom') ?? [];
+  const data = config || queryData;
+
+  const quickTopItems = data?.navQuickTopOption?.filter((b) => b.type === 'quick-top') ?? [];
+  const quickBottomItems = data?.navQuickBottomOption?.filter((b) => b.type === 'quick-bottom') ?? [];
 
   const productMenu = quickTopItems.length
     ? [{
-        key: 'products',
-        icon: <AppstoreOutlined />,
-        label: 'Sản Phẩm',
-        children: quickTopItems.map((item: BannerSlot) => ({
-          key: item.id,
-          label: (
-            <a href={item.link} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              {item.icon && <span>{item.icon}</span>}
-              {item.label}
-            </a>
-          ),
-          ...(item.children?.length ? {
-            children: item.children.map((child) => ({
-              key: child.id,
-              label: (
-                <a href={child.link} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {child.icon && <span>{child.icon}</span>}
-                  {child.label}
-                </a>
-              ),
-            })),
-          } : {}),
-        })),
-      }]
-    : [{ 
-        key: 'products',
-        icon: <AppstoreOutlined />,
-        label: 'Sản Phẩm',
-        children: [
-          { key: 'adapters',     label: 'Adapter - Bộ Sạc - Nguồn' },
-          { key: 'transformers', label: 'Biến Áp' },
-          { key: 'boards',       label: 'Board Mạch' },
-          { key: 'capacitors',   label: 'Các Loại Tụ' },
-        ],
-      }];
+      key: 'products',
+      icon: <AppstoreOutlined />,
+      label: 'Sản Phẩm',
+      children: quickTopItems.map((item: NavSlot) => ({
+        key: item.id,
+        label: (
+          <a href={item.link} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {item.icon && <span>{item.icon}</span>}
+            {item.label}
+          </a>
+        ),
+        ...(item.children?.length ? {
+          children: item.children.map((child) => ({
+            key: child.id,
+            label: (
+              <a href={child.link} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {child.icon && <span>{child.icon}</span>}
+                {child.label}
+              </a>
+            ),
+          })),
+        } : {}),
+      })),
+    }]
+    : [{
+      key: 'products',
+      icon: <AppstoreOutlined />,
+      label: 'Sản Phẩm',
+      children: [
+        { key: 'adapters', label: 'Adapter - Bộ Sạc - Nguồn' },
+        { key: 'transformers', label: 'Biến Áp' },
+        { key: 'boards', label: 'Board Mạch' },
+        { key: 'capacitors', label: 'Các Loại Tụ' },
+      ],
+    }];
 
   const menuItems = [staticMenuItems[0], ...productMenu, ...staticMenuItems.slice(1)];
 
@@ -101,15 +105,15 @@ const Sidebar = () => {
         <div className={styles.searchTags}>
           {quickBottomItems.length
             ? quickBottomItems.map((item) => (
-                <a key={item.id} href={item.link} className={styles.searchTag}>
-                  {item.icon && <span style={{ marginRight: 4 }}>{item.icon}</span>}
-                  {item.label}
-                </a>
-              ))
+              <a key={item.id} href={item.link} className={styles.searchTag}>
+                {item.icon && <span style={{ marginRight: 4 }}>{item.icon}</span>}
+                {item.label}
+              </a>
+            ))
             :
-              ['Hộp Nhựa', 'Fe Sắt Silic', 'Khuôn Nhựa'].map((t) => (
-                <div key={t} className={styles.searchTag}>{t}</div>
-              ))
+            ['Hộp Nhựa', 'Fe Sắt Silic', 'Khuôn Nhựa'].map((t) => (
+              <div key={t} className={styles.searchTag}>{t}</div>
+            ))
           }
         </div>
       </div>

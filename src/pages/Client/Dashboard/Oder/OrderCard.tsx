@@ -101,7 +101,9 @@ export const OrderCard=({order,setPaymentOpen,setSelectedOrder,setDetailOpen,han
             </Button>
           )}
 
-          {order.status === OrderStatus.PENDING && (
+          {order.status !== OrderStatus.CANCELLED && 
+           order.status !== OrderStatus.DELIVERED && 
+           order.status !== OrderStatus.RETURNED && (
             <Button size="small" danger onClick={() => handleCancelOrder(order)}>Hủy</Button>
           )}
 

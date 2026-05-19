@@ -87,6 +87,7 @@ export interface AiProduct {
   productId: number;
   productName: string;
   price: number;
+  originalPrice?: number;
   description?: string;
   imageUrl?: string;
   variants: AiVariant[];
@@ -95,19 +96,12 @@ export interface AiProduct {
 export interface AiResponse {
   message: string;
   products: AiProduct[];
-  note?: string;
-  action?: {
-    type: string;
-    params: any;
+  cta?: {
+    label: string;
+    url: string;
   };
-  availableAddresses?: {
-    id: number;
-    fullName: string;
-    phone: string;
-    detailAddress: string;
-    isDefault: boolean;
-  }[];
-  availablePaymentMethods?: string[];
+  suggestions?: string[];
+  note?: string;
 }
 
 export interface VariantStats {

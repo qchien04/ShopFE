@@ -113,6 +113,7 @@ export const requiresReason = (status: OrderStatus): boolean =>
     OrderStatus.CANCELLED,
     OrderStatus.DELIVERY_FAILED,
     OrderStatus.RETURNED,
+    OrderStatus.SHIPPING,
   ].includes(status);
 
 // ── Placeholder gợi ý lý do theo trạng thái ──────────────────────────────────

@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { Input, Badge, Dropdown, type MenuProps } from 'antd';
 import logo from '../../assets/logo.png';
 import logoShort from '../../assets/logoshort.png';
-import { 
-  SearchOutlined, 
-  HeartOutlined, 
-  UserOutlined, 
+import {
+  SearchOutlined,
+  HeartOutlined,
+  UserOutlined,
   ShoppingCartOutlined,
-  DownOutlined 
+  DownOutlined
 } from '@ant-design/icons';
 import './Topbar.scss';
 import { queryClient } from '../../app/queryClient';
@@ -17,24 +17,24 @@ import { useAppDispatch, useAppSelector, type RootState } from '../../app/store'
 import { useCategoryParentList } from '../../hooks/Category/useCategotyList';
 import { LogoutOutlined, SettingOutlined } from "@ant-design/icons";
 import { useCart } from '../../hooks/Cart/useCart';
-import type { BannerConfig } from '../../types/entity.type';
+import type { HomePageConfig } from '../../types/entity.type';
 import { useQuery } from '@tanstack/react-query';
 import { adminApi } from '../../api/admin.api';
 
 
 const TopBar = () => {
-  const {data:categories} = useCategoryParentList();
+  const { data: categories } = useCategoryParentList();
   const { data: cart } = useCart();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { data } = useQuery<BannerConfig>({
-    queryKey: ['banner-config'],  
+  const { data } = useQuery<HomePageConfig>({
+    queryKey: ['banner-config'],
     queryFn: () => adminApi.getConfigBanner(),
     staleTime: 1000 * 60 * 10,
     retry: false,
   });
 
-  const {userAccount,isAuthenticated} = useAppSelector((state:RootState)=>state.auth);
+  const { userAccount, isAuthenticated } = useAppSelector((state: RootState) => state.auth);
 
   const [keyword, setKeyword] = useState("");
   const handleSearch = () => {
@@ -50,12 +50,12 @@ const TopBar = () => {
     navigate("/login");
   };
 
-  
+
   const handleDashboard = () => {
     console.log(userAccount)
     console.log(userAccount?.roles?.length)
-    if(!isAuthenticated) navigate("/login");
-    if(userAccount?.roles?.length == 0) navigate("/user/profile");
+    if (!isAuthenticated) navigate("/login");
+    if (userAccount?.roles?.length == 0) navigate("/user/profile");
     if (userAccount?.roles?.includes("ADMIN")) {
       navigate("/admin/dashboard");
     }
@@ -67,7 +67,7 @@ const TopBar = () => {
 
   // Menu cho dropdown Sản Phẩm
   const productItems: MenuProps['items'] = categories
-  ? categories.map((category) => ({
+    ? categories.map((category) => ({
       key: `parent-${category.id}`,
       label: (
         <span
@@ -84,14 +84,34 @@ const TopBar = () => {
         label: c.name,
       })),
     }))
-  : [];
+    : [];
+
+  const footer = data?.footer || {};
+  const shopeeLink = footer.shopeeLink;
+  const lazadaLink = footer.lazadaLink;
+  const tiktokLink = footer.tiktokLink;
 
   const marketplaceItems: MenuProps['items'] = [
-    { key: '1', label: 'Shopee' },
-    { key: '2', label: 'Lazada' },
-    { key: '3', label: 'Tiktok' },
+    {
+      key: 'shopee',
+      label: 'Shopee',
+      disabled: !shopeeLink,
+      onClick: () => shopeeLink && window.open(shopeeLink, '_blank'),
+    },
+    {
+      key: 'lazada',
+      label: 'Lazada',
+      disabled: !lazadaLink,
+      onClick: () => lazadaLink && window.open(lazadaLink, '_blank'),
+    },
+    {
+      key: 'tiktok',
+      label: 'TikTok Shop',
+      disabled: !tiktokLink,
+      onClick: () => tiktokLink && window.open(tiktokLink, '_blank'),
+    },
   ];
-  
+
   const promotionItems: MenuProps['items'] = data?.saleEvents?.map((item) => ({
     key: item.id,
     label: item.label,
@@ -115,7 +135,7 @@ const TopBar = () => {
 
 
   const accountItems: MenuProps["items"] = isAuthenticated
-  ? [
+    ? [
       {
         key: "user-info",
         label: (
@@ -140,6 +160,12 @@ const TopBar = () => {
         onClick: handleDashboard,
       },
       {
+        key: "orders",
+        icon: <ShoppingCartOutlined />,
+        label: "Lịch sử đơn hàng",
+        onClick: () => navigate("/user/orders"),
+      },
+      {
         key: "settings",
         icon: <SettingOutlined />,
         label: "Cài đặt",
@@ -153,7 +179,7 @@ const TopBar = () => {
         onClick: handleLogout,
       },
     ]
-  : [
+    : [
       {
         key: "login",
         icon: <UserOutlined />,
@@ -170,9 +196,9 @@ const TopBar = () => {
         <div className="topbar-container">
           {/* Logo */}
           <div className="topbar-logo">
-            <div className="logo-icon" onClick={()=>navigate("/")}>
-                <img src={logo} className="logo-full" />
-                <img src={logoShort} className="logo-short" />
+            <div className="logo-icon" onClick={() => navigate("/")}>
+              <img src={logo} className="logo-full" />
+              <img src={logoShort} className="logo-short" />
             </div>
           </div>
 
@@ -186,7 +212,7 @@ const TopBar = () => {
               onPressEnter={handleSearch}
               prefix={<SearchOutlined />}
               suffix={
-                <button 
+                <button
                   className="search-btn"
                   onClick={handleSearch}
                 >
@@ -198,11 +224,11 @@ const TopBar = () => {
 
           {/* Right Actions */}
           <div className="topbar-actions">
-            <div className="action-item" onClick={()=>navigate("/wish-list")}>
+            <div className="action-item" onClick={() => navigate("/wish-list")}>
               <HeartOutlined className="action-icon" />
               <span className="action-text">Yêu thích</span>
             </div>
-            
+
             <Dropdown
               menu={{ items: accountItems }}
               trigger={['hover']}
@@ -216,7 +242,7 @@ const TopBar = () => {
                 <span className="action-text">Tài khoản</span>
               </div>
             </Dropdown>
-            
+
             <div className="action-item" onClick={handleCart}>
               <Badge count={cart?.items?.length || 0} showZero>
                 <ShoppingCartOutlined className="action-icon" />
@@ -230,9 +256,9 @@ const TopBar = () => {
       <div className="topbar-nav">
         <div className="topbar-container">
           <nav className="nav-menu">
-            <a href="#" className="nav-item" onClick={()=>navigate("/")}>Trang Chủ</a>
-            <a href="#" className="nav-item" onClick={()=>navigate("/about")}>Giới Thiệu</a>
-            
+            <a href="#" className="nav-item" onClick={() => navigate("/")}>Trang Chủ</a>
+            <a href="#" className="nav-item" onClick={() => navigate("/about")}>Giới Thiệu</a>
+
             <Dropdown
               trigger={['hover']}
               menu={{
@@ -251,23 +277,21 @@ const TopBar = () => {
                 Sản Phẩm <DownOutlined />
               </span>
             </Dropdown>
-            
+
             <Link to="/vouchers" className="nav-item">Mã Giảm Giá</Link>
-            
-            <Link to="/" className="nav-item">Kiểm tra đơn hàng</Link>
-            
-            <Dropdown menu={{items:marketplaceItems}} trigger={['hover']}>
+
+            <Dropdown menu={{ items: marketplaceItems }} trigger={['hover']}>
               <a href="#" className="nav-item nav-dropdown">
                 Sàn Thương Mại Điện Tử <DownOutlined />
               </a>
             </Dropdown>
-            
+
             <Dropdown menu={{ items: promotionItems ?? [] }} trigger={['hover']}>
               <a href="#" className="nav-item nav-dropdown">
                 Chương Trình Khuyến Mãi <DownOutlined />
               </a>
             </Dropdown>
-            
+
             <Dropdown
               trigger={['hover']}
               menu={{

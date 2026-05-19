@@ -16,7 +16,7 @@ import type {
   OrderStatus,
 } from "../../../types/entity.type";
 import "./Dashboard.scss";
-import type { ProductStatus } from "../../../types/product.type";
+
 import { useDashboard, useNewUsersInWeek } from "../../../hooks/Admin";
 import { useUpdateStatusOrders, useOrderDetail } from "../../../hooks/Order/useOrder";
 import OrderDetailModal from "../../../components/OrderDetailModal";
@@ -39,12 +39,7 @@ const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string }> = {
   RETURNED: { label: "Hoàn hàng", color: "orange" },
 };
 
-const PRODUCT_STATUS_CONFIG: Record<ProductStatus, { label: string; color: string }> = {
-  PUBLISHED: { label: "Đang bán", color: "green" },
-  DRAFT: { label: "Nháp", color: "default" },
-  OUT_OF_STOCK: { label: "Hết hàng", color: "red" },
-  DISCONTINUED: { label: "Ngưng bán", color: "orange" },
-};
+
 
 const PAY_STATUS_CONFIG = {
   UNPAID: { label: "Chưa TT", color: "red" },
@@ -207,7 +202,7 @@ const Dashboard = () => {
       ),
     },
     { title: "Đã bán", dataIndex: "soldCount", render: (v: number) => <span className="sold-count">{v.toLocaleString()}</span>, sorter: (a, b) => a.soldCount - b.soldCount, defaultSortOrder: "descend" },
-    { title: "Trạng thái", dataIndex: "status", render: (v: ProductStatus) => { const c = PRODUCT_STATUS_CONFIG[v]; return <Tag className={`status-tag status-tag--${c.color}`}>{c.label}</Tag>; } },
+
   ];
 
   return (

@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query"
 import type { Product } from "../../types/product.type"
 import { productApi } from "../../api/product.api"
+import { aiApi } from "../../api/ai.api"
 import { productsQueryKeys } from "./room.query-key"
 import type { ProductStats } from "../../types"
 
@@ -26,5 +27,12 @@ export const useProductStats = (productId: number | null) =>
   useQuery<ProductStats>({
     queryKey: ["product-stats", productId],
     queryFn:  () =>productApi.getProductStats(productId!),
+    enabled: !!productId,
+  });
+
+export const useRelatedProducts = (productId: number, limit = 4) =>
+  useQuery<Product[]>({
+    queryKey: ["related-products", productId, limit],
+    queryFn: () => aiApi.getRelatedProducts(productId, limit),
     enabled: !!productId,
   });

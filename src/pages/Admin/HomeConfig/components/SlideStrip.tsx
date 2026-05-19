@@ -1,7 +1,7 @@
-import type { BannerSlot } from "../../../types/entity.type";
+import type { VisualBanner } from "../../../../types/entity.type";
 import { DeleteOutlined, PictureOutlined, PlusOutlined } from "@ant-design/icons";
 const SlideStrip = ({ slides, activeId, onSelect, onAdd, onDelete }: {
-  slides: BannerSlot[];
+  slides: VisualBanner[];
   activeId: string;
   onSelect: (id: string) => void;
   onAdd: () => void;

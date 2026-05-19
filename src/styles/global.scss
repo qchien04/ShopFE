@@ -1,0 +1,293 @@
+// Premium Product Modal & Form Styles
+.premium-product-modal {
+  .ant-modal-content {
+    background: #fdfdfd;
+    border-radius: 24px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+  }
+
+  .ant-modal-header {
+    background: #ffffff;
+    padding: 24px 32px;
+    margin: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    .ant-modal-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #262626;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  }
+
+  .ant-modal-close {
+    top: 24px;
+    right: 24px;
+    width: 36px;
+    height: 36px;
+    background: #f5f5f5;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: #eeeeee;
+      transform: rotate(90deg);
+    }
+  }
+
+  .ant-modal-body {
+    padding: 0;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+.premium-product-form {
+  padding: 32px;
+  background: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .form-section-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.015);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+
+    &:hover {
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 200, 83, 0.15);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #f5f5f5;
+
+      .section-icon {
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        background: #e8fced;
+        color: #00c853;
+        border-radius: 10px;
+      }
+
+      h3 {
+        font-size: 16px;
+        font-weight: 750;
+        color: #262626;
+        margin: 0;
+      }
+    }
+  }
+
+  // AntD Overrides for Form items
+  .ant-form-item {
+    margin-bottom: 20px;
+
+    .ant-form-item-label {
+      padding-bottom: 8px;
+
+      label {
+        font-size: 13px;
+        font-weight: 650;
+        color: #595959;
+
+        &::after {
+          display: none; // remove colon
+        }
+      }
+    }
+
+    .ant-input, 
+    .ant-input-number, 
+    .ant-select-selector {
+      border-radius: 10px !important;
+      border-color: #d9d9d9;
+      height: 42px !important;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: #00c853;
+      }
+
+      &:focus, &-focused {
+        border-color: #00c853 !important;
+        box-shadow: 0 0 0 2px rgba(0, 200, 83, 0.1) !important;
+      }
+    }
+
+    .ant-select-selection-search-input {
+      height: 40px !important;
+    }
+
+    textarea.ant-input {
+      height: auto !important;
+      min-height: 100px;
+      padding: 12px;
+    }
+  }
+
+  // Custom Upload Styling
+  .ant-upload-picture-card-wrapper {
+    .ant-upload-list-item-container,
+    .ant-upload-select {
+      width: 104px;
+      height: 104px;
+      border-radius: 12px !important;
+      overflow: hidden;
+      border: 2px dashed rgba(0, 0, 0, 0.08);
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: #00c853;
+        background: #fbfdfb;
+      }
+    }
+
+    .ant-upload-select {
+      background: #fafafa;
+      color: #8c8c8c;
+      font-size: 13px;
+      font-weight: 500;
+
+      .anticon {
+        font-size: 20px;
+        color: #bfbfbf;
+        margin-bottom: 6px;
+      }
+    }
+  }
+
+  // Variants Styling
+  .variant-card-container {
+    background: #fafafa;
+    border: 1px solid #f0f0f0;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+
+    &:hover {
+      background: #ffffff;
+      border-color: rgba(0, 200, 83, 0.2);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.02);
+    }
+
+    .variant-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px dashed #e8e8e8;
+      padding-bottom: 10px;
+
+      span.variant-title-text {
+        font-weight: 700;
+        font-size: 14px;
+        color: #262626;
+      }
+    }
+  }
+
+  .add-variant-btn {
+    border-radius: 12px;
+    height: 48px;
+    font-weight: 600;
+    font-size: 14px;
+    border-color: rgba(0, 200, 83, 0.4);
+    color: #00c853;
+    background: #ffffff;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: #ffffff;
+      background: #00c853;
+      border-color: #00c853;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 24px;
+    border-top: 1px solid #f0f0f0;
+
+    .btn-submit {
+      height: 46px;
+      padding: 0 32px;
+      border-radius: 12px;
+      font-weight: 600;
+      background: #00c853;
+      border-color: #00c853;
+      color: #ffffff;
+
+      &:hover {
+        background: #00e676;
+        border-color: #00e676;
+        color: #ffffff;
+      }
+    }
+
+    .btn-reset {
+      height: 46px;
+      padding: 0 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      color: #595959;
+      background: #ffffff;
+      border-color: #d9d9d9;
+
+      &:hover {
+        color: #262626;
+        border-color: #bfbfbf;
+        background: #f5f5f5;
+      }
+    }
+  }
+}
+
+// Global Premium Admin Tables
+.premium-admin-table {
+  .ant-table-thead > tr > th {
+    background: #fafafa !important;
+    font-weight: 750 !important;
+    color: #262626 !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    padding: 16px 24px !important;
+  }
+  .ant-table-tbody > tr > td {
+    padding: 16px 24px !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+  }
+  .ant-table-row {
+    transition: all 0.2s ease;
+    &:hover > td {
+      background: #fbfdfb !important;
+    }
+  }
+}
+

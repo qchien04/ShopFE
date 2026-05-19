@@ -6,12 +6,12 @@ import { useState, useEffect } from 'react';
 import type { Category } from '../../../../types/categories.type';
 import NewProductCard from '../../../../components/NewProductCard/NewProductCard';
 import type { Product } from '../../../../types/product.type';
-import type { ProductSectionConfig } from '../../../../types/entity.type';
+import type { NewProductConfig } from '../../../../types/entity.type';
 import { productApi } from '../../../../api/product.api';
 import { useNavigate } from 'react-router-dom';
 
 
-const NewProducts = ({ section }: { section?: ProductSectionConfig }) => {
+const NewProducts = ({ section }: { section?: NewProductConfig }) => {
   const { data: categories } = useCategoryList();
   const nav = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -25,17 +25,19 @@ const NewProducts = ({ section }: { section?: ProductSectionConfig }) => {
 
   useEffect(() => {
     const fetchCustom = async () => {
-      // If we are filtering by category in the UI tab, we ALWAYS fetch from default defaultProducts
-      // because specific productIds might not match the tab. 
-      // To strictly follow admin's pinned products, if selectedCategory is ALL (null), we show pinned if available.
-      if (selectedCategory == null && section && section.productIds && section.productIds.length > 0) {
+      // Tìm cấu hình cho category hiện tại trong section config
+      const catConfig = section?.categoryOfProduct?.find(c => 
+        (selectedCategory === null && c.categoryId === null) || 
+        (selectedCategory?.id === c.categoryId)
+      );
+
+      if (catConfig && catConfig.productIds?.length) {
         try {
-          const resp = await productApi.getByIds(section.productIds);
-          setProducts(resp.content.slice(0, section.productCount || 10));
+          const resp = await productApi.getByIds(catConfig.productIds);
+          setProducts(resp.content);
         } catch(e) {}
       } else {
-        const list = defaultProducts || [];
-        setProducts(list.slice(0, section?.productCount || list.length));
+        setProducts(defaultProducts || []);
       }
     };
     fetchCustom();
@@ -60,19 +62,23 @@ const NewProducts = ({ section }: { section?: ProductSectionConfig }) => {
         >
           {"Tất cả"}
         </button>
-        {categories?.slice(0, 6).map((cat) => (
-          <button
-            key={cat.id}
-            className={`category-tab ${cat.id == selectedCategory?.id ? 'active' : ''}`}
-            onClick={() => handleChangeCat(cat)}
-          >
-            {cat.name}
-          </button>
-        ))}
+        {section?.categoryOfProduct?.filter(c => c.categoryId != null).map((catConf) => {
+          const cat = categories?.find(c => c.id === catConf.categoryId);
+          if (!cat) return null;
+          return (
+            <button
+              key={cat.id}
+              className={`category-tab ${cat.id == selectedCategory?.id ? 'active' : ''}`}
+              onClick={() => handleChangeCat(cat)}
+            >
+              {cat.name}
+            </button>
+          );
+        })}
       </div>
 
       {/* Products Grid */}
-      <div className="products-grid">
+      <div className="products-grid" style={section?.productPerRow ? { '--cols': section.productPerRow } as React.CSSProperties : undefined}>
         {products?.map((product) => (
           <NewProductCard key={product.id} product={product}></NewProductCard>
         ))}

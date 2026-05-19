@@ -5,7 +5,7 @@ import { useUserRegister } from "../../hooks/Auth/useUserRegister";
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { mutate: register, isPending } = useUserRegister();
-  
+
   const rules = [
     {
       required: true,
@@ -24,6 +24,14 @@ const RegisterPage: React.FC = () => {
       message: "Số điện thoại phải đủ 10 số!",
     },
   ];
+
+  const usernameRules = [
+    ...rules,
+    {
+      pattern: /^[a-zA-Z0-9_]+$/,
+      message: "Tên đăng nhập không được chứa chữ có dấu hoặc ký tự đặc biệt!",
+    },
+  ];
   const handleSubmit = (values: any) => {
     const { password2, dob, ...rest } = values;
     const payload = {
@@ -33,10 +41,10 @@ const RegisterPage: React.FC = () => {
 
     register(payload);
   };
- 
-  
+
+
   return (
-    <div style={{width:"100%",height:"100%"}}>
+    <div style={{ width: "100%", height: "100%" }}>
       <div className="center-container">
         <Spin spinning={isPending} tip="Đang xử lý ..."
           style={{
@@ -45,10 +53,10 @@ const RegisterPage: React.FC = () => {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             zIndex: 10,
-        }}>
-          <div style={{ 
-            background: '#fff', 
-            padding: '40px', 
+          }}>
+          <div style={{
+            background: '#fff',
+            padding: '40px',
             borderRadius: '8px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
@@ -87,7 +95,7 @@ const RegisterPage: React.FC = () => {
                     name="dob"
                     rules={[{ required: true, message: 'Chọn ngày sinh' }]}
                   >
-                    <DatePicker format="DD/MM/YYYY" size="large" style={{width:"100%",height:"100%"}}/>
+                    <DatePicker format="DD/MM/YYYY" size="large" style={{ width: "100%", height: "100%" }} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -95,7 +103,7 @@ const RegisterPage: React.FC = () => {
 
               <Row gutter={2}>
                 <Col span={24}>
-                  <Form.Item label="Tài khoản" name="username" rules={rules}>
+                  <Form.Item label="Tài khoản" name="username" rules={usernameRules}>
                     <Input size="large" placeholder="Nhập tên đăng nhập" />
                   </Form.Item>
                 </Col>
@@ -129,20 +137,20 @@ const RegisterPage: React.FC = () => {
                   </Form.Item>
                 </Col>
               </Row>
-              
+
               <Alert
                 title="Lưu ý"
                 description="Sau khi đăng ký, vui lòng kiểm tra Gmail và nhấn vào link xác thực để kích hoạt tài khoản."
                 type="warning"
                 showIcon
-                style={{ marginTop: '16px' , marginBottom:"10px"}}
+                style={{ marginTop: '16px', marginBottom: "10px" }}
               />
 
 
               <Form.Item>
-                <Button 
-                  type="primary" 
-                  htmlType="submit" 
+                <Button
+                  type="primary"
+                  htmlType="submit"
                   loading={isPending}
                   size="large"
                   block
@@ -150,13 +158,13 @@ const RegisterPage: React.FC = () => {
                   Đăng kí
                 </Button>
               </Form.Item>
-              
+
               <div style={{ textAlign: 'center' }}>
                 Đã có tài khoản?
               </div>
-              
-              <Button 
-                type="default" 
+
+              <Button
+                type="default"
                 onClick={() => navigate("/login")}
                 size="large"
                 block
@@ -166,11 +174,11 @@ const RegisterPage: React.FC = () => {
 
             </Form>
           </div>
-          
+
         </Spin>
       </div>
     </div>
-    
+
   );
 };
 

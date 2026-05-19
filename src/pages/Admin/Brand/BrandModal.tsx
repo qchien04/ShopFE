@@ -1,5 +1,6 @@
 // BrandModal.tsx
-import { Modal, Form } from "antd";
+import { Modal, Form, Space } from "antd";
+import { EditOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import BrandForm from "./BrandForm";
 import type { Brand } from "../../../types/entity.type";
 
@@ -23,12 +24,23 @@ const BrandModal = ({
   return (
     <Modal
       open={open}
-      title={brand ? "✏️ Sửa brand" : "➕ Thêm brand"}
-      okText={brand ? "Cập nhật" : "Tạo"}
+      width={850}
+      className="premium-product-modal"
+      title={
+        <Space size={8}>
+          {brand ? (
+            <EditOutlined style={{ color: "#00c853" }} />
+          ) : (
+            <PlusCircleOutlined style={{ color: "#00c853" }} />
+          )}
+          <span>{brand ? "Hiệu chỉnh thương hiệu" : "Thêm thương hiệu mới"}</span>
+        </Space>
+      }
+      okText={brand ? "Cập nhật" : "Tạo mới"}
       onCancel={onCancel}
       confirmLoading={loading}
       onOk={() => form.submit()}
-      destroyOnHidden   // ⬅ sửa luôn lỗi phụ bên dưới
+      destroyOnClose
     >
       <BrandForm
         form={form}

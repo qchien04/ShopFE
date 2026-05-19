@@ -22,8 +22,7 @@ export interface ProductFormValues {
   stockQuantity: number;
   shortDescription: string;
   fullDescription?: string;
-  status: string;
-  featured: boolean;
+
   mainImage: any[];
   images: any[];
   variants: VariantFormValue[];
@@ -31,12 +30,14 @@ export interface ProductFormValues {
 
 
 export interface CategoryFormValues {
+  id?: number
   name: string;
   description: string;
   slug: string;
-  icon:string;
+  icon: string;
   image: string;
-  active: boolean;
+
+  parentId?: number;
 }
 
 export interface BrandFormValues {
@@ -45,7 +46,7 @@ export interface BrandFormValues {
   website: string;
   slug: string;
   logo: string;
-  active: boolean;
+
 }
 export interface AddToCartRequest {
   productVariantId: number;
@@ -70,36 +71,36 @@ export interface CreateCustomerAddressRequest {
   lng?: number;
 }
 
-export interface OrderRequestItem{
-  productVariantId:number;
-  quantity:number;
+export interface OrderRequestItem {
+  productVariantId: number;
+  quantity: number;
 }
 
 
 export interface CreateOrderRequest {
   addressId: number;
   paymentMethod: PaymentMethod;
-  items:OrderRequestItem[];
+  items: OrderRequestItem[];
   couponCode?: string;
 }
 
 
-export interface CreatePaymentRequest{
+export interface CreatePaymentRequest {
   orderId: number;
   paymentMethod: PaymentMethod;
 }
 
-export interface ChangePasswordRequest{
+export interface ChangePasswordRequest {
   oldPassword: string;
   newPassword: string;
 }
 
-export interface UpdateUserInfoRequest{
+export interface UpdateUserInfoRequest {
   fullName: string;
   dob: string;
 }
 
-export interface ReviewRequest{
+export interface ReviewRequest {
   rating: number;
   comment: string;
 }

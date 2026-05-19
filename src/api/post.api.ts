@@ -3,7 +3,7 @@ import type { Post, PostPayload, PostStatus } from "../types/entity.type";
 import type { PageResponse } from "../types/response.type";
 
 
-export interface UpdatePostPayload extends Partial<PostPayload> {}
+export interface UpdatePostPayload extends Partial<PostPayload> { }
 export interface GetPostsParams {
   page?: number;
   size?: number;
@@ -14,22 +14,27 @@ export interface GetPostsParams {
 export const postApi = {
 
   getAll: async (params: GetPostsParams = {}): Promise<PageResponse<Post>> =>
-     getData<PageResponse<Post>>(`/posts`, params),
+    getData<PageResponse<Post>>(`/posts`, params),
 
-   getPre: async (): Promise<Post[]> =>
-     getData<Post[]>(`/posts/pretent`,),
+  getByIds: async (ids: number[]): Promise<Post[]> => {
+    const res = await getData<PageResponse<Post>>(`/posts?ids=${ids.join(",")}`);
+    return res.content;
+  },
 
-   getRand: async (): Promise<Post[]> =>
-     getData<Post[]>(`/posts/rand`,),
+  getPre: async (): Promise<Post[]> =>
+    getData<Post[]>(`/posts/pretent`,),
 
-   getPopular: async (): Promise<Post[]> =>
-     getData<Post[]>(`/posts/popular`,),
-   
+  getRand: async (): Promise<Post[]> =>
+    getData<Post[]>(`/posts/rand`,),
+
+  getPopular: async (): Promise<Post[]> =>
+    getData<Post[]>(`/posts/popular`,),
+
 
   /**
    * Lấy chi tiết một bài viết theo ID
    */
-  getById: async (id: number): Promise<Post> => 
+  getById: async (id: number): Promise<Post> =>
     getData(`/posts/${id}`),
 
   /**
@@ -42,7 +47,7 @@ export const postApi = {
   /**
    * Cập nhật bài viết (dùng cho edit page)
    */
-  update: async (id: number, payload: UpdatePostPayload): Promise<Post> => 
+  update: async (id: number, payload: UpdatePostPayload): Promise<Post> =>
     putData(`/posts/${id}`, payload),
 
 
@@ -55,7 +60,7 @@ export const postApi = {
   /**
    * Thay đổi trạng thái bài viết (draft ↔ published)
    */
-  updateStatus: async (id: number, status: PostStatus): Promise<Post> => 
+  updateStatus: async (id: number, status: PostStatus): Promise<Post> =>
     putData(`/posts/${id}/status`, { status }),
 }
 

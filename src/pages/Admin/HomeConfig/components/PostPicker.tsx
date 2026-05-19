@@ -1,6 +1,6 @@
 import { Checkbox, Empty, Pagination, Spin, Tag, Tooltip, Button } from "antd";
-import type { Post } from "../../../types/entity.type";
-import { antdMessage } from "../../../utils/antdMessage";
+import type { Post } from "../../../../types/entity.type";
+import { antdMessage } from "../../../../utils/antdMessage";
 import {
   PictureOutlined,
   CopyOutlined,
@@ -12,30 +12,30 @@ export const PostPicker = ({
   loading,
   selectedIds,
   onChange,
-  max = 6,
+  max,
   renderActions,
   page = 0,
   pageSize = 10,
   total,
   onPageChange,
 }: {
-  posts:          Post[]   | undefined;
-  loading:        boolean;
-  selectedIds:    number[];
-  onChange:       (ids: number[]) => void;
-  max?:           number;
+  posts: Post[] | undefined;
+  loading: boolean;
+  selectedIds: number[];
+  onChange: (ids: number[]) => void;
+  max?: number;
   renderActions?: (post: Post) => React.ReactNode;
   // Props phân trang — tuỳ chọn (nếu không truyền thì không hiện Pagination)
-  page?:          number;
-  pageSize?:      number;
-  total?:         number;
-  onPageChange?:  (page: number, pageSize: number) => void;
+  page?: number;
+  pageSize?: number;
+  total?: number;
+  onPageChange?: (page: number, pageSize: number) => void;
 }) => {
   const toggle = (id: number) => {
     if (selectedIds.includes(id)) {
       onChange(selectedIds.filter((x) => x !== id));
     } else {
-      if (selectedIds.length >= max) {
+      if (max !== undefined && selectedIds.length >= max) {
         antdMessage.warning(`Chỉ được chọn tối đa ${max} bài`);
         return;
       }
@@ -62,7 +62,7 @@ export const PostPicker = ({
   return (
     <div className="post-picker">
       <div className="post-picker__hint">
-        Đã chọn <strong>{selectedIds.length}</strong> / {max} bài •
+        Đã chọn <strong>{selectedIds.length}</strong>{max !== undefined ? ` / ${max}` : ''} bài •
         Click để chọn/bỏ chọn bài hiển thị trang chủ
       </div>
 

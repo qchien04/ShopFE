@@ -6,7 +6,7 @@ import {
   ShoppingCartOutlined, ClockCircleOutlined, CheckCircleOutlined,
   CloseCircleOutlined, TruckOutlined,
 } from '@ant-design/icons';
-import { useMyOrders } from '../../../../hooks/Order/useOrder';
+import { useMyOrders, useCancelOrder } from '../../../../hooks/Order/useOrder';
 import type { Order } from '../../../../types/entity.type';
 import { OrderStatus, PaymentMethod } from '../../../../types/entity.type';
 import { paymentApi } from '../../../../api/payment.api';
@@ -27,6 +27,7 @@ const TAB_ITEMS = [
 
 const OrderListPage = () => {
   const { data, isLoading } = useMyOrders();
+  const { mutate: cancelOrder } = useCancelOrder();
   const [activeTab, setActiveTab]             = useState('ALL');
   const [selectedOrder, setSelectedOrder]     = useState<Order | null>(null);
   const [detailOpen, setDetailOpen]           = useState(false);
@@ -98,7 +99,9 @@ const OrderListPage = () => {
       content: `Xác nhận hủy đơn ${order.orderNumber}?`,
       okText: 'Hủy đơn', cancelText: 'Không',
       okButtonProps: { danger: true },
-      onOk: async () => { message.success('Đã hủy đơn hàng'); },
+      onOk: () => {
+        cancelOrder({ id: order.id, reason: "Khách hàng hủy đơn" });
+      },
     });
   };
 
@@ -160,6 +163,7 @@ const OrderListPage = () => {
         detailOpen={detailOpen} 
         selectedOrder={selectedOrder!}
         setDetailOpen={setDetailOpen}
+        handleCancelOrder={handleCancelOrder}
       ></OrderClientDetailModal>
 
       <PaymentModal 

@@ -13,21 +13,21 @@ export type ProductListType =
   | "new"
   | "search"
 
-export type ParamSearch={
-  type:ProductListType,
-  keyword?:string|null,
+export type ParamSearch = {
+  type: ProductListType,
+  keyword?: string | null,
   page?: number,
   size?: number,
   minPrice?: number,
   maxPrice?: number,
-  brandIds?: number[]|null,
-  mainCategoryId?:number,
-  subCategoryIds?:number[]|null,
+  brandIds?: number[] | null,
+  mainCategoryId?: number,
+  subCategoryIds?: number[] | null,
   sort?: string,
   inStock?: boolean,
 }
 
-export const useProductList = <T = PageResponse<Product>>(params: ParamSearch = {type:"all"}) => {
+export const useProductList = <T = PageResponse<Product>>(params: ParamSearch = { type: "all" }) => {
   return useQuery<T>({
     queryKey: productsQueryKeys.list(params),
     queryFn: () => {
@@ -40,9 +40,9 @@ export const useProductList = <T = PageResponse<Product>>(params: ParamSearch = 
 
         case "featured":
           return productApi.getFeaturedProducts() as T
-          
+
         case "new":
-          return productApi.getNew(params.mainCategoryId||1) as T
+          return productApi.getNew(params.mainCategoryId ?? null) as T
 
         case "search":
           return productApi.getByKeyword(params) as T
@@ -51,7 +51,7 @@ export const useProductList = <T = PageResponse<Product>>(params: ParamSearch = 
           return productApi.getAll(params) as T
       }
     },
-   enabled: (() => {
+    enabled: (() => {
       switch (params.type) {
         case "all":
         case "featured":
@@ -62,7 +62,7 @@ export const useProductList = <T = PageResponse<Product>>(params: ParamSearch = 
           return Boolean(params?.mainCategoryId)
 
         case "brand":
-          return Boolean(params?.brandIds?.length==1)
+          return Boolean(params?.brandIds?.length == 1)
 
         case "search":
           return Boolean(params?.keyword)

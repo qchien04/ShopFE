@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   Modal, Descriptions, Table, Steps, Button,
-  Space, Tag, Input, Divider, Image, Alert,
+  Space, Tag, Input, Divider, Image, Alert, Timeline, Select,
 } from 'antd';
 import {
   CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined,
@@ -15,25 +15,37 @@ import { getStatusActions, getStatusStep, paymentMethodText, paymentStatusColors
 
 
 interface Props {
-  open:           boolean;
-  order:          Order;
-  onClose:        () => void;
-  onUpdateStatus: (order: Order, newStatus: OrderStatus, reason?: string, internalNote?:string) => void;
+  open: boolean;
+  order: Order;
+  onClose: () => void;
+  onUpdateStatus: (order: Order, newStatus: OrderStatus, reason?: string, internalNote?: string) => void;
 }
 
 const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
-  const [adminNote,     setAdminNote]     = useState(order?.internalNote ?? '');
-  const [reasonTarget,  setReasonTarget]  = useState<OrderStatus | null>(null);
-  const [reason,        setReason]        = useState('');
+  const [adminNote, setAdminNote] = useState(order?.internalNote ?? '');
+  const [reasonTarget, setReasonTarget] = useState<OrderStatus | null>(null);
+  const [reason, setReason] = useState('');
+
+  // Shipper assignment states
+  const [carrier, setCarrier] = useState('Giao Hàng Nhanh (GHN)');
+  const [shipperName, setShipperName] = useState('');
+  const [shipperPhone, setShipperPhone] = useState('');
+  const [trackingCode, setTrackingCode] = useState('');
+
+  const isPhoneValid = (phone: string) => {
+    if (!phone) return true;
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone);
+  };
 
   if (!order) return null;
 
-  const currentStep    = getStatusStep(order.status);
-  const statusActions  = getStatusActions(order);
+  const currentStep = getStatusStep(order.status);
+  const statusActions = getStatusActions(order);
   const isDeliveryFail = order.status === OrderStatus.DELIVERY_FAILED;
-  const isCancelled    = order.status === OrderStatus.CANCELLED;
-  const isReturned     = order.status === OrderStatus.RETURNED;
-  const isTerminal     = isCancelled || isReturned;
+  const isCancelled = order.status === OrderStatus.CANCELLED;
+  const isReturned = order.status === OrderStatus.RETURNED;
+  const isTerminal = isCancelled || isReturned;
 
   // ── Xử lý action ──────────────────────────────────────────────────────────
   const handleAction = (newStatus: OrderStatus) => {
@@ -41,20 +53,30 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
       setReasonTarget(newStatus);
       setReason('');
     } else {
-      onUpdateStatus(order, newStatus,reason,adminNote);
+      onUpdateStatus(order, newStatus, reason, adminNote);
     }
   };
 
   const confirmAction = () => {
     if (!reasonTarget) return;
-    onUpdateStatus(order, reasonTarget, reason.trim(),adminNote);
+    let finalNote = reason.trim();
+    if (reasonTarget === OrderStatus.SHIPPING) {
+      finalNote = `ĐVVC: ${carrier} | Shipper: ${shipperName.trim() || 'N/A'} (SĐT: ${shipperPhone.trim() || 'N/A'}) | Mã vận đơn: ${trackingCode.trim() || 'N/A'}`;
+    }
+    onUpdateStatus(order, reasonTarget, finalNote, adminNote);
     setReasonTarget(null);
     setReason('');
+    setShipperName('');
+    setShipperPhone('');
+    setTrackingCode('');
   };
 
   const cancelAction = () => {
     setReasonTarget(null);
     setReason('');
+    setShipperName('');
+    setShipperPhone('');
+    setTrackingCode('');
   };
 
   // ── Columns ───────────────────────────────────────────────────────────────
@@ -142,13 +164,13 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
               status={isDeliveryFail ? 'error' : 'process'}
               items={[
                 { title: 'Chờ xác nhận', icon: <ClockCircleOutlined /> },
-                { title: 'Đã xác nhận',  icon: <CheckCircleOutlined /> },
-                { title: 'Đang xử lý',   icon: <ShoppingOutlined />    },
+                { title: 'Đã xác nhận', icon: <CheckCircleOutlined /> },
+                { title: 'Đang xử lý', icon: <ShoppingOutlined /> },
                 {
                   title: isDeliveryFail ? 'Giao thất bại' : 'Đang giao',
-                  icon:  isDeliveryFail ? <WarningOutlined /> : <TruckOutlined />,
+                  icon: isDeliveryFail ? <WarningOutlined /> : <TruckOutlined />,
                 },
-                { title: 'Hoàn thành',   icon: <CheckCircleOutlined /> },
+                { title: 'Hoàn thành', icon: <CheckCircleOutlined /> },
               ]}
             />
           </div>
@@ -221,7 +243,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
               {order.discount > 0 && (
                 <div style={{ marginTop: 4 }}>
                   <span style={{ color: '#52c41a', fontSize: 13, display: 'block' }}>
-                    Giảm {order.discount.toLocaleString('vi-VN')}₫ 
+                    Giảm {order.discount.toLocaleString('vi-VN')}₫
                     {order.couponCode && ` (${order.couponCode})`}
                   </span>
                   {order.couponDetails && (
@@ -278,7 +300,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
                     {order.discount > 0 && (
                       <div style={{ marginTop: 4 }}>
                         <span style={{ color: '#52c41a', fontSize: 13, display: 'block' }}>
-                          Giảm {order.discount.toLocaleString('vi-VN')}₫ 
+                          Giảm {order.discount.toLocaleString('vi-VN')}₫
                           {order.couponCode && ` (${order.couponCode})`}
                         </span>
                         {order.couponDetails && (
@@ -304,6 +326,81 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
             )}
           />
         </div>
+
+        {/* ── Lịch sử trạng thái đơn hàng ──────────────────────────────────── */}
+        {order.statusHistory && order.statusHistory.length > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontWeight: 500, marginBottom: 12 }}>📜 Lịch sử trạng thái đơn hàng</div>
+            <Timeline
+              mode="left"
+              items={order.statusHistory.map(history => {
+                const formattedDate = new Date(history.createdAt).toLocaleString('vi-VN');
+                const toStatusText = statusText[history.toStatus] || history.toStatus;
+                const toColor = statusColors[history.toStatus] || 'gray';
+
+                const isShippingNote = history.note && history.note.startsWith("ĐVVC: ");
+                let parsedNote: React.ReactNode = history.note;
+
+                if (isShippingNote) {
+                  const parts = history.note?.split(" | ");
+                  const dvvc = parts?.[0]?.replace("ĐVVC: ", "") || 'N/A';
+                  const shipper = parts?.[1]?.replace("Shipper: ", "") || 'N/A';
+                  const mavandon = parts?.[2]?.replace("Mã vận đơn: ", "") || 'N/A';
+
+                  parsedNote = (
+                    <div style={{
+                      marginTop: 6,
+                      padding: '10px 14px',
+                      background: 'linear-gradient(135deg, #f6ffed 0%, #e6f7ff 100%)',
+                      border: '1px solid #b7eb8f',
+                      borderRadius: 8,
+                      fontSize: 12,
+                      color: '#237804',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                    }}>
+                      <div style={{ fontWeight: 600, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <TruckOutlined style={{ fontSize: 14 }} /> Thông tin giao hàng & Shipper:
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px' }}>
+                        <div><strong>Đơn vị:</strong> {dvvc}</div>
+                        <div><strong>Mã vận đơn:</strong> <Tag color="blue" style={{ margin: 0, fontSize: 10 }}>{mavandon}</Tag></div>
+                        <div style={{ gridColumn: 'span 2', marginTop: 2 }}>
+                          <strong>Shipper:</strong> {shipper}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return {
+                  label: formattedDate,
+                  color: toColor === 'error' ? 'red' : toColor === 'success' ? 'green' : toColor === 'warning' ? 'orange' : 'blue',
+                  children: (
+                    <div>
+                      <strong>
+                        Chuyển sang: <Tag color={toColor} style={{ marginLeft: 4 }}>{toStatusText}</Tag>
+                      </strong>
+                      {history.note && (
+                        <div style={{ fontSize: 12, color: '#555', marginTop: 4 }}>
+                          {isShippingNote ? parsedNote : <span>Chi tiết: <em>{history.note}</em></span>}
+                        </div>
+                      )}
+                      <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>
+                        Người thực hiện: <span style={{ fontWeight: 500 }}>
+                          {history.actionBy === 'SYSTEM'
+                            ? 'Hệ thống'
+                            : history.actionBy.startsWith('USER_ID_')
+                              ? 'Khách hàng'
+                              : 'Quản trị viên'}
+                        </span>
+                      </div>
+                    </div>
+                  ),
+                };
+              })}
+            />
+          </div>
+        )}
 
         {/* ── Ghi chú nội bộ ───────────────────────────────────────────────── */}
         <div style={{ marginBottom: 16 }}>
@@ -335,30 +432,103 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
           </Space>
         )}
 
-        {/* ── Nhập lý do (hiện sau khi bấm action cần reason) ─────────────── */}
+        {/* ── Nhập lý do hoặc phân công Shipper ─────────────── */}
         {reasonTarget && (
           <div style={{
             background: '#fafafa', border: '1px solid #f0f0f0',
-            borderRadius: 8, padding: 16,
+            borderRadius: 8, padding: 16, marginTop: 16
           }}>
-            <div style={{ fontWeight: 500, marginBottom: 8 }}>
-              {reasonTarget === OrderStatus.DELIVERY_FAILED && 'Lý do giao thất bại'}
-              {reasonTarget === OrderStatus.CANCELLED       && 'Lý do hủy đơn'}
-              {reasonTarget === OrderStatus.RETURNED        && 'Lý do hoàn hàng'}
-            </div>
-            <Input.TextArea
-              autoFocus
-              rows={3}
-              placeholder={reasonPlaceholder[reasonTarget]}
-              value={reason}
-              onChange={e => setReason(e.target.value)}
-              style={{ marginBottom: 10 }}
-            />
+            {reasonTarget === OrderStatus.SHIPPING ? (
+              <div>
+                <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 12, color: '#1890ff', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <TruckOutlined /> PHÂN CÔNG ĐƠN VỊ VẬN CHUYỂN & SHIPPER
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }}>
+                      Đơn vị vận chuyển <span style={{ color: 'red' }}>*</span>
+                    </label>
+                    <Select
+                      style={{ width: '100%' }}
+                      value={carrier}
+                      onChange={val => setCarrier(val)}
+                      options={[
+                        { value: 'Giao Hàng Nhanh (GHN)', label: 'Giao Hàng Nhanh (GHN)' },
+                        { value: 'Giao Hàng Tiết Kiệm (GHTK)', label: 'Giao Hàng Tiết Kiệm (GHTK)' },
+                        { value: 'Viettel Post', label: 'Viettel Post' },
+                        { value: 'Shopee Express', label: 'Shopee Express' },
+                        { value: 'GrabExpress', label: 'GrabExpress (Giao nhanh)' },
+                        { value: 'Shipper nội bộ', label: 'Shipper nội bộ (Cửa hàng tự giao)' },
+                      ]}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }}>
+                      Mã vận đơn (nếu có)
+                    </label>
+                    <Input
+                      placeholder="VD: GHN987654321"
+                      value={trackingCode}
+                      onChange={e => setTrackingCode(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }}>
+                      Tên người giao hàng (Shipper) <span style={{ color: 'red' }}>*</span>
+                    </label>
+                    <Input
+                      placeholder="Nhập tên Shipper"
+                      value={shipperName}
+                      onChange={e => setShipperName(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#555', marginBottom: 4 }}>
+                      Số điện thoại Shipper <span style={{ color: 'red' }}>*</span>
+                    </label>
+                    <Input
+                      placeholder="Nhập SĐT Shipper (10 chữ số)"
+                      maxLength={10}
+                      value={shipperPhone}
+                      onChange={e => setShipperPhone(e.target.value.replace(/[^0-9]/g, ''))}
+                    />
+                    {shipperPhone && !isPhoneValid(shipperPhone) && (
+                      <span style={{ color: 'red', fontSize: 11, display: 'block', marginTop: 2 }}>
+                        Số điện thoại phải có đúng 10 chữ số!
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div style={{ fontWeight: 500, marginBottom: 8 }}>
+                  {reasonTarget === OrderStatus.DELIVERY_FAILED && 'Lý do giao thất bại'}
+                  {reasonTarget === OrderStatus.CANCELLED && 'Lý do hủy đơn'}
+                  {reasonTarget === OrderStatus.RETURNED && 'Lý do hoàn hàng'}
+                </div>
+                <Input.TextArea
+                  autoFocus
+                  rows={3}
+                  placeholder={reasonPlaceholder[reasonTarget]}
+                  value={reason}
+                  onChange={e => setReason(e.target.value)}
+                  style={{ marginBottom: 10 }}
+                />
+              </div>
+            )}
+
             <Space>
               <Button
                 type="primary"
                 danger={[OrderStatus.CANCELLED, OrderStatus.RETURNED].includes(reasonTarget)}
-                disabled={!reason.trim()}
+                disabled={
+                  reasonTarget === OrderStatus.SHIPPING
+                    ? (!shipperName.trim() || !shipperPhone.trim() || !isPhoneValid(shipperPhone))
+                    : !reason.trim()
+                }
                 onClick={confirmAction}
               >
                 Xác nhận
@@ -370,7 +540,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
 
         {/* ── Đóng ─────────────────────────────────────────────────────────── */}
         {!reasonTarget && (
-          <Button style={{marginLeft:5, marginTop: statusActions.length > 0 ? 8 : 0 }} onClick={onClose}>
+          <Button style={{ marginLeft: 5, marginTop: statusActions.length > 0 ? 8 : 0 }} onClick={onClose}>
             Đóng
           </Button>
         )}

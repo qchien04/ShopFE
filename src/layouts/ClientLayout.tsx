@@ -1,8 +1,6 @@
-import { Tabs, Avatar, Typography } from "antd";
+import { Tabs } from "antd";
 import { HomeOutlined, ShoppingOutlined, UserOutlined } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-
-const { Text } = Typography;
 
 const NAV_ITEMS = [
   { key: "profile", icon: <UserOutlined />, label: "Hồ sơ" },
@@ -24,33 +22,6 @@ const ClientLayout = () => {
         boxSizing: "border-box",
       }}
     >
-      {/* User info */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          marginBottom: 20,
-          padding: "16px",
-          background: "#fff",
-          borderRadius: 10,
-          boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-        }}
-      >
-        <Avatar
-          size={48}
-          icon={<UserOutlined />}
-          style={{ background: "#00b96b", flexShrink: 0 }}
-        />
-        <div>
-          <Text strong style={{ display: "block" }}>
-            Nguyễn Văn A
-          </Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            Thành viên
-          </Text>
-        </div>
-      </div>
 
       {/* Tabs */}
       <div

@@ -1,7 +1,7 @@
 import React from 'react';
-import { 
-  FacebookFilled, 
-  TwitterCircleFilled, 
+import {
+  FacebookFilled,
+  TwitterCircleFilled,
   InstagramFilled,
   YoutubeFilled,
   PhoneOutlined,
@@ -15,9 +15,36 @@ import banking from '../../assets/banking.png'
 import "./Footer.scss";
 import { useCategoryParentList } from '../../hooks/Category/useCategotyList';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { adminApi } from '../../api/admin.api';
 
 const Footer: React.FC = () => {
-  const {data:categories} = useCategoryParentList();
+  const { data: categories } = useCategoryParentList();
+
+  const { data: config } = useQuery({
+    queryKey: ['banner-config'],
+    queryFn: () => adminApi.getConfigBanner(),
+    staleTime: 1000 * 60 * 10,
+    retry: false
+  });
+
+  const footer = config?.footer || {};
+  const companyDescription = footer.companyDescription || "Chuyên cung cấp linh kiện điện tử chính hãng, uy tín hàng đầu Việt Nam. Cam kết chất lượng - Giá cả cạnh tranh.";
+  const address = footer.address || "123 Đường Trần Phú, Quận Hà Đông, TP.Hà Nội";
+  const hotline = footer.hotline || "1900 1000";
+  const email = footer.email || "chien1472k4@gmail.com";
+  const workingHours = footer.workingHours || "Thứ 2 - Thứ 7: 8:00 - 19:00";
+  const copyright = footer.copyright || "© 2026 Anbato Electronic. All rights reserved.";
+
+  const facebookLink = footer.facebookLink || "#";
+  const twitterLink = footer.twitterLink || "#";
+  const instagramLink = footer.instagramLink || "#";
+  const youtubeLink = footer.youtubeLink || "#";
+
+  const shopeeLink = footer.shopeeLink;
+  const lazadaLink = footer.lazadaLink;
+  const tiktokLink = footer.tiktokLink;
+
   return (
     <footer className="footer">
       {/* Main Footer Content */}
@@ -29,30 +56,55 @@ const Footer: React.FC = () => {
               <img src={logo} alt="Logo" />
             </div>
             <p className="company-description">
-              Chuyên cung cấp linh kiện điện tử chính hãng, uy tín hàng đầu Việt Nam. 
-              Cam kết chất lượng - Giá cả cạnh tranh.
+              {companyDescription}
             </p>
             <div className="social-links">
-              <a href="#" className="social-icon facebook">
+              <a href={facebookLink} target="_blank" rel="noopener noreferrer" className="social-icon facebook">
                 <FacebookFilled />
               </a>
-              <a href="#" className="social-icon twitter">
+              <a href={twitterLink} target="_blank" rel="noopener noreferrer" className="social-icon twitter">
                 <TwitterCircleFilled />
               </a>
-              <a href="#" className="social-icon instagram">
+              <a href={instagramLink} target="_blank" rel="noopener noreferrer" className="social-icon instagram">
                 <InstagramFilled />
               </a>
-              <a href="#" className="social-icon youtube">
+              <a href={youtubeLink} target="_blank" rel="noopener noreferrer" className="social-icon youtube">
                 <YoutubeFilled />
               </a>
             </div>
+
+            {(shopeeLink || lazadaLink || tiktokLink) && (
+              <div className="ecom-links" style={{ marginTop: 16, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {shopeeLink && (
+                  <a href={shopeeLink} target="_blank" rel="noopener noreferrer" className="ecom-badge shopee" style={{
+                    background: '#ff5722', color: '#fff', padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 600, display: 'inline-flex', alignItems: 'center', transition: 'transform 0.2s', textDecoration: 'none'
+                  }} onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}>
+                    🛍️ Shopee
+                  </a>
+                )}
+                {lazadaLink && (
+                  <a href={lazadaLink} target="_blank" rel="noopener noreferrer" className="ecom-badge lazada" style={{
+                    background: '#101566', color: '#fff', padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 600, display: 'inline-flex', alignItems: 'center', transition: 'transform 0.2s', textDecoration: 'none'
+                  }} onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}>
+                    🛍️ Lazada
+                  </a>
+                )}
+                {tiktokLink && (
+                  <a href={tiktokLink} target="_blank" rel="noopener noreferrer" className="ecom-badge tiktok" style={{
+                    background: '#000000', color: '#fff', padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 600, display: 'inline-flex', alignItems: 'center', transition: 'transform 0.2s', textDecoration: 'none'
+                  }} onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}>
+                    🎵 TikTok Shop
+                  </a>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Quick Links */}
           <div className="footer-column">
             <h3 className="column-title">Sản Phẩm</h3>
             <ul className="footer-links">
-              {categories?.slice(0,6).map((cat)=>{
+              {categories?.slice(0, 6).map((cat) => {
                 return <li key={cat.id}><Link to={`/category/${cat.id}`}>{cat.name}</Link></li>
               })}
               <li><a href={`/category/`}>Xem tất cả sản phẩm</a></li>
@@ -78,19 +130,19 @@ const Footer: React.FC = () => {
             <ul className="contact-list">
               <li>
                 <EnvironmentOutlined className="contact-icon" />
-                <span>123 Đường Trần Phú, Quận Hà Đông, TP.Hà Nội</span>
+                <span>{address}</span>
               </li>
               <li>
                 <PhoneOutlined className="contact-icon" />
-                <span>Hotline: 1900 1000</span>
+                <span>Hotline: {hotline}</span>
               </li>
               <li>
                 <MailOutlined className="contact-icon" />
-                <span>Email: chien1472k4@gmail.com</span>
+                <span>Email: {email}</span>
               </li>
               <li>
                 <ClockCircleOutlined className="contact-icon" />
-                <span>Thứ 2 - Thứ 7: 8:00 - 19:00</span>
+                <span>{workingHours}</span>
               </li>
             </ul>
 
@@ -111,7 +163,7 @@ const Footer: React.FC = () => {
         <div className="footer-container">
           <div className="footer-bottom-content">
             <p className="copyright">
-              © 2026 Anbato Electronic. All rights reserved.
+              {copyright}
             </p>
             <div className="payment-methods">
               <span>Phương thức thanh toán:</span>
