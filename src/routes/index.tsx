@@ -36,6 +36,7 @@ import ReviewManagePage from "../pages/Admin/Review/ReviewManagePage";
 import WishlistPage from "../pages/Client/WishListPage/WishlistPage";
 import CouponPage from "../pages/Admin/Coupon";
 import VoucherPage from "../pages/Client/VoucherPage";
+import PromotionPage from "../pages/Admin/Promotion";
 
 export const router = createBrowserRouter([
   {
@@ -172,6 +173,10 @@ export const router = createBrowserRouter([
       {
         path: "coupons",
         element: <CouponPage />,
+      },
+      {
+        path: "promotions",
+        element: <PromotionPage />,
       },
       {
         path: "reviews",

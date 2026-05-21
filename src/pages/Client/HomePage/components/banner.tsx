@@ -104,6 +104,13 @@ const Banner: React.FC<{ banners?: VisualBanner[] }> = ({ banners }) => {
             {mainSlides.map((slide) => (
               <a key={slide.id} href={slide.link ?? '#'} className={styles.slide}>
                 <img src={slide.image || "/"} alt={slide.label} />
+                {(slide.title || slide.subtitle || slide.badge) && (
+                  <div className={styles.overlay}>
+                    {slide.badge && <span className={styles.badge}>{slide.badge}</span>}
+                    {slide.title && <h3 className={styles.title}>{slide.title}</h3>}
+                    {slide.subtitle && <p className={styles.subtitle}>{slide.subtitle}</p>}
+                  </div>
+                )}
               </a>
             ))}
           </Carousel>
@@ -112,8 +119,15 @@ const Banner: React.FC<{ banners?: VisualBanner[] }> = ({ banners }) => {
         {/* Side banners */}
         <div className={styles.sideBanners}>
           {sideBanners.slice(0, 2).map((s) => (
-            <a key={s.id} href={s.link ?? '#'}>
+            <a key={s.id} href={s.link ?? '#'} className={styles.slide}>
               <img src={s.image || "/"} alt={s.label} />
+              {(s.title || s.subtitle || s.badge) && (
+                  <div className={styles.sideOverlay}>
+                    {s.badge && <span className={styles.badge}>{s.badge}</span>}
+                    {s.title && <h3 className={styles.title}>{s.title}</h3>}
+                    {s.subtitle && <p className={styles.subtitle}>{s.subtitle}</p>}
+                  </div>
+              )}
             </a>
           ))}
         </div>

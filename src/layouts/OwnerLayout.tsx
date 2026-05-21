@@ -25,7 +25,8 @@ import {
   CodeSandboxOutlined,
   KeyOutlined,
   LogoutOutlined,
-  LockOutlined
+  LockOutlined,
+  FireOutlined
 } from "@ant-design/icons";
 
 interface NavItem {
@@ -42,6 +43,7 @@ const navItems: NavItem[] = [
   { key: "brands", label: "Thương hiệu", icon: <TagOutlined />, path: "/admin/brands" },
   { key: "orders", label: "Đơn hàng", icon: <ShoppingCartOutlined />, path: "/admin/orders" },
   { key: "coupons", label: "Voucher", icon: <ExperimentOutlined />, path: "/admin/coupons" },
+  { key: "promotions", label: "Promotions", icon: <FireOutlined />, path: "/admin/promotions" },
   { key: "post", label: "Bài viết", icon: <FileTextOutlined />, path: "/admin/post" },
   { key: "reviews", label: "Bình luận", icon: <CommentOutlined />, path: "/admin/reviews" },
   { key: "chat-manager", label: "Chat", icon: <MessageOutlined />, path: "/admin/chat-manager" },

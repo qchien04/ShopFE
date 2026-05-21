@@ -82,6 +82,7 @@ export interface CreateOrderRequest {
   paymentMethod: PaymentMethod;
   items: OrderRequestItem[];
   couponCode?: string;
+  shippingFee?: number;
 }
 
 

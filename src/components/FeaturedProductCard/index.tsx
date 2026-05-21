@@ -1,6 +1,5 @@
-import { Card, Progress, Button, Tag } from 'antd';
+import { Card, Button, Tag } from 'antd';
 import {
-  HeartOutlined,
   ShoppingCartOutlined,
 } from '@ant-design/icons';
 
@@ -11,25 +10,18 @@ import { useNavigate } from 'react-router-dom';
 interface Props {
   product: Product;
 }
-const FeaturedProductCard = ({product}:Props) => {
-  const nav=useNavigate();
+const FeaturedProductCard = ({ product }: Props) => {
+  const nav = useNavigate();
   return (
-    <Card key={product.id} hoverable className={styles['product-card']} onClick={()=>nav(`/products/${product.id}`)}>
+    <Card key={product.id} hoverable className={styles['product-card']} onClick={() => nav(`/products/${product.id}`)}>
       <div className={styles['image-wrapper']}>
         <img src={product.mainImage} alt={product.name} />
 
-        <Button
-          type="text"
-          shape="circle"
-          className={styles["favorite-btn"]}
-          icon={<HeartOutlined />}
-        />
-
-          <Tag color="red" className={styles['discount-tag']}>
-            -{Math.round(
-                ((product.price - product.salePrice) * 100) / product.price
-              )}%
-          </Tag>
+        <Tag color="red" className={styles['discount-tag']}>
+          -{Math.round(
+            ((product.price - product.salePrice) * 100) / product.price
+          )}%
+        </Tag>
       </div>
 
       <div className={styles['card-body']}>
@@ -46,14 +38,8 @@ const FeaturedProductCard = ({product}:Props) => {
           </span>
         </div>
 
-        {product.stockQuantity<=0 ? (
+        {product.stockQuantity <= 0 && (
           <div className={styles['sold-out']}>Hết hàng</div>
-        ) : (
-          <Progress
-            percent={60}
-            showInfo={false}
-            strokeColor="#ff4d4f"
-          />
         )}
       </div>
 

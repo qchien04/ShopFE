@@ -39,7 +39,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
           setShowForm(false);
         },
         onError: (err: any) => {
-          message.error(err.response?.data?.message || "Lỗi khi gửi đánh giá");
+          message.error(err?.message);
         },
       }
     );

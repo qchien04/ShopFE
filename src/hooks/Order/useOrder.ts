@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orderApi } from "../../api/order.api";
-import { OrderStatus } from "../../types/entity.type";
+import { OrderStatus, PaymentStatus } from "../../types/entity.type";
 import { antdMessage } from "../../utils/antdMessage";
 
 export const useMyOrders = () => {
@@ -29,6 +29,24 @@ export const useUpdateStatusOrders = () => {
       queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
       antdMessage.success(`Đã cập nhật trạng thái đơn hàng!`);
     },
+  });
+};
+
+export const useUpdatePaymentStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, paymentStatus }: { id: number; paymentStatus: PaymentStatus }) =>
+      orderApi.updatePaymentStatus(id, paymentStatus),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order-detail"] });
+      antdMessage.success(`Đã cập nhật trạng thái thanh toán đơn hàng!`);
+    },
+    onError: (error: any) => {
+      antdMessage.error(error.response?.data?.message || "Không thể cập nhật trạng thái thanh toán!");
+    }
   });
 };
 

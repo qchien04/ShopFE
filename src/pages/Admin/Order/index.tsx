@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { 
-  Tag, 
-  Button, 
+import {
+  Tag,
+  Button,
   Dropdown,
   Card,
   Image,
@@ -18,7 +18,7 @@ import {
 import type { Order } from '../../../types/entity.type';
 import { OrderStatus, PaymentStatus } from '../../../types/entity.type';
 import OrderDetailModal from '../../../components/OrderDetailModal';
-import { useAdminOrders, useUpdateStatusOrders } from '../../../hooks/Order/useOrder';
+import { useAdminOrders, useUpdateStatusOrders, useUpdatePaymentStatus } from '../../../hooks/Order/useOrder';
 import { getStatusActions, paymentMethodText, paymentStatusColors, paymentStatusText, statusColors, statusText } from './Mapper';
 import { Stat } from './Stat';
 import { Filter } from './Filter';
@@ -34,23 +34,24 @@ const OrdersPage = () => {
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  
+
   const { mutate: UpdateStatus } = useUpdateStatusOrders();
+  const { mutate: updatePaymentStatus } = useUpdatePaymentStatus();
   const { data: orders, isLoading } = useAdminOrders();
 
 
   const filteredOrders = orders?.filter(order => {
-    const matchSearch = 
+    const matchSearch =
       order.orderNumber.toLowerCase().includes(searchText.toLowerCase()) ||
       order.items.some(item => item.productName.toLowerCase().includes(searchText.toLowerCase()));
-    
+
     const matchStatus = statusFilter === 'ALL' || order.status === statusFilter;
     const matchPaymentStatus = paymentStatusFilter === 'ALL' || order.paymentStatus === paymentStatusFilter;
 
     return matchSearch && matchStatus && matchPaymentStatus;
   }) || [];
 
-  const handleUpdateStatus = (order: Order, newStatus: OrderStatus, reason?: string, internalNote?:string) => {
+  const handleUpdateStatus = (order: Order, newStatus: OrderStatus, reason?: string, internalNote?: string) => {
     antdModal.confirm({
       title: 'Cập nhật trạng thái đơn hàng',
       content: (
@@ -69,9 +70,25 @@ const OrdersPage = () => {
       okText: 'Xác nhận',
       cancelText: 'Hủy',
       onOk: () => {
-        UpdateStatus({ id: order.id, status: newStatus, reason:reason||"",internalNote:internalNote||"" });
+        UpdateStatus({ id: order.id, status: newStatus, reason: reason || "", internalNote: internalNote || "" });
         setDetailModalOpen(false);
         setSelectedOrder(null);
+      },
+    });
+  };
+
+  const handleConfirmPayment = (order: Order) => {
+    antdModal.confirm({
+      title: 'Xác nhận thanh toán',
+      content: (
+        <div>
+          Xác nhận đơn hàng <b>{order.orderNumber}</b> đã được thanh toán thành công?
+        </div>
+      ),
+      okText: 'Xác nhận',
+      cancelText: 'Hủy',
+      onOk: () => {
+        updatePaymentStatus({ id: order.id, paymentStatus: PaymentStatus.PAID });
       },
     });
   };
@@ -103,7 +120,7 @@ const OrdersPage = () => {
     <div className="orders-page">
       <Stat stats={stats}></Stat>
 
-      <Filter 
+      <Filter
         paymentStatusFilter={paymentStatusFilter}
         searchText={searchText}
         setPaymentStatusFilter={(val) => {
@@ -242,6 +259,16 @@ const OrdersPage = () => {
                       >
                         Xem chi tiết
                       </Button>
+
+                      {order.paymentStatus !== PaymentStatus.PAID && (
+                        <Button
+                          type="dashed"
+                          style={{ borderColor: '#52c41a', color: '#52c41a' }}
+                          onClick={() => handleConfirmPayment(order)}
+                        >
+                          Xác nhận thanh toán
+                        </Button>
+                      )}
 
                       {statusActions.length > 0 && (
                         <Dropdown

@@ -11,7 +11,6 @@ import { PaymentMethod, type CustomerAddress } from "../../../types/entity.type"
 import type { CreateOrderRequest, OrderRequestItem } from "../../../types/request.type";
 import { orderApi } from "../../../api/order.api";
 import { paymentApi } from "../../../api/payment.api";
-import { couponApi } from "../../../api/coupon.api";
 import { useProductVariantsByIds } from "../../../hooks/Product/useProductList";
 import CustomerAddressFormModal from "../../../components/AddressFormModal/AddressFormModal";
 import { PaymentMethodCard } from "./PaymentMethodCard";
@@ -36,10 +35,12 @@ const CheckoutPage = () => {
 
   const [couponCode, setCouponCode] = useState("");
   const [appliedCouponCode, setAppliedCouponCode] = useState<string | undefined>(undefined);
-  const [couponDiscount, setCouponDiscount] = useState<number>(0);
   const [checkingCoupon, setCheckingCoupon] = useState(false);
   const [couponMessage, setCouponMessage] = useState("");
   const [couponStatus, setCouponStatus] = useState<"success" | "error" | "">("");
+
+  const [calculation, setCalculation] = useState<any>(null);
+  const [calculating, setCalculating] = useState(false);
 
 
   const productIds = useMemo(
@@ -56,32 +57,55 @@ const CheckoutPage = () => {
     }));
   }, [products, state.orderItems]);
 
-  const subtotal = items.reduce((sum, i) => sum + (i.product?.salePrice || 0) * i.quantity, 0);
-  const shippingFee = 20000;
-  const discount = 0;
-  const total = subtotal + shippingFee - discount - couponDiscount;
+  const subtotal = calculation ? calculation.subtotal : items.reduce((sum, i) => sum + (i.product?.salePrice || 0) * i.quantity, 0);
+  const shippingFee = calculation ? calculation.shippingFee : 20000;
+  const promotionDiscount = calculation ? calculation.promotionDiscount : 0;
+  const couponDiscount = calculation ? calculation.couponDiscount : 0;
+  const total = calculation ? calculation.total : (subtotal + shippingFee - promotionDiscount - couponDiscount);
 
   const currentAddress = selectedAddress || addresses?.find((a) => a.isDefault) || addresses?.[0];
+
+  const calculatePreview = async (coupon?: string) => {
+    if (!state.orderItems || state.orderItems.length === 0) return;
+    setCalculating(true);
+    try {
+      const payload: CreateOrderRequest = {
+        addressId: currentAddress?.id || 0,
+        items: state.orderItems,
+        paymentMethod: payMethod,
+        shippingFee: 20000,
+        ...(coupon ? { couponCode: coupon } : {}),
+      };
+      const res = await orderApi.calculateDiscountPreview(payload);
+      setCalculation(res);
+      return res;
+    } catch (err) {
+      console.error("Lỗi tính toán", err);
+    } finally {
+      setCalculating(false);
+    }
+  };
+
+  useEffect(() => {
+    calculatePreview(appliedCouponCode);
+  }, [state.orderItems, appliedCouponCode]);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
     setCheckingCoupon(true);
     try {
-      const res: any = await couponApi.validateCoupon({ code: couponCode, orderTotal: subtotal });
-      if (res.valid && res.discountAmount) {
+      const res = await calculatePreview(couponCode);
+      if (res && res.couponDiscount > 0) {
         setAppliedCouponCode(couponCode);
-        setCouponDiscount(res.discountAmount);
         setCouponStatus("success");
-        setCouponMessage(`Đã áp dụng mã giảm giá: -${res.discountAmount.toLocaleString("vi-VN")} ₫`);
+        setCouponMessage(`Đã áp dụng mã giảm giá: -${res.couponDiscount.toLocaleString("vi-VN")} ₫`);
       } else {
         setAppliedCouponCode(undefined);
-        setCouponDiscount(0);
         setCouponStatus("error");
-        setCouponMessage(res.message || "Mã giảm giá không hợp lệ");
+        setCouponMessage("Mã giảm giá không hợp lệ hoặc không thể áp dụng");
       }
     } catch (err: any) {
       setAppliedCouponCode(undefined);
-      setCouponDiscount(0);
       setCouponStatus("error");
       setCouponMessage("Lỗi khi kiểm tra mã. Vui lòng thử lại.");
     } finally {
@@ -123,6 +147,7 @@ const CheckoutPage = () => {
         addressId: currentAddress.id || 0,
         items: state.orderItems,
         paymentMethod: payMethod,
+        shippingFee: calculation ? calculation.shippingFee : 20000,
         ...(appliedCouponCode ? { couponCode: appliedCouponCode } : {}),
       };
 
@@ -151,7 +176,7 @@ const CheckoutPage = () => {
 
   return (
     <div style={{ background: "#f5f5f5", minHeight: "100vh" }}>
-      {redirecting && <Spin fullscreen size="large" tip="Đang xử lý đơn hàng..." />}
+      {(redirecting || calculating) && <Spin fullscreen size="large" tip="Đang xử lý..." />}
 
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 16px" }}>
         <CTitle level={2} style={{ marginTop: 16, color: "#111827" }}>
@@ -260,14 +285,32 @@ const CheckoutPage = () => {
                   <Text type="secondary">Phí vận chuyển</Text>
                   <Text>{shippingFee.toLocaleString("vi-VN")} ₫</Text>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <Text type="secondary">Miễn phí vận chuyển</Text>
-                  <Text style={{ color: "#00b96b" }}>-{discount.toLocaleString("vi-VN")} ₫</Text>
-                </div>
+                {(promotionDiscount > 0 || calculation?.promotionDetails) && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {promotionDiscount > 0 && (
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <Text type="secondary">Khuyến mãi hệ thống</Text>
+                        <Text style={{ color: "#00b96b" }}>-{promotionDiscount.toLocaleString("vi-VN")} ₫</Text>
+                      </div>
+                    )}
+                    {calculation?.promotionDetails && (
+                      <div style={{ fontSize: 12, color: "#1677ff", textAlign: "right" }}>
+                        ({calculation.promotionDetails})
+                      </div>
+                    )}
+                  </div>
+                )}
                 {couponDiscount > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <Text type="secondary">Voucher giảm giá</Text>
-                    <Text style={{ color: "#00b96b" }}>-{couponDiscount.toLocaleString("vi-VN")} ₫</Text>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <Text type="secondary">Voucher giảm giá</Text>
+                      <Text style={{ color: "#00b96b" }}>-{couponDiscount.toLocaleString("vi-VN")} ₫</Text>
+                    </div>
+                    {calculation?.couponDetails && (
+                      <div style={{ fontSize: 12, color: "#1677ff", textAlign: "right" }}>
+                        ({calculation.couponDetails})
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -386,6 +429,7 @@ const CheckoutPage = () => {
           payModalVisible={payModalVisible}
           setPayModalVisible={setPayModalVisible}
           payData={payData}
+          onClose={() => navigate("/user/orders")}
         />
       </div>
     </div>

@@ -10,7 +10,7 @@ import HotProduct from '../../../../components/HotProductCard';
 
 
 const HotDeals = ({ section }: { section?: HotDealsSectionConfig }) => {
-  const { data: defaultProducts } = useProductList<Product[]>({ type: "featured" });
+  const { data: defaultProducts } = useProductList<Product[]>({ type: "all" });
   const [hotProducts, setHotProducts] = useState<Product[]>([]);
   const [weeklyProducts, setWeeklyProducts] = useState<Product[]>([]);
 

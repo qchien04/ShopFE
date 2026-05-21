@@ -2,28 +2,28 @@ import {
   Card, Typography, Tag, Image,
   Divider, Button,
 } from 'antd';
-import {DollarOutlined, EyeOutlined} from '@ant-design/icons';
+import { DollarOutlined, EyeOutlined } from '@ant-design/icons';
 import type { Order } from '../../../../types/entity.type';
 import { OrderStatus, PaymentStatus } from '../../../../types/entity.type';
 import { paymentStatusMap, statusMap } from './Mapper';
 
-const {Text } = Typography;
+const { Text } = Typography;
 
 interface Props {
-  order:Order,
-  setSelectedOrder:React.Dispatch<React.SetStateAction<Order|null>>;
-  setPaymentOpen:React.Dispatch<React.SetStateAction<boolean>>;
-  handleCancelOrder:(order: Order) => void,
-  setDetailOpen:React.Dispatch<React.SetStateAction<boolean>>;
+  order: Order,
+  setSelectedOrder: React.Dispatch<React.SetStateAction<Order | null>>;
+  setPaymentOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleCancelOrder: (order: Order) => void,
+  setDetailOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const OrderCard=({order,setPaymentOpen,setSelectedOrder,setDetailOpen,handleCancelOrder}:Props)=>{
+export const OrderCard = ({ order, setPaymentOpen, setSelectedOrder, setDetailOpen, handleCancelOrder }: Props) => {
 
   return (
     <Card
       key={order.id}
       size="small"
-      style={{ borderRadius: 10 ,width:"100%"}}
+      style={{ borderRadius: 10, width: "100%" }}
       styles={{ body: { padding: 14 } }}
     >
       {/* Header */}
@@ -79,10 +79,17 @@ export const OrderCard=({order,setPaymentOpen,setSelectedOrder,setDetailOpen,han
             {order.total.toLocaleString('vi-VN')}₫
           </Text>
           {order.discount > 0 && (
-            <Tag color="success" style={{ margin: 0, border: 'none', background: 'transparent', padding: 0 }}>
-              - {order.discount.toLocaleString('vi-VN')}₫
-              {order.couponCode && ` (${order.couponCode})`}
-            </Tag>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Tag color="success" style={{ margin: 0, border: 'none', background: 'transparent', padding: 0 }}>
+                - {order.discount.toLocaleString('vi-VN')}₫
+                {order.couponCode && ` (${order.couponCode})`}
+              </Tag>
+              {order.couponDetails && (
+                <Text style={{ fontSize: 10, color: '#888', fontStyle: 'italic' }}>
+                  * Chi tiết giảm giá: {order.couponDetails}
+                </Text>
+              )}
+            </div>
           )}
         </div>
 
@@ -101,11 +108,11 @@ export const OrderCard=({order,setPaymentOpen,setSelectedOrder,setDetailOpen,han
             </Button>
           )}
 
-          {order.status !== OrderStatus.CANCELLED && 
-           order.status !== OrderStatus.DELIVERED && 
-           order.status !== OrderStatus.RETURNED && (
-            <Button size="small" danger onClick={() => handleCancelOrder(order)}>Hủy</Button>
-          )}
+          {order.status !== OrderStatus.CANCELLED &&
+            order.status !== OrderStatus.DELIVERED &&
+            order.status !== OrderStatus.RETURNED && (
+              <Button size="small" danger onClick={() => handleCancelOrder(order)}>Hủy</Button>
+            )}
 
           {order.status === OrderStatus.DELIVERED && (
             <Button size="small" type="primary" style={{ background: '#00b96b', borderColor: '#00b96b' }}>

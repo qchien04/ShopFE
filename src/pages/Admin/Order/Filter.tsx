@@ -1,21 +1,17 @@
-import { Button, Card, DatePicker, Input, Select, Space } from "antd"
-import {
-  DownloadOutlined,
-  PrinterOutlined
-} from '@ant-design/icons';
+import { Card, DatePicker, Input, Select, Space } from "antd"
 import { OrderStatus, PaymentStatus } from "../../../types/entity.type";
 import { paymentStatusText, statusText } from "./Mapper";
 
 const { RangePicker } = DatePicker;
-interface Props{
-  searchText:string,
-  statusFilter:OrderStatus|"ALL",
-  paymentStatusFilter:PaymentStatus|"ALL",
-  setStatusFilter:React.Dispatch<React.SetStateAction<OrderStatus|"ALL">>;
-  setPaymentStatusFilter:React.Dispatch<React.SetStateAction<PaymentStatus|"ALL">>;
-  setSearchText:React.Dispatch<React.SetStateAction<string>>;
+interface Props {
+  searchText: string,
+  statusFilter: OrderStatus | "ALL",
+  paymentStatusFilter: PaymentStatus | "ALL",
+  setStatusFilter: React.Dispatch<React.SetStateAction<OrderStatus | "ALL">>;
+  setPaymentStatusFilter: React.Dispatch<React.SetStateAction<PaymentStatus | "ALL">>;
+  setSearchText: React.Dispatch<React.SetStateAction<string>>;
 }
-export const Filter=({searchText,setSearchText,statusFilter,setStatusFilter,paymentStatusFilter,setPaymentStatusFilter}:Props)=>{
+export const Filter = ({ searchText, setSearchText, statusFilter, setStatusFilter, paymentStatusFilter, setPaymentStatusFilter }: Props) => {
   return (
     <Card className="filters-card">
       <Space style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -57,15 +53,6 @@ export const Filter=({searchText,setSearchText,statusFilter,setStatusFilter,paym
           />
 
           <RangePicker placeholder={['Từ ngày', 'Đến ngày']} />
-        </Space>
-
-        <Space>
-          <Button icon={<DownloadOutlined />}>
-            Xuất Excel
-          </Button>
-          <Button type="primary" icon={<PrinterOutlined />}>
-            In đơn hàng
-          </Button>
         </Space>
       </Space>
     </Card>

@@ -88,7 +88,7 @@ const OrderClientDetailModal = ({ detailOpen, selectedOrder, setDetailOpen, hand
                 </div>
                 {selectedOrder.couponDetails && (
                   <Text style={{ fontSize: 11, color: '#888', fontStyle: 'italic' }}>
-                    * Chi tiết mã: {selectedOrder.couponDetails}
+                    * Chi tiết giảm giá: {selectedOrder.couponDetails}
                   </Text>
                 )}
               </div>

@@ -14,7 +14,7 @@ const { useBreakpoint } = Grid;
 const FeaturedProducts = ({ title = "Sản Phẩm Nổi Bật", section }: { title?: string, section?: FeaturedProductConfig }) => {
   const carouselRef = useRef<any>(null);
 
-  const { data: defaultProducts } = useProductList<Product[]>({ type: "featured" });
+  const { data: defaultProducts } = useProductList<Product[]>({ type: "all" });
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {

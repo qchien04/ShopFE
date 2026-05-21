@@ -363,3 +363,60 @@ export interface UserAccountDTO {
   email: string;
   roles: string[];
 }
+
+// ── Promotion Engine ──────────────────────────────────────────────────────────
+
+export type PromotionType =
+  | "FLASH_SALE"
+  | "ORDER_TIER"
+  | "CATEGORY_DISCOUNT"
+  | "BRAND_DISCOUNT"
+  | "FREE_SHIPPING";
+
+
+
+export interface FlashSaleItem {
+  productId: number;
+  variantId?: number;
+  discountPercent?: number;
+  fixedPrice?: number;
+  stockLimit?: number;
+  soldCount?: number;
+}
+
+export interface OrderTier {
+  minOrderValue: number;
+  discountValue: number;
+  discountType: DiscountType;
+  maxDiscountAmount?: number;
+}
+
+export interface Promotion {
+  id: number;
+  name: string;
+  description?: string;
+  type: PromotionType;
+  startDate: string;
+  endDate: string;
+  active: boolean;
+  priority?: number;
+  usageLimit?: number;
+  usedCount?: number;
+  perUserLimit?: number;
+
+  // Flash Sale
+  flashSaleItems?: FlashSaleItem[];
+
+  // Order Tier
+  orderTiers?: OrderTier[];
+
+  // Category / Brand
+  applyCategoryIds?: number[];
+  applyBrandIds?: number[];
+  discountValue?: number;
+  discountType?: DiscountType;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+

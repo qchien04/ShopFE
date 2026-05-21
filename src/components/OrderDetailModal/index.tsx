@@ -10,7 +10,9 @@ import {
   RollbackOutlined,
 } from '@ant-design/icons';
 import type { Order, OrderItem } from '../../types/entity.type';
-import { OrderStatus } from '../../types/entity.type';
+import { OrderStatus, PaymentStatus } from '../../types/entity.type';
+import { useUpdatePaymentStatus } from '../../hooks/Order/useOrder';
+import { antdModal } from '../../utils/antdModal';
 import { getStatusActions, getStatusStep, paymentMethodText, paymentStatusColors, paymentStatusText, reasonPlaceholder, requiresReason, statusColors, statusText } from '../../pages/Admin/Order/Mapper';
 
 
@@ -22,9 +24,26 @@ interface Props {
 }
 
 const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
+  const { mutate: updatePaymentStatus } = useUpdatePaymentStatus();
   const [adminNote, setAdminNote] = useState(order?.internalNote ?? '');
   const [reasonTarget, setReasonTarget] = useState<OrderStatus | null>(null);
   const [reason, setReason] = useState('');
+
+  const handleConfirmPayment = () => {
+    antdModal.confirm({
+      title: 'Xác nhận thanh toán',
+      content: (
+        <div>
+          Xác nhận đơn hàng <b>{order.orderNumber}</b> đã được thanh toán thành công?
+        </div>
+      ),
+      okText: 'Xác nhận',
+      cancelText: 'Hủy',
+      onOk: () => {
+        updatePaymentStatus({ id: order.id, paymentStatus: PaymentStatus.PAID });
+      },
+    });
+  };
 
   // Shipper assignment states
   const [carrier, setCarrier] = useState('Giao Hàng Nhanh (GHN)');
@@ -232,9 +251,21 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
               </Tag>
             </Descriptions.Item>
             <Descriptions.Item label="Trạng thái TT">
-              <Tag color={paymentStatusColors[order.paymentStatus]}>
-                {paymentStatusText[order.paymentStatus]}
-              </Tag>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Tag color={paymentStatusColors[order.paymentStatus]} style={{ margin: 0 }}>
+                  {paymentStatusText[order.paymentStatus]}
+                </Tag>
+                {order.paymentStatus !== PaymentStatus.PAID && (
+                  <Button
+                    type="link"
+                    size="small"
+                    style={{ padding: 0, height: 'auto', fontSize: 12, color: '#52c41a', display: 'inline-flex', alignItems: 'center' }}
+                    onClick={handleConfirmPayment}
+                  >
+                    [Xác nhận thanh toán]
+                  </Button>
+                )}
+              </div>
             </Descriptions.Item>
             <Descriptions.Item label="Tổng tiền" span={2}>
               <strong style={{ fontSize: 15, color: '#ff4444' }}>
@@ -248,7 +279,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
                   </span>
                   {order.couponDetails && (
                     <span style={{ color: '#999', fontSize: 11, fontStyle: 'italic', display: 'block', marginLeft: 2 }}>
-                      {order.couponDetails}
+                      * Chi tiết giảm giá: {order.couponDetails}
                     </span>
                   )}
                 </div>
@@ -305,7 +336,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
                         </span>
                         {order.couponDetails && (
                           <span style={{ color: '#999', fontSize: 11, fontStyle: 'italic', display: 'block' }}>
-                            {order.couponDetails}
+                            * Chi tiết giảm giá: {order.couponDetails}
                           </span>
                         )}
                       </div>

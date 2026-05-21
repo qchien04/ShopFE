@@ -1,7 +1,7 @@
-import {  getData, postData, putData } from "../app/axiosClient"
+import { getData, postData, putData } from "../app/axiosClient"
 import type { Order } from "../types/entity.type"
 import type { CreateOrderRequest } from "../types/request.type"
-import { OrderStatus } from "../types/entity.type"
+import { OrderStatus, PaymentStatus } from "../types/entity.type"
 
 export const orderApi = {
   getUserOrder: (): Promise<Order[]> =>
@@ -10,13 +10,19 @@ export const orderApi = {
   getAllOrder: (): Promise<Order[]> =>
     getData<Order[]>("/orders"),
 
-  updateStatusOrders: (id:number,status:OrderStatus,reason:string,internalNote:string): Promise<Order> =>
-    putData<Order>(`/orders/${id}/status`,{status:status,reason,internalNote}),
+  updateStatusOrders: (id: number, status: OrderStatus, reason: string, internalNote: string): Promise<Order> =>
+    putData<Order>(`/orders/${id}/status`, { status: status, reason, internalNote }),
 
-  createOrder: (payload:CreateOrderRequest): Promise<Order> =>
+  updatePaymentStatus: (id: number, paymentStatus: PaymentStatus): Promise<Order> =>
+    putData<Order>(`/orders/${id}/payment-status?status=${paymentStatus}`, {}),
+
+  createOrder: (payload: CreateOrderRequest): Promise<Order> =>
     postData<Order>("/orders", payload),
 
   getOrderById: (id: number): Promise<Order> =>
     getData<Order>(`/orders/${id}`),
+
+  calculateDiscountPreview: (payload: CreateOrderRequest): Promise<any> =>
+    postData<any>("/orders/calculate-discount", payload),
 }
 

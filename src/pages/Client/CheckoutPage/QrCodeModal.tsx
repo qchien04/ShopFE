@@ -6,14 +6,18 @@ interface Props {
   payModalVisible: boolean;
   setPayModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   payData: any;
+  onClose?: () => void;
 }
 
-const QrCodeModal = ({ payModalVisible, setPayModalVisible, payData }: Props) => {
+const QrCodeModal = ({ payModalVisible, setPayModalVisible, payData, onClose }: Props) => {
   return (
     <Modal
       title={null}
       open={payModalVisible}
-      onCancel={() => setPayModalVisible(false)}
+      onCancel={() => {
+        setPayModalVisible(false);
+        if (onClose) onClose();
+      }}
       footer={null}
       width={400}
       centered

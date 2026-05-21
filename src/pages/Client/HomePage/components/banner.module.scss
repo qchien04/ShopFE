@@ -31,6 +31,7 @@
 }
 
 .sideBanners a {
+  position: relative;
   display: block;
   aspect-ratio: 16 / 9;
   overflow: hidden;
@@ -43,6 +44,73 @@
   object-fit: cover;
 }
 
+/* OVERLAYS */
+.slide {
+  position: relative;
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 40px 20px 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.badge {
+  align-self: flex-start;
+  background: #ee4d2d;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.title {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  margin: 0;
+}
+
+.sideOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 12px 12px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  pointer-events: none;
+
+  .badge {
+    font-size: 10px;
+    margin-bottom: 2px;
+  }
+  .title {
+    font-size: 16px;
+  }
+  .subtitle {
+    font-size: 12px;
+  }
+}
 
 /* Features dưới banner (6 item) */
 .features {
