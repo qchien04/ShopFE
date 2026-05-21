@@ -8,6 +8,6 @@ export default defineConfig({
     global: "globalThis",
   },
   build: {
-    sourcemap: false
+    sourcemap: true
   }
 })
