@@ -1,4 +1,4 @@
-import { Button, Space, Popconfirm, Image, Input, Spin, Pagination, Card, Row, Col } from "antd";
+import { Button, Popconfirm, Image, Input, Spin, Pagination, Row, Col } from "antd";
 import { useState } from "react";
 import { useBrandList, useCreateBrand, useDeleteBrand, useUpdateBrand } from "../../../hooks/Brand/useBrand";
 import type { Brand } from "../../../types/entity.type";

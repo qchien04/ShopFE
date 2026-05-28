@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Button, Modal, message, Space, Typography, Tabs, Card, Input, Select, Divider } from "antd";
+import { useState } from "react";
+import { Button, Modal, message, Space, Typography, Tabs, Card, Input, Select } from "antd";
 import {
   PictureOutlined,
   SaveOutlined,

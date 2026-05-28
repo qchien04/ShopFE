@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   Modal, Form, InputNumber, Select, Radio, Divider,
-  Typography, Tag, Alert, Button, Spin, Descriptions, Space
+  Typography, Tag, Alert, Button, Descriptions, Space
 } from 'antd';
 import {
   TruckOutlined, DollarOutlined, PrinterOutlined,
@@ -12,7 +12,7 @@ import { PaymentStatus, PaymentMethod } from '../../../types/entity.type';
 import { useCreateGHNShipping, useGHNCalculateFeeByOrder, useGHNPrintToken } from '../../../hooks/Order/useGHN';
 import type { GHNCalculateFeePayload } from '../../../api/ghn.api';
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 interface Props {
   open: boolean;

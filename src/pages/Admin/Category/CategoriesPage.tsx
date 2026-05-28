@@ -1,4 +1,4 @@
-import { Button, Space, Popconfirm, Image, Input, Spin, Pagination, Select, Row, Col, Card } from "antd";
+import { Button, Space, Popconfirm, Image, Input, Spin, Pagination, Select, Row, Col } from "antd";
 import { useState } from "react";
 import { useCategoryList } from "../../../hooks/Category/useCategotyList";
 import { useDeleteCategory } from "../../../hooks/Category/useDeleteCategory";

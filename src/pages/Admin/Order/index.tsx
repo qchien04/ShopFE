@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Tag,
   Button,
@@ -18,7 +18,7 @@ import {
 import type { Order } from '../../../types/entity.type';
 import { OrderStatus, PaymentStatus } from '../../../types/entity.type';
 import OrderDetailModal from '../../../components/OrderDetailModal';
-import { useAdminOrders, useUpdateStatusOrders, useUpdatePaymentStatus, useAdminOrdersPaginated } from '../../../hooks/Order/useOrder';
+import { useUpdateStatusOrders, useUpdatePaymentStatus, useAdminOrdersPaginated } from '../../../hooks/Order/useOrder';
 import { getStatusActions, paymentMethodText, paymentStatusColors, paymentStatusText, statusColors, statusText } from './Mapper';
 import { Stat } from './Stat';
 import { Filter } from './Filter';

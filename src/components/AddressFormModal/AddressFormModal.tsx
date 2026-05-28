@@ -155,7 +155,6 @@ export default function CustomerAddressFormModal({ open, onCancel, initial }: Pr
           );
           const data = await response.json();
           if (data && data.address) {
-            const address = data.address;
             form.setFieldsValue({
               detailAddress: data.display_name || "",
               lat, lng,
@@ -245,7 +244,7 @@ export default function CustomerAddressFormModal({ open, onCancel, initial }: Pr
         </Form.Item>
 
         {/* GHN Location Section */}
-        <Divider orientation="left" style={{ fontSize: 13 }}>
+        <Divider orientation="vertical" style={{ fontSize: 13 }}>
           🚚 Địa chỉ GHN (để tính phí & tạo vận đơn)
         </Divider>
 
@@ -328,7 +327,7 @@ export default function CustomerAddressFormModal({ open, onCancel, initial }: Pr
           </Form.Item>
         </div>
 
-        <Divider orientation="left" style={{ fontSize: 13 }}>📍 Địa chỉ chi tiết</Divider>
+        <Divider orientation="vertical" style={{ fontSize: 13 }}>📍 Địa chỉ chi tiết</Divider>
 
         <Button
           onClick={getCurrentLocation}

@@ -18,8 +18,6 @@ import {
   MessageOutlined,
   SettingOutlined,
   ExperimentOutlined,
-  SearchOutlined,
-  BellOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   CodeSandboxOutlined,

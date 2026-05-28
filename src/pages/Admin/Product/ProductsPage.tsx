@@ -1,5 +1,5 @@
 // ProductsPage.tsx
-import { Button, Space, Input, Modal, Spin, Pagination, Popconfirm, Image, Select, Row, Col } from "antd";
+import { Button, Space, Input, Modal, Spin, Pagination, Popconfirm, Image, Select } from "antd";
 import { useState } from "react";
 import { useProductList } from "../../../hooks/Product/useProductList";
 import { useDeleteProduct } from "../../../hooks/Product/useDeleteProduct";
