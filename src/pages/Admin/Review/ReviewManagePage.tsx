@@ -1,6 +1,7 @@
 import { Rate, Button, Tabs, Popconfirm, Spin, Input, message } from "antd";
-import { DeleteOutlined, CheckOutlined, CloseOutlined, CommentOutlined } from "@ant-design/icons";
+import { DeleteOutlined, CheckOutlined, CloseOutlined, CommentOutlined, LinkOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAdminReviews, useDeleteReview, useApproveReview, useRejectReview } from "../../../hooks/Admin";
 import "./ReviewManagePage.scss";
 
@@ -58,7 +59,7 @@ export default function ReviewManagePage() {
   });
 
   return (
-    <div style={{ padding: 24, background: "#f8f9fa", minHeight: "100vh" }}>
+    <div style={{ background: "#f8f9fa", minHeight: "100vh" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
         <h2 style={{ margin: 0, fontWeight: 700, fontSize: 24, color: "#1f1f1f" }}>Quản lý Đánh giá & Bình luận</h2>
 
@@ -126,7 +127,19 @@ export default function ReviewManagePage() {
                     <div className="review-card-content">
                       <div className="product-title-badge">
                         <CommentOutlined />
-                        <span>Sản phẩm: {review.productName || "Không xác định"}</span>
+                        {review.productId ? (
+                          <Link
+                            to={`/products/${review.productId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ fontWeight: 600, color: "#1677ff", display: "inline-flex", alignItems: "center", gap: 4 }}
+                          >
+                            {review.productName || "Xem sản phẩm"}
+                            <LinkOutlined style={{ fontSize: 11 }} />
+                          </Link>
+                        ) : (
+                          <span>{review.productName || "Không xác định"}</span>
+                        )}
                       </div>
 
                       <div className="rating-row">

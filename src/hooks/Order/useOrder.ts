@@ -1,12 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orderApi } from "../../api/order.api";
 import { OrderStatus, PaymentStatus } from "../../types/entity.type";
 import { antdMessage } from "../../utils/antdMessage";
+import type { AdminOrderFilter } from "../../types";
 
-export const useMyOrders = () => {
+export const useMyOrders = (page = 0, size = 10, status = "ALL") => {
   return useQuery({
-    queryKey: ["my-orders"],
-    queryFn: orderApi.getUserOrder,
+    queryKey: ["my-orders", page, size, status],
+    queryFn: () => orderApi.getUserOrder(page, size, status),
   });
 };
 
@@ -22,7 +23,7 @@ export const useUpdateStatusOrders = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, status,reason, internalNote }: { id: number; status: OrderStatus,reason:string,internalNote:string }) =>
+    mutationFn: ({ id, status, reason, internalNote }: { id: number; status: OrderStatus, reason: string, internalNote: string }) =>
       orderApi.updateStatusOrders(id, status, reason, internalNote),
 
     onSuccess: () => {
@@ -67,6 +68,23 @@ export const useCancelOrder = () => {
   });
 };
 
+export const useConfirmReceivedOrder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id }: { id: number }) =>
+      orderApi.updateStatusOrders(id, OrderStatus.DELIVERED, "Khách hàng xác nhận đã nhận hàng thành công", ""),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-orders"] });
+      antdMessage.success("Xác nhận nhận hàng thành công! Cảm ơn bạn đã mua sắm.");
+    },
+    onError: (error: any) => {
+      antdMessage.error(error.response?.data?.message || "Không thể xác nhận đã nhận hàng!");
+    }
+  });
+};
+
 export const useOrderDetail = (id: number | null) => {
   return useQuery({
     queryKey: ["order-detail", id],
@@ -75,3 +93,10 @@ export const useOrderDetail = (id: number | null) => {
   });
 };
 
+export const useAdminOrdersPaginated = (filter: AdminOrderFilter) => {
+  return useQuery({
+    queryKey: ['admin-orders', filter],   // tự re-fetch khi bất kỳ field nào thay đổi
+    queryFn: () => orderApi.getAdminOrdersPaginated(filter),
+    placeholderData: keepPreviousData,    // giữ data cũ khi đang fetch trang mới
+  });
+};

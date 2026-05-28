@@ -19,7 +19,7 @@ export const useCreateCustomerAddress = () => {
 export const useUpdateCustomerAddress = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ data }: any) =>
+    mutationFn: (data: any) =>
       customerAddressApi.updateAddress(data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["addresses"] }),
   });

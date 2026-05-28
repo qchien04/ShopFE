@@ -1,5 +1,6 @@
 // BrandModal.tsx
 import { Modal, Form, Space } from "antd";
+import { useEffect } from "react";
 import { EditOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import BrandForm from "./BrandForm";
 import type { Brand } from "../../../types/entity.type";
@@ -20,6 +21,30 @@ const BrandModal = ({
   brand,
 }: Props) => {
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (open) {
+      if (brand) {
+        form.setFieldsValue({
+          name: brand.name,
+          slug: brand.slug,
+          description: brand.description,
+          website: brand.website,
+          logo: typeof brand.logo === "string"
+            ? [{ uid: "-1", name: "logo", status: "done", url: brand.logo }]
+            : brand.logo
+        });
+      } else {
+        form.setFieldsValue({
+          name: undefined,
+          slug: undefined,
+          description: undefined,
+          website: undefined,
+          logo: undefined
+        });
+      }
+    }
+  }, [open, brand, form]);
 
   return (
     <Modal
@@ -47,14 +72,13 @@ const BrandModal = ({
         initialValues={brand ? {
           name: brand.name,
           slug: brand.slug,
-          description: brand.description,     
-          website:brand.website,
+          description: brand.description,
+          website: brand.website,
           logo: brand.logo
         } : {}}
-        onSubmit={onSubmit}   // ⬅ truyền xuống
+        onSubmit={onSubmit}
       />
     </Modal>
-
   );
 };
 

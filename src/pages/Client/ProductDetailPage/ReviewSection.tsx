@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Rate, Input, Button, Avatar, Empty, message, Spin } from "antd";
+import { Rate, Input, Button, Avatar, Empty, message, Spin, Pagination } from "antd";
 import {
   MessageOutlined,
   StarFilled,
@@ -18,7 +18,10 @@ export default function ReviewSection({ productId }: { productId: number }) {
     (state: RootState) => state.auth
   );
 
-  const { data, isLoading } = useReviews(productId);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+
+  const { data, isLoading } = useReviews(productId, page, pageSize);
   const { mutate: addReview, isPending } = useAddReview(productId);
 
   const [rating, setRating] = useState(5);
@@ -45,17 +48,11 @@ export default function ReviewSection({ productId }: { productId: number }) {
     );
   };
 
-  const reviews = data?.reviews || [];
-  const total = reviews.length;
+  const reviews = data?.reviews?.content || [];
+  const total = data?.totalReviews ?? 0;
 
   // Star breakdown calculation
-  const breakdownCounts = [0, 0, 0, 0, 0]; // 1 to 5 stars
-  reviews.forEach((r: any) => {
-    const star = Math.round(r.rating || 5);
-    if (star >= 1 && star <= 5) {
-      breakdownCounts[star - 1]++;
-    }
-  });
+  const breakdownCounts = data?.ratingStatistics || [0, 0, 0, 0, 0]; // 1 to 5 stars
 
   const breakdownPercent = breakdownCounts.map(count =>
     total > 0 ? Math.round((count / total) * 100) : 0
@@ -105,10 +102,13 @@ export default function ReviewSection({ productId }: { productId: number }) {
           {/* Column 3: Call to Action to Write Review */}
           <div className="dashboard-col action-col">
             <div className="cta-box">
-              <StarFilled className="cta-star-icon" />
-              <h4>Chia sẻ cảm nhận của bạn</h4>
-              <p>Ý kiến của bạn giúp hàng ngàn người mua sắm khác đưa ra quyết định đúng đắn!</p>
-
+              <div>
+                <StarFilled className="cta-star-icon" />
+                <StarFilled className="cta-star-icon" />
+                <StarFilled className="cta-star-icon" />
+                <StarFilled className="cta-star-icon" />
+                <StarFilled className="cta-star-icon" />
+              </div>
               <Button
                 type="primary"
                 icon={showForm ? <CloseOutlined /> : <EditOutlined />}
@@ -191,7 +191,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
 
       {/* Customer Comments List */}
       <div className="comments-section-header">
-        <h3>Ý kiến khách hàng ({total})</h3>
+        <h3>Ý kiến khách hàng ({data?.totalReviews ?? total})</h3>
       </div>
 
       {isLoading ? (
@@ -246,6 +246,24 @@ export default function ReviewSection({ productId }: { productId: number }) {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {total > 0 && (
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 24 }}>
+          <Pagination
+            current={page + 1}
+            pageSize={pageSize}
+            total={total}
+            showSizeChanger
+            pageSizeOptions={[5, 10, 20]}
+            onChange={(newPage, newSize) => {
+              setPage(newPage - 1);
+              setPageSize(newSize);
+            }}
+            showTotal={(t) => `Tổng ${t} đánh giá`}
+          />
         </div>
       )}
     </div>

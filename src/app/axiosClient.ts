@@ -7,6 +7,20 @@ const axiosClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  paramsSerializer: (params) => {
+    const searchParams = new URLSearchParams();
+    Object.keys(params).forEach(key => {
+      const value = params[key];
+      if (value !== undefined && value !== null && value !== "") {
+        if (Array.isArray(value)) {
+          value.forEach(item => searchParams.append(key, item));
+        } else {
+          searchParams.append(key, value);
+        }
+      }
+    });
+    return searchParams.toString();
+  }
 });
 
 // Request interceptor
@@ -30,7 +44,7 @@ axiosClient.interceptors.response.use(
   },
   (error) => {
     const { response } = error;
-    
+
     if (response?.status === 401) {
       // Token expired or invalid
       localStorage.removeItem('jwtToken');
@@ -41,17 +55,17 @@ axiosClient.interceptors.response.use(
   }
 );
 
-export const getData = <T>(url: string,params?:any) => axiosClient.get<T>(url,{params}) as Promise<T>
-export const deleteDataNoBody = <T>(url: string,params?:any) => axiosClient.delete<T>(url,{params}) as Promise<T>
-export const deleteData = <T>(url: string, body: any) => 
+export const getData = <T>(url: string, params?: any) => axiosClient.get<T>(url, { params }) as Promise<T>
+export const deleteDataNoBody = <T>(url: string, params?: any) => axiosClient.delete<T>(url, { params }) as Promise<T>
+export const deleteData = <T>(url: string, body: any) =>
   axiosClient.delete<T>(url, body) as Promise<T>
-export const postData = <T>(url: string, body: any) => 
+export const postData = <T>(url: string, body: any) =>
   axiosClient.post<T>(url, body) as Promise<T>
 
-export const putData = <T>(url: string, body: any) => 
+export const putData = <T>(url: string, body: any) =>
   axiosClient.put<T>(url, body) as Promise<T>
 
-export const patchData = <T>(url: string, body: any) => 
+export const patchData = <T>(url: string, body: any) =>
   axiosClient.patch<T>(url, body) as Promise<T>
 
-export default axiosClient;
+export default axiosClient;

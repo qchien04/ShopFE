@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Modal, message, Space, Typography, Tabs, Card, Input } from "antd";
+import { Button, Modal, message, Space, Typography, Tabs, Card, Input, Select, Divider } from "antd";
 import {
   PictureOutlined,
   SaveOutlined,
@@ -13,6 +13,7 @@ import {
   ReadOutlined,
   PlusOutlined,
   DeleteOutlined,
+  EnvironmentOutlined,
 } from "@ant-design/icons";
 import {
   DndContext,
@@ -34,8 +35,10 @@ import { adminApi } from "../../../api/admin.api";
 import type {
   HomePageConfig, VisualBanner, NavSlot, FooterConfig,
   FeaturedProductConfig, NewProductConfig, BrandsShowcaseConfig,
-  HotDealsSectionConfig, NewsSectionConfig, Post, CategoryConfig, FeaturedCategoryConfig
+  HotDealsSectionConfig, NewsSectionConfig, Post, CategoryConfig, FeaturedCategoryConfig,
+  ShippingConfig
 } from "../../../types/entity.type";
+import { useGHNProvinces, useGHNDistricts, useGHNWards } from "../../../hooks/Order/useGHN";
 import EditPanel from "./components/EditPanel";
 import { useQuery } from "@tanstack/react-query";
 import { postApi } from "../../../api/post.api";
@@ -121,6 +124,7 @@ const HomeConfigPage = () => {
   const [featuredCategories, setFeaturedCategories] = useState<FeaturedCategoryConfig>({ id: 'featured_categories', title: 'Danh Mục Nổi Bật', active: true, categoryIds: [], categoryPerRow: 10 });
   const [categorySections, setCategorySections] = useState<CategoryConfig[]>([]);
   const [layout, setLayout] = useState<string[]>(['featured_products', 'featured_categories', 'new_products', 'brand_showcase', 'hot_deals', 'news']);
+  const [shippingConfig, setShippingConfig] = useState<ShippingConfig>({});
 
   // --- UI States ---
   const [activeSlideId, setActiveSlideId] = useState<string>(defaultMainSlides[0].id);
@@ -141,6 +145,15 @@ const HomeConfigPage = () => {
     queryKey: ["banner-post"],
     queryFn: () => postApi.getAll(),
   });
+
+  const { data: rawShippingConfig } = useQuery<ShippingConfig>({
+    queryKey: ["shipping-config"],
+    queryFn: () => adminApi.getShippingConfig(),
+  });
+
+  const { data: provinces, isLoading: loadingProvinces } = useGHNProvinces();
+  const { data: districts, isLoading: loadingDistricts } = useGHNDistricts(shippingConfig.ghnProvinceId || null);
+  const { data: wards, isLoading: loadingWards } = useGHNWards(shippingConfig.ghnDistrictId || null);
 
   useEffect(() => {
     if (!data) return;
@@ -175,6 +188,12 @@ const HomeConfigPage = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (rawShippingConfig) {
+      setShippingConfig(rawShippingConfig);
+    }
+  }, [rawShippingConfig]);
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -195,6 +214,7 @@ const HomeConfigPage = () => {
         layout,
       };
       await adminApi.saveFullConfig(payload);
+      await adminApi.saveShippingConfig(shippingConfig);
       message.success("Đã lưu toàn bộ cấu hình thành công!");
     } catch (err) {
       message.error("Lưu thất bại!");
@@ -587,6 +607,108 @@ const HomeConfigPage = () => {
                       placeholder="https://tiktok.com/@..."
                     />
                   </div>
+                </div>
+              </Card>
+            )
+          },
+          {
+            key: "shipping",
+            label: <span><EnvironmentOutlined /> Giao hàng (GHN)</span>,
+            children: (
+              <Card bordered={false} title="🚚 Cấu hình Vị trí Cửa hàng">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
+                  <div>
+                    <label style={{ display: "block", marginBottom: 6, fontWeight: 500, color: "#595959" }}>Tỉnh/Thành (GHN)</label>
+                    <Select
+                      showSearch
+                      style={{ width: '100%' }}
+                      placeholder="Chọn tỉnh/thành"
+                      loading={loadingProvinces}
+                      value={shippingConfig.ghnProvinceId}
+                      filterOption={(input, option) =>
+                        (option?.label ?? '').toString().toLowerCase().includes(input.toLowerCase())
+                      }
+                      options={provinces?.map(p => ({
+                        value: p.ProvinceID,
+                        label: p.ProvinceName,
+                      }))}
+                      onChange={(val, option: any) => {
+                        setShippingConfig(prev => ({
+                          ...prev,
+                          ghnProvinceId: val,
+                          provinceName: option?.label,
+                          ghnDistrictId: undefined,
+                          districtName: undefined,
+                          ghnWardCode: undefined,
+                          wardName: undefined
+                        }));
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", marginBottom: 6, fontWeight: 500, color: "#595959" }}>Quận/Huyện (GHN)</label>
+                    <Select
+                      showSearch
+                      style={{ width: '100%' }}
+                      placeholder="Chọn quận/huyện"
+                      loading={loadingDistricts}
+                      disabled={!shippingConfig.ghnProvinceId}
+                      value={shippingConfig.ghnDistrictId}
+                      filterOption={(input, option) =>
+                        (option?.label ?? '').toString().toLowerCase().includes(input.toLowerCase())
+                      }
+                      options={districts?.map(d => ({
+                        value: d.DistrictID,
+                        label: d.DistrictName,
+                      }))}
+                      onChange={(val, option: any) => {
+                        setShippingConfig(prev => ({
+                          ...prev,
+                          ghnDistrictId: val,
+                          districtName: option?.label,
+                          ghnWardCode: undefined,
+                          wardName: undefined
+                        }));
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", marginBottom: 6, fontWeight: 500, color: "#595959" }}>Phường/Xã (GHN)</label>
+                    <Select
+                      showSearch
+                      style={{ width: '100%' }}
+                      placeholder="Chọn phường/xã"
+                      loading={loadingWards}
+                      disabled={!shippingConfig.ghnDistrictId}
+                      value={shippingConfig.ghnWardCode}
+                      filterOption={(input, option) =>
+                        (option?.label ?? '').toString().toLowerCase().includes(input.toLowerCase())
+                      }
+                      options={wards?.map(w => ({
+                        value: w.WardCode,
+                        label: w.WardName,
+                      }))}
+                      onChange={(val, option: any) => {
+                        setShippingConfig(prev => ({
+                          ...prev,
+                          ghnWardCode: val,
+                          wardName: option?.label
+                        }));
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: "block", marginBottom: 6, fontWeight: 500, color: "#595959" }}>Địa chỉ chi tiết (Không bắt buộc)</label>
+                  <Input.TextArea
+                    rows={2}
+                    value={shippingConfig.detailAddress}
+                    onChange={e => setShippingConfig({ ...shippingConfig, detailAddress: e.target.value })}
+                    placeholder="Số 123, đường ABC..."
+                  />
                 </div>
               </Card>
             )

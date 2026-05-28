@@ -1,4 +1,4 @@
-import { Button, Space, Popconfirm, Image, Input, Spin, Pagination } from "antd";
+import { Button, Space, Popconfirm, Image, Input, Spin, Pagination, Card, Row, Col } from "antd";
 import { useState } from "react";
 import { useBrandList, useCreateBrand, useDeleteBrand, useUpdateBrand } from "../../../hooks/Brand/useBrand";
 import type { Brand } from "../../../types/entity.type";
@@ -7,7 +7,9 @@ import {
   EditOutlined,
   DeleteOutlined,
   GlobalOutlined,
-  LinkOutlined
+  LinkOutlined,
+  SearchOutlined,
+  PlusCircleOutlined
 } from "@ant-design/icons";
 import "./BrandsPage.scss";
 
@@ -15,7 +17,7 @@ const BrandsPage = () => {
   const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  
+
   const { data, isLoading } = useBrandList();
 
   const [open, setOpen] = useState(false);
@@ -41,7 +43,8 @@ const BrandsPage = () => {
   };
 
   const filteredData = data?.filter((item) =>
-    item.name.toLowerCase().includes(searchText.toLowerCase())
+    item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+    (item.slug && item.slug.toLowerCase().includes(searchText.toLowerCase()))
   ) || [];
 
   const handleDelete = (id: number) => {
@@ -52,37 +55,36 @@ const BrandsPage = () => {
   const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize);
 
   return (
-    <div>
-      <Space style={{ marginBottom: 16, justifyContent: "space-between", width: "100%" }}>
-        <Button
-          type="primary"
-          size="large"
-          onClick={() => {
-            setEditing(null);
-            setOpen(true);
-          }}
-          style={{ borderRadius: 8, fontWeight: 600 }}
-        >
-          ➕ Thêm brand
-        </Button>
-        <Input.Search
-          placeholder="Tìm kiếm brand..."
-          style={{ width: 320 }}
-          size="large"
-          enterButton
-          onSearch={(value) => {
-            setSearchText(value);
-            setPage(1);
-          }}
-          onChange={(e) => {
-            if (!e.target.value) {
-              setSearchText("");
+    <div className="brands-page-wrapper">
+      <Row justify="space-between" align="middle" gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col>
+          <Input
+            placeholder="Tìm tên hoặc slug..."
+            prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+            style={{ width: 280, borderRadius: 8 }}
+            size="large"
+            allowClear
+            onChange={(e) => {
+              setSearchText(e.target.value);
               setPage(1);
-            }
-          }}
-          allowClear
-        />
-      </Space>
+            }}
+          />
+        </Col>
+        <Col>
+          <Button
+            type="primary"
+            size="large"
+            icon={<PlusCircleOutlined />}
+            onClick={() => {
+              setEditing(null);
+              setOpen(true);
+            }}
+            style={{ borderRadius: 8, fontWeight: 600, background: '#00c853', borderColor: '#00c853' }}
+          >
+            Thêm thương hiệu mới
+          </Button>
+        </Col>
+      </Row>
 
       <BrandModal
         open={open}
@@ -121,7 +123,7 @@ const BrandsPage = () => {
                     <h3 className="brand-title">{brand.name}</h3>
                     <span className="brand-id-badge">ID: {brand.id}</span>
                   </div>
-                  
+
                   <div className="brand-slug-row">
                     {brand.slug && (
                       <span className="slug-badge">

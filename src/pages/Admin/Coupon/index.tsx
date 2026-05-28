@@ -150,7 +150,7 @@ const CouponPage = () => {
   const paginatedCoupons = filteredCoupons.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
-    <div style={{ padding: 24, background: "#f8f9fa", minHeight: "100vh" }}>
+    <div style={{ background: "#f8f9fa", minHeight: "100vh" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
         <h2 style={{ margin: 0, fontWeight: 700, fontSize: 24, color: "#1f1f1f" }}>Quản lý Voucher</h2>
         <Space size="middle" wrap>

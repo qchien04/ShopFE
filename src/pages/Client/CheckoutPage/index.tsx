@@ -11,6 +11,7 @@ import { PaymentMethod, type CustomerAddress } from "../../../types/entity.type"
 import type { CreateOrderRequest, OrderRequestItem } from "../../../types/request.type";
 import { orderApi } from "../../../api/order.api";
 import { paymentApi } from "../../../api/payment.api";
+import { cartApi } from "../../../api/cart.api";
 import { useProductVariantsByIds } from "../../../hooks/Product/useProductList";
 import CustomerAddressFormModal from "../../../components/AddressFormModal/AddressFormModal";
 import { PaymentMethodCard } from "./PaymentMethodCard";
@@ -20,7 +21,7 @@ const { Title: CTitle, Text } = Typography;
 
 
 const CheckoutPage = () => {
-  const { state } = useLocation() as { state: { orderItems: OrderRequestItem[] } };
+  const { state } = useLocation() as { state: { orderItems: OrderRequestItem[]; cartItemIds?: number[] } };
   const navigate = useNavigate();
   const { data: addresses } = useCustomerAddresses();
 
@@ -88,7 +89,7 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     calculatePreview(appliedCouponCode);
-  }, [state.orderItems, appliedCouponCode]);
+  }, [state.orderItems, appliedCouponCode, currentAddress?.id]);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -138,6 +139,12 @@ const CheckoutPage = () => {
     return () => clearInterval(interval);
   }, [payModalVisible, payData, navigate]);
 
+  const removeOrderedCartItems = async () => {
+    const ids = state.cartItemIds ?? [];
+    if (ids.length === 0) return;
+    await Promise.allSettled(ids.map((id) => cartApi.removeFromCart(id)));
+  };
+
   const handleOrder = async () => {
     if (!currentAddress) { message.error("Vui lòng chọn địa chỉ giao hàng"); return; }
 
@@ -153,6 +160,8 @@ const CheckoutPage = () => {
 
       const order = await orderApi.createOrder(payload);
 
+      await removeOrderedCartItems();
+
       if (payMethod === PaymentMethod.BANK_TRANSFER) {
         const res = await paymentApi.pay({ orderId: order.id, paymentMethod: PaymentMethod.BANK_TRANSFER });
         setPayData(res);
@@ -164,7 +173,7 @@ const CheckoutPage = () => {
       }
     } catch (err: any) {
       message.error(err?.message || "Đặt hàng thất bại. Vui lòng thử lại.");
-      setRedirecting(false); // chỉ tắt spin nếu lỗi
+      setRedirecting(false);
     }
   };
 
@@ -201,8 +210,7 @@ const CheckoutPage = () => {
                     </Text>
                     <Text type="secondary">{currentAddress.phone}</Text>
                     <Text>
-                      {currentAddress.detailAddress}, {currentAddress.ward},{" "}
-                      {currentAddress.district}, {currentAddress.province}
+                      {currentAddress.detailAddress}
                     </Text>
                   </Space>
                   <Button type="link" icon={<EditOutlined />} onClick={() => setOpen(true)}>Thay đổi</Button>
@@ -409,7 +417,7 @@ const CheckoutPage = () => {
                         {addr.isDefault && <Tag color="green" icon={<CheckCircleFilled />}>Mặc định</Tag>}
                       </div>
                       <Text type="secondary">{addr.phone}</Text>
-                      <Text>{addr.detailAddress}, {addr.ward}, {addr.district}, {addr.province}</Text>
+                      <Text>{addr.detailAddress}</Text>
                     </Space>
                   </Radio>
                 </Card>

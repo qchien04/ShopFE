@@ -208,7 +208,7 @@ const FilterSidebar = ({
       {/* Còn hàng */}
       <div className="filter-section">
         <Checkbox
-          checked={filters.inStock}
+          checked={!!filters.inStock}
           onChange={(e) => onChange({ inStock: e.target.checked })}
           className="filter-checkbox"
         >
@@ -281,7 +281,7 @@ const DEFAULT_FILTERS: FilterState = {
   brandIds: [],
   categoryIds: [],
   sortBy: "newest",
-  inStock: false,
+  inStock: true,
 };
 
 // ─── Search Page ──────────────────────────────────────────────────────────────

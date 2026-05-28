@@ -1,17 +1,16 @@
-import { Card, DatePicker, Input, Select, Space } from "antd"
+import { Button, Card, DatePicker, Input, Select, Space } from "antd"
 import { OrderStatus, PaymentStatus } from "../../../types/entity.type";
 import { paymentStatusText, statusText } from "./Mapper";
-
+import type { AdminOrderFilter } from "../../../types";
+import dayjs from 'dayjs';
+import { ReloadOutlined } from '@ant-design/icons';
 const { RangePicker } = DatePicker;
 interface Props {
-  searchText: string,
-  statusFilter: OrderStatus | "ALL",
-  paymentStatusFilter: PaymentStatus | "ALL",
-  setStatusFilter: React.Dispatch<React.SetStateAction<OrderStatus | "ALL">>;
-  setPaymentStatusFilter: React.Dispatch<React.SetStateAction<PaymentStatus | "ALL">>;
-  setSearchText: React.Dispatch<React.SetStateAction<string>>;
+  filter: AdminOrderFilter;
+  onChange: (patch: Partial<AdminOrderFilter>) => void;
+  onReset: () => void;
 }
-export const Filter = ({ searchText, setSearchText, statusFilter, setStatusFilter, paymentStatusFilter, setPaymentStatusFilter }: Props) => {
+export const Filter = ({ filter, onChange, onReset }: Props) => {
   return (
     <Card className="filters-card">
       <Space style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -19,16 +18,16 @@ export const Filter = ({ searchText, setSearchText, statusFilter, setStatusFilte
           <Input.Search
             placeholder="Tìm kiếm mã đơn, sản phẩm..."
             style={{ width: 300 }}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            value={filter.keyword}
+            onChange={(e) => onChange({ keyword: e.target.value })}
             allowClear
           />
 
           <Select
             style={{ width: 160 }}
             placeholder="Trạng thái"
-            value={statusFilter}
-            onChange={setStatusFilter}
+            value={filter.status}
+            onChange={(value) => onChange({ status: value as OrderStatus })}
             options={[
               { value: 'ALL', label: 'Tất cả trạng thái' },
               ...Object.entries(statusText).map(([key, value]) => ({
@@ -41,8 +40,8 @@ export const Filter = ({ searchText, setSearchText, statusFilter, setStatusFilte
           <Select
             style={{ width: 160 }}
             placeholder="Thanh toán"
-            value={paymentStatusFilter}
-            onChange={setPaymentStatusFilter}
+            value={filter.paymentStatus}
+            onChange={(value) => onChange({ paymentStatus: value as PaymentStatus })}
             options={[
               { value: 'ALL', label: 'Tất cả' },
               ...Object.entries(paymentStatusText).map(([key, value]) => ({
@@ -52,7 +51,30 @@ export const Filter = ({ searchText, setSearchText, statusFilter, setStatusFilte
             ]}
           />
 
-          <RangePicker placeholder={['Từ ngày', 'Đến ngày']} />
+          <RangePicker
+            style={{ width: '100%' }}
+            format="DD/MM/YYYY"
+            placeholder={['Từ ngày', 'Đến ngày']}
+            value={[
+              filter.fromDate ? dayjs(filter.fromDate) : null,
+              filter.toDate ? dayjs(filter.toDate) : null,
+            ]}
+            onChange={dates => {
+              onChange({
+                fromDate: dates?.[0] ? dates[0].format('YYYY-MM-DD') : null,
+                toDate: dates?.[1] ? dates[1].format('YYYY-MM-DD') : null,
+                page: 0,
+              });
+            }}
+          />
+
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={onReset}
+            style={{ width: '100%' }}
+          >
+            Đặt lại
+          </Button>
         </Space>
       </Space>
     </Card>

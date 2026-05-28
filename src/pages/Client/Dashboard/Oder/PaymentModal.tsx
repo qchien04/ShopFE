@@ -1,20 +1,20 @@
 
-import {  Modal, Radio, Space,Typography } from "antd"
-import {PaymentMethod, type Order } from '../../../../types/entity.type';
+import { Modal, Radio, Space, Typography } from "antd"
+import { PaymentMethod, type Order } from '../../../../types/entity.type';
 import { paymentMethodMap } from "./Mapper";
 
-const { Title,Text } = Typography;
+const { Title, Text } = Typography;
 interface Props {
-  paymentOpen:boolean,
-  selectedOrder:Order,
-  payMethod:PaymentMethod,
-  setPaymentOpen:React.Dispatch<React.SetStateAction<boolean>>;
-  setPayMethod:React.Dispatch<React.SetStateAction<PaymentMethod>>;
-  handleConfirmPayment:(id?: number) => Promise<void>
+  paymentOpen: boolean,
+  selectedOrder: Order,
+  payMethod: PaymentMethod,
+  setPaymentOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setPayMethod: React.Dispatch<React.SetStateAction<PaymentMethod>>;
+  handleConfirmPayment: (id?: number) => Promise<void>
 }
 
-export const PaymentModal=({handleConfirmPayment,payMethod,setPayMethod
-  ,paymentOpen,selectedOrder,setPaymentOpen}:Props)=>{
+export const PaymentModal = ({ handleConfirmPayment, payMethod, setPayMethod
+  , paymentOpen, selectedOrder, setPaymentOpen }: Props) => {
 
   return (
     <Modal
@@ -39,7 +39,7 @@ export const PaymentModal=({handleConfirmPayment,payMethod,setPayMethod
           <div>
             <Text strong style={{ display: 'block', marginBottom: 10 }}>Phương thức thanh toán</Text>
             <Radio.Group value={payMethod} onChange={e => setPayMethod(e.target.value)} style={{ width: '100%' }}>
-              <Space direction="vertical" style={{ width: '100%' }}>
+              <Space orientation="vertical" style={{ width: '100%' }}>
                 {Object.entries(paymentMethodMap).map(([key, val]) => (
                   <Radio key={key} value={key} style={{
                     width: '100%', padding: '12px 14px',

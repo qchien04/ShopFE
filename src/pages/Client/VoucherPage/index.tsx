@@ -4,6 +4,7 @@ import { CopyOutlined, TagOutlined, ClockCircleOutlined } from '@ant-design/icon
 import { couponApi } from '../../../api/coupon.api';
 import type { Coupon } from '../../../types/entity.type';
 import dayjs from 'dayjs';
+import './VoucherPage.scss';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -39,73 +40,50 @@ const VoucherPage = () => {
     return (
       <Card
         hoverable
-        style={{
-          marginBottom: 16,
-          borderRadius: 12,
-          overflow: 'hidden',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-          border: '1px solid #e5e7eb'
-        }}
+        className="voucher-card"
         bodyStyle={{ padding: 0 }}
       >
-        <div style={{ display: 'flex', height: '100%', minHeight: 140 }}>
+        <div className="voucher-ticket">
           {/* Left section - Colored Area */}
-          <div style={{
-            width: 120,
-            background: 'linear-gradient(135deg, #00b96b 0%, #00d27a 100%)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: 'white',
-            padding: 16,
-            position: 'relative'
-          }}>
-            <TagOutlined style={{ fontSize: 32, opacity: 0.8 }} />
-            <Text style={{
-              color: 'white',
-              fontSize: 18,
-              fontWeight: 'bold',
-              marginTop: 12,
-              textAlign: 'center',
-              lineHeight: 1.2
-            }}>
+          <div className="ticket-left">
+            <TagOutlined className="ticket-icon" />
+            <Text className="ticket-discount">
               {coupon.discountType === 'PERCENTAGE' ? `GIẢM ${coupon.discountValue}%` : `GIẢM ${coupon.discountValue / 1000}K`}
             </Text>
 
             {/* Ticket holes effect */}
-            <div style={{ position: 'absolute', right: -10, top: '50%', transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div className="ticket-holes">
               {[...Array(6)].map((_, i) => (
-                <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: 'white' }} />
+                <div key={i} className="hole" />
               ))}
             </div>
           </div>
 
           {/* Right section - Content Area */}
-          <div style={{ flex: 1, padding: '16px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div className="ticket-right">
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Title level={5} style={{ margin: 0, color: '#1f2937' }}>{coupon.code}</Title>
+              <div className="ticket-header">
+                <Title level={5} className="ticket-code">{coupon.code}</Title>
               </div>
-              <Paragraph type="secondary" style={{ margin: '8px 0', fontSize: 13, minHeight: 40 }} ellipsis={{ rows: 2, expandable: true }}>
+              <Paragraph type="secondary" className="ticket-description" ellipsis={{ rows: 2, expandable: true }}>
                 {coupon.description}
               </Paragraph>
 
-              <Space direction="vertical" size={1} style={{ fontSize: 12, color: '#6b7280' }}>
+              <Space orientation="vertical" size={1} className="ticket-info">
                 {coupon.minOrderValue > 0 && <Text type="secondary">Đơn tối thiểu: {coupon.minOrderValue.toLocaleString('vi-VN')}đ</Text>}
                 {coupon.maxDiscountAmount && coupon.discountType === 'PERCENTAGE' && (
                   <Text type="secondary">Giảm tối đa: {coupon.maxDiscountAmount.toLocaleString('vi-VN')}đ</Text>
                 )}
-                {coupon.usedCount && coupon.usageLimit && (
+                {coupon.usedCount !== undefined && coupon.usageLimit !== undefined && (
                   <Text type="secondary">Đã dùng: {coupon.usedCount}/{coupon.usageLimit}</Text>
                 )}
               </Space>
             </div>
 
-            <Divider style={{ margin: '12px 0' }} dashed />
+            <Divider className="ticket-divider" dashed />
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Space style={{ fontSize: 12, color: '#ef4444' }}>
+            <div className="ticket-actions">
+              <Space className="ticket-expiry">
                 <ClockCircleOutlined />
                 HSD: {dayjs(coupon.endDate).format('DD/MM/YYYY')}
               </Space>
@@ -115,13 +93,7 @@ const VoucherPage = () => {
                 size="middle"
                 icon={<CopyOutlined />}
                 onClick={() => handleCopyCode(coupon.code)}
-                style={{
-                  borderRadius: 20,
-                  background: 'white',
-                  color: '#00b96b',
-                  border: '1px solid #00b96b',
-                  fontWeight: 600
-                }}
+                className="copy-btn"
               >
                 Sao chép mã
               </Button>
@@ -133,15 +105,15 @@ const VoucherPage = () => {
   };
 
   return (
-    <div style={{ background: '#f9fafb', minHeight: '100vh', padding: '40px 0' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px' }}>
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <Title level={2} style={{ color: '#111827', marginBottom: 8 }}>Mã Giảm Giá Dành Cho Bạn</Title>
-          <Text type="secondary" style={{ fontSize: 16 }}>Lưu ngay các mã giảm giá hấp dẫn để mua sắm tiết kiệm hơn tại cửa hàng</Text>
+    <div className="voucher-page">
+      <div className="voucher-container">
+        <div className="voucher-header">
+          <Title level={2} className="title">Mã Giảm Giá Dành Cho Bạn</Title>
+          <Text type="secondary" className="subtitle">Lưu ngay các mã giảm giá hấp dẫn để mua sắm tiết kiệm hơn tại cửa hàng</Text>
         </div>
 
         {loading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', margin: '100px 0' }}>
+          <div className="loading-container">
             <Spin size="large" tip="Đang tải danh sách voucher..." />
           </div>
         ) : coupons.length > 0 ? (
@@ -155,11 +127,11 @@ const VoucherPage = () => {
         ) : (
           <Empty
             description={
-              <span style={{ color: '#6b7280', fontSize: 16 }}>
+              <span className="empty-text">
                 Hiện tại không có mã giảm giá nào. Vui lòng quay lại sau!
               </span>
             }
-            style={{ margin: '100px 0' }}
+            className="empty-container"
           />
         )}
       </div>

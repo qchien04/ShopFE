@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Tag,
   Button,
@@ -18,38 +18,46 @@ import {
 import type { Order } from '../../../types/entity.type';
 import { OrderStatus, PaymentStatus } from '../../../types/entity.type';
 import OrderDetailModal from '../../../components/OrderDetailModal';
-import { useAdminOrders, useUpdateStatusOrders, useUpdatePaymentStatus } from '../../../hooks/Order/useOrder';
+import { useAdminOrders, useUpdateStatusOrders, useUpdatePaymentStatus, useAdminOrdersPaginated } from '../../../hooks/Order/useOrder';
 import { getStatusActions, paymentMethodText, paymentStatusColors, paymentStatusText, statusColors, statusText } from './Mapper';
 import { Stat } from './Stat';
 import { Filter } from './Filter';
 import { antdModal } from '../../../utils/antdModal';
 import "./OdersPage.scss";
-
+import type { AdminOrderFilter } from '../../../types';
+const INITIAL_FILTER: AdminOrderFilter = {
+  page: 0,
+  pageSize: 5,
+  status: 'ALL',
+  keyword: '',
+  paymentStatus: 'ALL',
+  fromDate: null,
+  toDate: null,
+};
 
 const OrdersPage = () => {
-  const [searchText, setSearchText] = useState('');
-  const [statusFilter, setStatusFilter] = useState<OrderStatus | 'ALL'>('ALL');
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState<PaymentStatus | 'ALL'>('ALL');
+  const [filter, setFilter] = useState<AdminOrderFilter>(INITIAL_FILTER);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
 
   const { mutate: UpdateStatus } = useUpdateStatusOrders();
   const { mutate: updatePaymentStatus } = useUpdatePaymentStatus();
-  const { data: orders, isLoading } = useAdminOrders();
+  const { data, isLoading } = useAdminOrdersPaginated(filter);
 
+  const orders = data?.content ?? [];
+  const totalElements = data?.totalElements ?? 0;
+  const counts = data?.counts ?? {};
 
-  const filteredOrders = orders?.filter(order => {
-    const matchSearch =
-      order.orderNumber.toLowerCase().includes(searchText.toLowerCase()) ||
-      order.items.some(item => item.productName.toLowerCase().includes(searchText.toLowerCase()));
+  // Patch một phần filter, tự reset page nếu cần
+  const handleFilterChange = (patch: Partial<AdminOrderFilter>) => {
+    setFilter(prev => ({
+      ...prev,
+      ...patch,
+      page: patch.page ?? 0,
+    }));
+  };
 
-    const matchStatus = statusFilter === 'ALL' || order.status === statusFilter;
-    const matchPaymentStatus = paymentStatusFilter === 'ALL' || order.paymentStatus === paymentStatusFilter;
-
-    return matchSearch && matchStatus && matchPaymentStatus;
-  }) || [];
+  const handleReset = () => setFilter(INITIAL_FILTER);
 
   const handleUpdateStatus = (order: Order, newStatus: OrderStatus, reason?: string, internalNote?: string) => {
     antdModal.confirm({
@@ -59,7 +67,7 @@ const OrdersPage = () => {
           <div>
             Chuyển đơn <b>{order.orderNumber}</b> sang{' '}
             <b>"{statusText[newStatus]}"</b>?
-          </div>
+          </div>``
           {reason && (
             <div style={{ marginTop: 8, color: '#666', fontSize: 13 }}>
               Lý do: {reason}
@@ -99,43 +107,25 @@ const OrdersPage = () => {
   };
 
   const stats = {
-    total: orders?.length,
-    pending: orders?.filter(o => o.status === 'PENDING').length,
-    processing: orders?.filter(o => o.status === 'PROCESSING' || o.status === 'CONFIRMED').length,
-    shipping: orders?.filter(o => o.status === 'SHIPPING').length,
-    delivered: orders?.filter(o => o.status === 'DELIVERED').length,
-    revenue: orders ? orders
-      .filter(o => o.status === 'DELIVERED')
-      .reduce((sum, o) => sum + o.total, 0)
-      : 0
+    total: counts['ALL'] ?? 0,
+    pending: counts['PENDING'] ?? 0,
+    confirmed: counts['CONFIRMED'] ?? 0,
+    processing: counts['PROCESSING'] ?? 0,
+    shipping: counts['SHIPPING'] ?? 0,
+    delivered: counts['DELIVERED'] ?? 0,
+    revenue: orders
+      .filter(o => o.status === OrderStatus.DELIVERED)
+      .reduce((sum, o) => sum + o.total, 0),
   };
-
-  // Safe pagination calculation (in case filters shrink the list)
-  const totalElements = filteredOrders.length;
-  const maxPage = Math.max(1, Math.ceil(totalElements / pageSize));
-  const currentPage = page > maxPage ? maxPage : page;
-  const paginatedOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <div className="orders-page">
       <Stat stats={stats}></Stat>
 
       <Filter
-        paymentStatusFilter={paymentStatusFilter}
-        searchText={searchText}
-        setPaymentStatusFilter={(val) => {
-          setPaymentStatusFilter(val);
-          setPage(1);
-        }}
-        setSearchText={(val) => {
-          setSearchText(val);
-          setPage(1);
-        }}
-        setStatusFilter={(val) => {
-          setStatusFilter(val);
-          setPage(1);
-        }}
-        statusFilter={statusFilter}
+        filter={filter}
+        onChange={handleFilterChange}
+        onReset={handleReset}
       />
 
       <Card className="table-card" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
@@ -145,10 +135,9 @@ const OrdersPage = () => {
           </div>
         ) : (
           <div className="order-list-container">
-            {paginatedOrders.length > 0 ? (
-              paginatedOrders.map((order) => {
+            {orders.length > 0 ? (
+              orders.map(order => {
                 const statusActions = getStatusActions(order);
-
                 return (
                   <div key={order.id} className="order-row-card">
                     {/* Card Header */}
@@ -299,15 +288,17 @@ const OrdersPage = () => {
             {/* Pagination */}
             <div className="order-pagination-container">
               <Pagination
-                current={currentPage}
-                pageSize={pageSize}
+                current={filter.page + 1}
+                pageSize={filter.pageSize}
                 total={totalElements}
                 showSizeChanger
-                showTotal={(total) => `Tổng ${total} đơn hàng`}
-                onChange={(p, ps) => {
-                  setPage(p);
-                  setPageSize(ps);
-                }}
+                pageSizeOptions={[5, 10, 20, 50]}
+                showTotal={(total, range) =>
+                  `${range[0]}-${range[1]} / ${total} đơn hàng`
+                }
+                onChange={(p, ps) =>
+                  handleFilterChange({ page: p - 1, pageSize: ps })
+                }
               />
             </div>
           </div>

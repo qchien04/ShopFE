@@ -1,11 +1,13 @@
 // ProductsPage.tsx
-import { Button, Space, Input, Modal, Spin, Pagination, Popconfirm, Image } from "antd";
+import { Button, Space, Input, Modal, Spin, Pagination, Popconfirm, Image, Select, Row, Col } from "antd";
 import { useState } from "react";
 import { useProductList } from "../../../hooks/Product/useProductList";
 import { useDeleteProduct } from "../../../hooks/Product/useDeleteProduct";
 import { useCreateProduct } from "../../../hooks/Product/useCreateProduct";
 import { useUpdateProduct } from "../../../hooks/Product/useUpdateProduct";
 import { useProductDetail } from "../../../hooks/Product/useProduct";
+import { useCategoryList } from "../../../hooks/Category/useCategotyList";
+import { useBrandList } from "../../../hooks/Brand/useBrand";
 import type { Product } from "../../../types/product.type";
 import type { PageResponse } from "../../../types/response.type";
 import ProductForm from "./ProductFormProps";
@@ -52,14 +54,23 @@ const ProductsPage = () => {
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
   const [keyword, setKeyword] = useState("");
+  const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [brandId, setBrandId] = useState<number | null>(null);
+  const [inStock, setInStock] = useState<boolean | null>(null);
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"create" | "edit">("create");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [viewOpen, setViewOpen] = useState(false);
   const [viewingId, setViewingId] = useState<number | null>(null);
 
+  const { data: categories } = useCategoryList();
+  const { data: brands } = useBrandList();
+
   const { data, isLoading } = useProductList<PageResponse<Product>>({
-    type: "all", page: page - 1, size: pageSize, keyword,
+    type: "search", page: page - 1, size: pageSize, keyword,
+    brandIds: brandId ? [brandId] : undefined,
+    subCategoryIds: categoryId ? [categoryId] : undefined,
+    inStock: inStock !== null ? inStock : undefined
   });
 
   const openViewModal = (id: number) => { setViewingId(id); setViewOpen(true); };
@@ -79,6 +90,9 @@ const ProductsPage = () => {
 
   const handleSearch = (value: string) => { setKeyword(value); setPage(1); };
   const handleClear = () => { setKeyword(""); setPage(1); setSearchText(""); };
+  const handleCategoryChange = (val: number | null) => { setCategoryId(val); setPage(1); };
+  const handleBrandChange = (val: number | null) => { setBrandId(val); setPage(1); };
+  const handleInStockChange = (val: boolean | null) => { setInStock(val); setPage(1); };
 
   const handleSubmit = (values: any) => {
     const payload = toPayload(values);
@@ -150,7 +164,7 @@ const ProductsPage = () => {
         onClose={closeViewModal}
       />
 
-      <Space style={{ marginBottom: 16, justifyContent: "space-between", width: "100%" }}>
+      <Space style={{ marginBottom: 16, justifyContent: "space-between", width: "100%", flexWrap: "wrap", gap: 16 }}>
         <Button
           type="primary"
           size="large"
@@ -160,17 +174,49 @@ const ProductsPage = () => {
         >
           Thêm sản phẩm
         </Button>
-        <Input.Search
-          placeholder="Tìm kiếm sản phẩm..."
-          style={{ width: 320 }}
-          size="large"
-          enterButton
-          value={searchText}
-          onChange={e => setSearchText(e.target.value)}
-          onSearch={handleSearch}
-          onClear={handleClear}
-          allowClear
-        />
+        <Space style={{ flexWrap: "wrap" }}>
+          <Select
+            allowClear
+            placeholder="Danh mục"
+            size="large"
+            style={{ width: 180 }}
+            options={(categories ?? []).map(c => ({ label: c.name, value: c.id }))}
+            value={categoryId}
+            onChange={handleCategoryChange}
+          />
+          <Select
+            allowClear
+            placeholder="Thương hiệu"
+            size="large"
+            style={{ width: 180 }}
+            options={(brands ?? []).map(b => ({ label: b.name, value: b.id }))}
+            value={brandId}
+            onChange={handleBrandChange}
+          />
+          <Select
+            allowClear
+            placeholder="Trạng thái tồn kho"
+            size="large"
+            style={{ width: 180 }}
+            options={[
+              { label: "Còn hàng", value: true },
+              { label: "Hết hàng", value: false }
+            ]}
+            value={inStock}
+            onChange={handleInStockChange}
+          />
+          <Input.Search
+            placeholder="Tìm kiếm sản phẩm..."
+            style={{ width: 320 }}
+            size="large"
+            enterButton
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+            onSearch={handleSearch}
+            onClear={handleClear}
+            allowClear
+          />
+        </Space>
       </Space>
 
       {isLoading ? (
@@ -244,7 +290,7 @@ const ProductsPage = () => {
                         </span>
                       )}
                     </div>
-                    
+
                     <div className={`stock-status ${product.stockQuantity > 0 ? "in" : "out"}`}>
                       <span className={`status-dot ${product.stockQuantity > 0 ? "in-stock" : "out-of-stock"}`} />
                       {product.stockQuantity > 0 ? `Còn hàng (${product.stockQuantity})` : "Hết hàng"}

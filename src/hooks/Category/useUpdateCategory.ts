@@ -19,7 +19,7 @@ export const useUpdateCategory = () => {
       },
       onError: (err: any) => {
         console.error(err);
-        antdMessage.error("Cập nhật thất bại!");
+        antdMessage.error(err?.message || "Cập nhật thất bại!");
       },
     }
   );

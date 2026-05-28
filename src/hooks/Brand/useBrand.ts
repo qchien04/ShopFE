@@ -10,7 +10,7 @@ export const brandQueryKeys = {
 
   lists: () => [...brandQueryKeys.all, "list"] as const,
 
-  listFilter: (id: number) => [...brandQueryKeys.all, "list","filter",id] as const,
+  listFilter: (id: number) => [...brandQueryKeys.all, "list", "filter", id] as const,
 
   detail: (id: number) =>
     [...brandQueryKeys.all, "detail", id] as const,
@@ -32,7 +32,7 @@ export const useBrandDetail = <T = Brand>(id?: number) => {
 export const useBrandList = <T = Brand[]>() => {
   return useQuery<T>({
     queryKey: brandQueryKeys.lists(),
-    queryFn: () => { 
+    queryFn: () => {
       return brandApi.getAll() as T
     }
   })
@@ -44,10 +44,14 @@ export const useCreateBrand = () => {
   return useMutation({
     mutationFn: brandApi.createBrand,
     onSuccess: () => {
+      antdMessage.success("Tạo mới thành công!");
       queryClient.invalidateQueries({
         queryKey: brandQueryKeys.lists(),
       });
-      
+    },
+    onError: (err: any) => {
+      console.error(err);
+      antdMessage.error(err.message || "Thêm mới thất bại!");
     },
   });
 };
@@ -59,9 +63,14 @@ export const useDeleteBrand = () => {
   return useMutation({
     mutationFn: (id: number) => brandApi.deleteById(id),
     onSuccess: () => {
+      antdMessage.success("Xóa thành công!");
       queryClient.invalidateQueries({
         queryKey: brandQueryKeys.lists(),
       });
+    },
+    onError: (err: any) => {
+      console.error(err);
+      antdMessage.error(err.message || "Xóa thất bại!");
     },
   });
 };
@@ -80,17 +89,17 @@ export const useUpdateBrand = () => {
       },
       onError: (err: any) => {
         console.error(err);
-        antdMessage.error("Cập nhật thất bại!");
+        antdMessage.error(err.response?.data?.message || err.response?.data?.error || "Cập nhật thất bại!");
       },
     }
   );
 };
 
 
-export const useBrandFilter = <T = BrandFilterResponse>(id:number) => {
+export const useBrandFilter = <T = BrandFilterResponse>(id: number) => {
   return useQuery<T>({
     queryKey: brandQueryKeys.listFilter(id),
-    queryFn: () => { 
+    queryFn: () => {
       return brandApi.getFilter(id) as T
     }
   })

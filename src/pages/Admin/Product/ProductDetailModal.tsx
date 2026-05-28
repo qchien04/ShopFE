@@ -1,5 +1,7 @@
-import { Modal, Button, Spin, Image, Tag }  from "antd";
-import { useProductDetail, useProductStats }                 from "../../../hooks/Product/useProduct";
+import { useState } from "react";
+import { Modal, Button, Spin, Image, Tag, Rate, Avatar, Pagination }  from "antd";
+import { UserOutlined } from '@ant-design/icons';
+import { useProductDetail, useProductStats, useProductReviews }                 from "../../../hooks/Product/useProduct";
 
 
 
@@ -45,8 +47,12 @@ interface Props {
 }
 
 const ProductDetailModal = ({ productId, open, onClose }: Props) => {
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
+
   const { data: p,     isLoading: loadingDetail } = useProductDetail(productId ?? 0);
   const { data: stats, isLoading: loadingStats  } = useProductStats(productId);
+  const { data: reviewSummary, isLoading: loadingReviews } = useProductReviews(productId, page - 1, pageSize);
 
   const variantStatsMap = Object.fromEntries(
     (stats?.variantStats ?? []).map(vs => [vs.variantId, vs])
@@ -251,6 +257,77 @@ const ProductDetailModal = ({ productId, open, onClose }: Props) => {
               </div>
             </div>
           )}
+
+          {/* ── Đánh giá / Bình luận ────────────────────────────────────────── */}
+          <div style={{ marginTop: 24 }}>
+            <SectionLabel>Đánh giá & Bình luận</SectionLabel>
+            {loadingReviews ? (
+              <Spin size="small" />
+            ) : reviewSummary?.reviews?.content && reviewSummary.reviews.content.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 12,
+                  padding: "12px 16px",
+                  background: "var(--ant-color-fill-quaternary, #fafafa)",
+                  borderRadius: 8
+                }}>
+                  <div style={{ fontSize: 24, fontWeight: 600, color: "#faad14" }}>
+                    {reviewSummary.averageRating?.toFixed(1) ?? 0}
+                  </div>
+                  <div>
+                    <Rate disabled allowHalf value={reviewSummary.averageRating ?? 0} style={{ fontSize: 14 }} />
+                    <div style={{ fontSize: 12, color: "rgba(0,0,0,0.45)", marginTop: 2 }}>
+                      Dựa trên {reviewSummary.totalReviews ?? 0} đánh giá
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {reviewSummary.reviews.content.map((r, idx) => (
+                    <div key={r.id || idx} style={{
+                      padding: "12px 16px",
+                      border: "1px solid #f0f0f0",
+                      borderRadius: 8,
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                        <Avatar src={r.userAvatar} icon={<UserOutlined />} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 13, fontWeight: 500 }}>{r.userName}</div>
+                          <div style={{ fontSize: 11, color: "rgba(0,0,0,0.4)" }}>
+                            {r.createdAt ? new Date(r.createdAt).toLocaleString("vi-VN") : ""}
+                          </div>
+                        </div>
+                        <Rate disabled value={r.rating ?? 0} style={{ fontSize: 12 }} />
+                      </div>
+                      <div style={{ fontSize: 14, color: "rgba(0,0,0,0.85)" }}>
+                        {r.comment}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {reviewSummary.reviews.totalElements > pageSize && (
+                  <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
+                    <Pagination
+                      current={page}
+                      pageSize={pageSize}
+                      total={reviewSummary.reviews.totalElements}
+                      onChange={(p) => setPage(p)}
+                      showSizeChanger={false}
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={{
+                padding: "24px", textAlign: "center",
+                background: "var(--ant-color-fill-quaternary, #fafafa)",
+                borderRadius: 8, color: "rgba(0,0,0,0.4)"
+              }}>
+                Chưa có bình luận nào cho sản phẩm này.
+              </div>
+            )}
+          </div>
         </>
       )}
     </Modal>

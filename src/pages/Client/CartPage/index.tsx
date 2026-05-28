@@ -74,7 +74,8 @@ const CartPage = () => {
       productVariantId: i.productVariant?.id,
       quantity: i.quantity,
     }));
-    navigate("/checkout", { state: { orderItems } });
+    const cartItemIds: number[] = selectedItems.map((i) => i.id);
+    navigate("/checkout", { state: { orderItems, cartItemIds } });
   };
 
   const handleRemoveSelected = () => {

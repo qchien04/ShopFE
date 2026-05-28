@@ -73,16 +73,7 @@ const CategoryForm = ({ form, initialValues, onSubmit, categories }: Props) => {
               </Row>
 
               <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    name="icon"
-                    label="Ký hiệu Icon"
-                    rules={[{ required: true, message: "Vui lòng nhập ký hiệu" }]}
-                  >
-                    <Input placeholder="VD: AppstoreOutlined" />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
+                <Col span={24}>
                   <Form.Item name="parentId" label="Danh mục cấp cha">
                     <Select
                       placeholder="Chọn danh mục cha"

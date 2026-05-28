@@ -1,4 +1,4 @@
-import { Button, Space, Popconfirm, Image, Input, Spin, Pagination } from "antd";
+import { Button, Space, Popconfirm, Image, Input, Spin, Pagination, Select, Row, Col, Card } from "antd";
 import { useState } from "react";
 import { useCategoryList } from "../../../hooks/Category/useCategotyList";
 import { useDeleteCategory } from "../../../hooks/Category/useDeleteCategory";
@@ -10,15 +10,19 @@ import {
   EditOutlined,
   DeleteOutlined,
   LinkOutlined,
-  FolderOpenOutlined
+  FolderOpenOutlined,
+  SearchOutlined,
+  FilterOutlined,
+  PlusCircleOutlined
 } from "@ant-design/icons";
 import "./CategoriesPage.scss";
 
 const CategoriesPage = () => {
   const [searchText, setSearchText] = useState("");
+  const [filterParent, setFilterParent] = useState<number | 'root' | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  
+
   const { data, isLoading } = useCategoryList();
 
   const [open, setOpen] = useState(false);
@@ -27,7 +31,6 @@ const CategoriesPage = () => {
   const { mutate: createCategory, isPending: creating } = useCreateCategory();
   const { mutate: updateCategory, isPending: updating } = useUpdateCategory();
 
-  
   const handleSubmit = (values: any) => {
     const payload = {
       ...values,
@@ -44,49 +47,79 @@ const CategoriesPage = () => {
     setEditing(null);
   };
 
-  const filteredData = data?.filter((item) =>
-    item.name.toLowerCase().includes(searchText.toLowerCase())
-  ) || [];
+  const filteredData = data?.filter((item) => {
+    const matchSearch = item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      (item.slug && item.slug.toLowerCase().includes(searchText.toLowerCase()));
+
+    const matchParent = filterParent === 'root'
+      ? !item.parentId
+      : filterParent
+        ? item.parentId === filterParent
+        : true;
+
+    return matchSearch && matchParent;
+  }) || [];
 
   const handleDelete = (id: number) => {
     deleteCategory(id);
   };
 
+  const parentCategories = data?.filter(c => !c.parentId) || [];
+
   // Pagination bounds
   const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize);
 
   return (
-    <div>
-      <Space style={{ marginBottom: 16, justifyContent: "space-between", width: "100%" }}>
-        <Button
-          type="primary"
-          size="large"
-          onClick={() => {
-            setEditing(null);
-            setOpen(true);
-          }}
-          style={{ borderRadius: 8, fontWeight: 600 }}
-        >
-          ➕ Thêm danh mục
-        </Button>
-        <Input.Search
-          placeholder="Tìm kiếm danh mục..."
-          style={{ width: 320 }}
-          size="large"
-          enterButton
-          onSearch={(value) => {
-            setSearchText(value);
-            setPage(1);
-          }}
-          onChange={(e) => {
-            if (!e.target.value) {
-              setSearchText("");
-              setPage(1);
-            }
-          }}
-          allowClear
-        />
-      </Space>
+    <div className="categories-page-wrapper">
+      <Row justify="space-between" align="middle" gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col>
+          <Space size={16}>
+            <Input
+              placeholder="Tìm tên hoặc slug..."
+              prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+              style={{ width: 280, borderRadius: 8 }}
+              size="large"
+              allowClear
+              onChange={(e) => {
+                setSearchText(e.target.value);
+                setPage(1);
+              }}
+            />
+            <Select
+              placeholder="Lọc theo cấp độ"
+              size="large"
+              style={{ width: 220 }}
+              allowClear
+              onChange={(val) => {
+                setFilterParent(val);
+                setPage(1);
+              }}
+              suffixIcon={<FilterOutlined />}
+              options={[
+                { label: "Danh mục gốc (Root)", value: "root" },
+                ...parentCategories.map(p => ({
+                  label: `Con của: ${p.name}`,
+                  value: p.id
+                }))
+              ]}
+            />
+          </Space>
+        </Col>
+        <Col>
+          <Button
+            type="primary"
+            size="large"
+            icon={<PlusCircleOutlined />}
+            onClick={() => {
+              setEditing(null);
+              setOpen(true);
+            }}
+            style={{ borderRadius: 8, fontWeight: 600, background: '#00c853', borderColor: '#00c853' }}
+          >
+            Thêm danh mục mới
+          </Button>
+        </Col>
+      </Row>
 
       <CategoryModal
         open={open}
@@ -127,11 +160,6 @@ const CategoriesPage = () => {
                   <div className="category-card-info">
                     <div className="category-title-row">
                       <h3 className="category-title">{category.name}</h3>
-                      {category.icon && (
-                        <span className="category-icon-badge" title="Icon">
-                          {category.icon}
-                        </span>
-                      )}
                       <span className="category-id-badge">ID: {category.id}</span>
                     </div>
 

@@ -1,7 +1,7 @@
 import { deleteData, getData, postData } from "../app/axiosClient"
 import type { PromoPost } from "../pages/Admin/HomeConfig/components/PromoPostsSlot"
 import type { Review } from "../types";
-import type { HomePageConfig, VisualBanner, NavSlot, DashboardDTO, UserAccountDTO } from "../types/entity.type"
+import type { HomePageConfig, VisualBanner, NavSlot, DashboardDTO, UserAccountDTO, ShippingConfig } from "../types/entity.type"
 import type { PageResponse } from "../types/response.type";
 
 export const adminApi = {
@@ -43,5 +43,11 @@ export const adminApi = {
 
   getNewUsersInWeek: (): Promise<UserAccountDTO[]> =>
     getData<UserAccountDTO[]>('/admin/users/new-this-week'),
+
+  getShippingConfig: (): Promise<ShippingConfig> =>
+    getData<ShippingConfig>('/admin/configs/shipping'),
+
+  saveShippingConfig: (config: ShippingConfig): Promise<ShippingConfig> =>
+    postData<ShippingConfig>('/admin/configs/shipping', config),
 }
 

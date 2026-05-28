@@ -37,3 +37,7 @@ export interface PageResponse<T> {
   size: number
   page: number
 }
+
+export interface UserOrderResponse<T> extends PageResponse<T> {
+  counts: Record<string, number>;
+}

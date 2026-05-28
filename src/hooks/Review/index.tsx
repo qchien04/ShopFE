@@ -2,11 +2,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { reviewApi } from "../../api/review.api";
 
-export const useReviews = (productId: number) =>{
+export const useReviews = (productId: number, page = 0, size = 5) => {
   return useQuery({
-    queryKey: ["reviews", productId],
-    queryFn: ()=>reviewApi.getReviewsByProductId(productId),
-    enabled: !!productId && !isNaN(productId), 
+    queryKey: ["reviews", productId, page, size],
+    queryFn: () => reviewApi.getReviewsByProductId(productId, page, size),
+    enabled: !!productId && !isNaN(productId),
   });
 }
   

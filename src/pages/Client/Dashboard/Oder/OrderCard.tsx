@@ -2,7 +2,8 @@ import {
   Card, Typography, Tag, Image,
   Divider, Button,
 } from 'antd';
-import { DollarOutlined, EyeOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
+import { DollarOutlined, EyeOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import type { Order } from '../../../../types/entity.type';
 import { OrderStatus, PaymentStatus } from '../../../../types/entity.type';
 import { paymentStatusMap, statusMap } from './Mapper';
@@ -14,10 +15,11 @@ interface Props {
   setSelectedOrder: React.Dispatch<React.SetStateAction<Order | null>>;
   setPaymentOpen: React.Dispatch<React.SetStateAction<boolean>>;
   handleCancelOrder: (order: Order) => void,
+  handleConfirmReceived: (order: Order) => void,
   setDetailOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const OrderCard = ({ order, setPaymentOpen, setSelectedOrder, setDetailOpen, handleCancelOrder }: Props) => {
+export const OrderCard = ({ order, setPaymentOpen, setSelectedOrder, setDetailOpen, handleCancelOrder, handleConfirmReceived }: Props) => {
 
   return (
     <Card
@@ -52,9 +54,9 @@ export const OrderCard = ({ order, setPaymentOpen, setSelectedOrder, setDetailOp
               preview={false}
             />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <Text strong style={{ display: 'block', fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <Link to={`/products/${item.productId}`} target="_blank" rel="noopener noreferrer" style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1890ff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.productName}
-              </Text>
+              </Link>
               <Text type="secondary" style={{ fontSize: 11 }}>x{item.quantity}</Text>
             </div>
             <div style={{ flexShrink: 0, textAlign: 'right' }}>
@@ -110,9 +112,21 @@ export const OrderCard = ({ order, setPaymentOpen, setSelectedOrder, setDetailOp
 
           {order.status !== OrderStatus.CANCELLED &&
             order.status !== OrderStatus.DELIVERED &&
-            order.status !== OrderStatus.RETURNED && (
+            order.status !== OrderStatus.RETURNED &&
+            order.status !== OrderStatus.SHIPPING && (
               <Button size="small" danger onClick={() => handleCancelOrder(order)}>Hủy</Button>
             )}
+
+          {order.status === OrderStatus.SHIPPING && (
+            <Button
+              size="small" type="primary"
+              icon={<CheckCircleOutlined />}
+              style={{ background: '#00b96b', borderColor: '#00b96b' }}
+              onClick={() => handleConfirmReceived(order)}
+            >
+              Đã nhận hàng
+            </Button>
+          )}
 
           {order.status === OrderStatus.DELIVERED && (
             <Button size="small" type="primary" style={{ background: '#00b96b', borderColor: '#00b96b' }}>

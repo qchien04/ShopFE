@@ -50,6 +50,7 @@ export interface UserRegisterPayLoad {
 
 export interface Review {
   id?: number,
+  productId?: number,
   prroductName: string,
   userAvatar?: string,
   userName?: string,
@@ -59,10 +60,14 @@ export interface Review {
   createdAt?: string,
 }
 
+import type { OrderStatus, PaymentStatus } from "./entity.type"
+import type { PageResponse } from "./response.type";
+
 export interface ReviewSummary {
   averageRating?: number,
   totalReviews?: number,
-  reviews?: Review[],
+  reviews?: PageResponse<Review>,
+  ratingStatistics: number[]
 }
 
 export interface Wishlist {
@@ -127,6 +132,16 @@ export interface ProductStats {
   variantStats: VariantStats[];
 }
 
+
+export interface AdminOrderFilter {
+  page: number;
+  pageSize: number;
+  status: OrderStatus | 'ALL';
+  keyword: string;
+  paymentStatus: PaymentStatus | 'ALL';
+  fromDate: string | null;   // 'YYYY-MM-DD'
+  toDate: string | null;
+}
 
 
 

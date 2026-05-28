@@ -1,0 +1,216 @@
+// ── Page wrapper ──────────────────────────────────────────────────────────────
+.voucher-page {
+  background: #f9fafb;
+  min-height: 100vh;
+  padding: 40px 0;
+
+  @media (max-width: 576px) {
+    padding: 24px 0;
+  }
+}
+
+.voucher-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.voucher-header {
+  text-align: center;
+  margin-bottom: 40px;
+
+  .title {
+    color: #111827;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+
+  @media (max-width: 576px) {
+    margin-bottom: 24px;
+    .subtitle { font-size: 14px; }
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  margin: 100px 0;
+}
+
+.empty-container {
+  margin: 100px 0;
+}
+
+.empty-text {
+  color: #6b7280;
+  font-size: 16px;
+}
+
+// ── Card wrapper ──────────────────────────────────────────────────────────────
+.voucher-card {
+  margin-bottom: 0;
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid #e5e7eb !important;
+}
+
+// ── Ticket layout ─────────────────────────────────────────────────────────────
+.voucher-ticket {
+  display: flex;
+  flex-direction: row;
+  min-height: 140px;
+  height: 100%;
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    min-height: auto;
+  }
+}
+
+// ── Left (colored) panel ──────────────────────────────────────────────────────
+.ticket-left {
+  width: 130px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #00b96b 0%, #00d27a 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  padding: 16px;
+  position: relative;
+
+  @media (max-width: 576px) {
+    width: 100%;
+    height: 100px;
+    flex-direction: row;
+    gap: 12px;
+    padding: 12px 20px;
+  }
+}
+
+.ticket-icon {
+  font-size: 32px;
+  opacity: 0.8;
+
+  @media (max-width: 576px) {
+    font-size: 24px;
+  }
+}
+
+.ticket-discount {
+  color: white !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  margin-top: 12px;
+  text-align: center;
+  line-height: 1.2;
+
+  @media (max-width: 576px) {
+    margin-top: 0;
+    font-size: 16px !important;
+  }
+}
+
+// ── Ticket holes ──────────────────────────────────────────────────────────────
+.ticket-holes {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  @media (max-width: 576px) {
+    flex-direction: row;
+    top: auto;
+    right: auto;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .hole {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: white;
+  }
+}
+
+// ── Right (content) panel ─────────────────────────────────────────────────────
+.ticket-right {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0; // prevent overflow in flex children
+
+  @media (max-width: 576px) {
+    padding: 14px 16px;
+  }
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.ticket-code {
+  margin: 0 !important;
+  color: #1f2937 !important;
+  word-break: break-all;
+}
+
+.ticket-description {
+  margin: 8px 0 !important;
+  font-size: 13px !important;
+  min-height: 40px;
+}
+
+.ticket-info {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.ticket-divider {
+  margin: 12px 0 !important;
+}
+
+// ── Footer actions ────────────────────────────────────────────────────────────
+.ticket-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+}
+
+.ticket-expiry {
+  font-size: 12px;
+  color: #ef4444;
+}
+
+.copy-btn {
+  border-radius: 20px !important;
+  background: white !important;
+  color: #00b96b !important;
+  border: 1px solid #00b96b !important;
+  font-weight: 600;
+
+  @media (max-width: 576px) {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -301,20 +301,20 @@ const SalePostEditor: React.FC<SalePostEditorProps> = ({ onSave, initialData, on
   const thumbnailValue = Form.useWatch('thumbnail', form);
 
   return (
-    <div style={{ maxWidth: 1000, margin: '24px auto', padding: '0 16px' }}>
+    <div style={{ margin: 'auto' }}>
       <Card
         title={
           <Space>
             {onCancel && (
-              <Button 
-                icon={<ArrowLeftOutlined />} 
-                onClick={onCancel} 
-                style={{ 
-                  borderRadius: '50%', 
-                  width: 38, 
-                  height: 38, 
-                  display: 'flex', 
-                  alignItems: 'center', 
+              <Button
+                icon={<ArrowLeftOutlined />}
+                onClick={onCancel}
+                style={{
+                  borderRadius: '50%',
+                  width: 38,
+                  height: 38,
+                  display: 'flex',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   background: '#f5f5f5',
                   border: 'none',

@@ -29,9 +29,8 @@ interface LocalMessage {
 type ChatMode = 'AI' | 'HUMAN';
 
 const WELCOME: AiResponse = {
-  message: 'Xin chào! 👋 Mình là **Shop Advisor** — trợ lý tư vấn mua sắm thông minh.\n\nMình có thể giúp bạn:\n• Tìm & tư vấn sản phẩm phù hợp\n• So sánh giá, kiểm tra tồn kho\n• Theo dõi đơn hàng của bạn\n\nBạn cần hỗ trợ gì hôm nay?',
+  message: 'Xin chào! 👋 Mình là **An3 Bot** — trợ lý tư vấn mua sắm thông minh.\n\nMình có thể giúp gì cho bạn',
   products: [],
-  suggestions: ['🔍 Tìm laptop gaming', '📦 Kiểm tra đơn hàng', '💰 Sản phẩm dưới 5 triệu'],
 };
 
 // ─── Status helpers ────────────────────────────────────────────────────────────
@@ -322,8 +321,8 @@ const ChatBot = () => {
       // Fetch orders if AI indicates order context
       let orders: Order[] | undefined;
       if (user?.id && (res.message.toLowerCase().includes('đơn hàng') || text.toLowerCase().includes('đơn'))) {
-        const allOrders = await orderApi.getUserOrder().catch(() => []);
-        orders = allOrders.slice(0, 5);
+        const orderResponse = await orderApi.getUserOrder(0, 10).catch(() => null);
+        orders = orderResponse && Array.isArray(orderResponse.content) ? orderResponse.content.slice(0, 5) : [];
       }
 
       addBot(res, orders);

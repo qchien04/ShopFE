@@ -8,13 +8,13 @@ import {
   TruckOutlined
 } from '@ant-design/icons';
 
-interface Props{
-  stats:any
+interface Props {
+  stats: any
 }
-export const Stat=({stats}:Props)=>{
+export const Stat = ({ stats }: Props) => {
   return (
-    <Row gutter={16} className="stats-row">
-      <Col span={4}>
+    <Row gutter={[4, 4]} className="stats-row">
+      <Col span={8}>
         <Card>
           <Statistic
             title="Tổng đơn hàng"
@@ -24,7 +24,7 @@ export const Stat=({stats}:Props)=>{
           />
         </Card>
       </Col>
-      <Col span={4}>
+      <Col span={8}>
         <Card>
           <Statistic
             title="Chờ xác nhận"
@@ -34,7 +34,7 @@ export const Stat=({stats}:Props)=>{
           />
         </Card>
       </Col>
-      <Col span={4}>
+      <Col span={8}>
         <Card>
           <Statistic
             title="Đang xử lý"
@@ -44,7 +44,7 @@ export const Stat=({stats}:Props)=>{
           />
         </Card>
       </Col>
-      <Col span={4}>
+      <Col span={8}>
         <Card>
           <Statistic
             title="Đang giao"
@@ -54,7 +54,7 @@ export const Stat=({stats}:Props)=>{
           />
         </Card>
       </Col>
-      <Col span={4}>
+      <Col span={8}>
         <Card>
           <Statistic
             title="Đã giao"
@@ -64,7 +64,7 @@ export const Stat=({stats}:Props)=>{
           />
         </Card>
       </Col>
-      <Col span={4}>
+      <Col span={8}>
         <Card>
           <Statistic
             title="Doanh thu"

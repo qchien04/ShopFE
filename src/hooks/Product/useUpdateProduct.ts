@@ -19,7 +19,7 @@ export const useUpdateProduct = () => {
       },
       onError: (err: any) => {
         console.error(err);
-        antdMessage.error("Cập nhật thất bại!");
+        antdMessage.error(err.response?.data?.message || err.response?.data?.error || "Cập nhật thất bại!");
       },
     }
   );

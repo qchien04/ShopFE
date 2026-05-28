@@ -65,7 +65,7 @@ export const useProductList = <T = PageResponse<Product>>(params: ParamSearch = 
           return Boolean(params?.brandIds?.length == 1)
 
         case "search":
-          return Boolean(params?.keyword)
+          return true;
 
         default:
           return false

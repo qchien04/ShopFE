@@ -25,28 +25,35 @@ const CategoryModal = ({
   const [form] = Form.useForm();
 
   useEffect(() => {
-    if (category) {
-      form.setFieldsValue({
-        name: category.name,
-        slug: category.slug,
-        description: category.description,
-        icon: category.icon,
-        parentId: category.parentId,
-        image: category.image
-          ? [
-              {
-                uid: "-1",
-                name: "image",
-                status: "done",
-                url: category.image,
-              },
-            ]
-          : [],
-      });
-    } else {
-      form.resetFields();
+    if (open) {
+      if (category) {
+        form.setFieldsValue({
+          name: category.name,
+          slug: category.slug,
+          description: category.description,
+          parentId: category.parentId,
+          image: category.image
+            ? [
+                {
+                  uid: "-1",
+                  name: "image",
+                  status: "done",
+                  url: category.image,
+                },
+              ]
+            : [],
+        });
+      } else {
+        form.setFieldsValue({
+          name: undefined,
+          slug: undefined,
+          description: undefined,
+          parentId: undefined,
+          image: undefined
+        });
+      }
     }
-  }, [category, form]);
+  }, [open, category, form]);
 
   return (
     <Modal
@@ -77,7 +84,6 @@ const CategoryModal = ({
           name: category.name,
           slug: category.slug,
           description: category.description,
-          icon:category.icon,
           image: category.image,
           parentId: category.parentId
         } : {}}

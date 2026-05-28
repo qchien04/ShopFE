@@ -1,8 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 .promotion-page {
-  padding: 24px;
-  background: #f0f2f5;
   min-height: 100vh;
   font-family: "Inter", sans-serif;
 }
@@ -247,5 +245,7 @@
   margin-bottom: 8px;
   flex-wrap: wrap;
 
-  &:last-child { margin-bottom: 0; }
+  &:last-child {
+    margin-bottom: 0;
+  }
 }

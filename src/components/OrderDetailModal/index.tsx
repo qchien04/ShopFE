@@ -7,13 +7,16 @@ import {
   CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined,
   TruckOutlined, ShoppingOutlined, DollarOutlined,
   UserOutlined, PhoneOutlined, EnvironmentOutlined, WarningOutlined,
-  RollbackOutlined,
+  RollbackOutlined, PrinterOutlined,
 } from '@ant-design/icons';
 import type { Order, OrderItem } from '../../types/entity.type';
 import { OrderStatus, PaymentStatus } from '../../types/entity.type';
 import { useUpdatePaymentStatus } from '../../hooks/Order/useOrder';
 import { antdModal } from '../../utils/antdModal';
 import { getStatusActions, getStatusStep, paymentMethodText, paymentStatusColors, paymentStatusText, reasonPlaceholder, requiresReason, statusColors, statusText } from '../../pages/Admin/Order/Mapper';
+import GHNShippingModal from '../../pages/Admin/Order/GHNShippingModal';
+import { useGHNPrintToken } from '../../hooks/Order/useGHN';
+import { Link } from 'react-router-dom';
 
 
 interface Props {
@@ -25,9 +28,11 @@ interface Props {
 
 const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
   const { mutate: updatePaymentStatus } = useUpdatePaymentStatus();
+  const { mutate: printLabel, isPending: isPrinting } = useGHNPrintToken();
   const [adminNote, setAdminNote] = useState(order?.internalNote ?? '');
   const [reasonTarget, setReasonTarget] = useState<OrderStatus | null>(null);
   const [reason, setReason] = useState('');
+  const [ghnModalOpen, setGhnModalOpen] = useState(false);
 
   const handleConfirmPayment = () => {
     antdModal.confirm({
@@ -111,7 +116,11 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
             style={{ objectFit: 'cover', borderRadius: 6 }}
           />
           <div>
-            <div style={{ fontWeight: 500 }}>{text}</div>
+            <div style={{ fontWeight: 500 }}>
+              <Link to={`/products/${record.productId}`} target="_blank" rel="noopener noreferrer" style={{ color: '#1890ff' }}>
+                {text}
+              </Link>
+            </div>
             <div style={{ fontSize: 12, color: '#999' }}>SKU: {record.productSku}</div>
             {record.attributes && Object.keys(record.attributes).length > 0 && (
               <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
@@ -141,7 +150,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
     },
   ];
 
-  return (
+  return (<>
     <Modal
       open={open}
       onCancel={onClose}
@@ -285,6 +294,29 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
                 </div>
               )}
             </Descriptions.Item>
+            {/* GHN Info */}
+            {order.ghnOrderCode && (
+              <Descriptions.Item label="🚚 Vận đơn GHN" span={2}>
+                <Space wrap>
+                  <Tag color="orange" style={{ fontSize: 13, padding: '2px 10px' }}>
+                    {order.ghnOrderCode}
+                  </Tag>
+                  {order.ghnExpectedDeliveryTime && (
+                    <span style={{ fontSize: 12, color: '#666' }}>
+                      Dự kiến giao: {new Date(order.ghnExpectedDeliveryTime).toLocaleString('vi-VN')}
+                    </span>
+                  )}
+                  <Button
+                    size="small"
+                    icon={<PrinterOutlined />}
+                    loading={isPrinting}
+                    onClick={() => printLabel([order.ghnOrderCode!])}
+                  >
+                    In nhãn
+                  </Button>
+                </Space>
+              </Descriptions.Item>
+            )}
             <Descriptions.Item label="Ghi chú KH" span={2}>
               {order.note || <span style={{ color: '#bbb' }}>Không có</span>}
             </Descriptions.Item>
@@ -321,7 +353,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
               <Table.Summary fixed>
                 <Table.Summary.Row>
                   <Table.Summary.Cell index={0} colSpan={2} align="right">
-                    <span style={{ color: '#999' }}>Phí vận chuyển:</span>
+                    <span style={{ color: '#999' }}>Phí vận chuyển (Khách trả):</span>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell index={1} align="right" colSpan={2}>
                     {order.shippingFee > 0
@@ -343,6 +375,24 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
                     )}
                   </Table.Summary.Cell>
                 </Table.Summary.Row>
+                {order.actualShippingFee !== undefined && order.actualShippingFee !== null && (
+                  <Table.Summary.Row>
+                    <Table.Summary.Cell index={0} colSpan={2} align="right">
+                      <span style={{ color: '#fa8c16' }}>Phí vận chuyển thực tế (GHN):</span>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell index={1} align="right" colSpan={2}>
+                      <span style={{ color: '#fa8c16', fontWeight: 500 }}>
+                        {order.actualShippingFee.toLocaleString('vi-VN')}₫
+                      </span>
+                      {order.actualShippingFee !== order.shippingFee && (
+                        <div style={{ fontSize: 11, color: order.actualShippingFee > order.shippingFee ? '#f5222d' : '#52c41a', marginTop: 2 }}>
+                          {order.actualShippingFee > order.shippingFee ? 'Lỗ phí ship: ' : 'Lời phí ship: '}
+                          {Math.abs(order.actualShippingFee - order.shippingFee).toLocaleString('vi-VN')}₫
+                        </div>
+                      )}
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row>
+                )}
                 <Table.Summary.Row>
                   <Table.Summary.Cell index={0} colSpan={2} align="right">
                     <strong>Tổng cộng:</strong>
@@ -449,17 +499,40 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
         {/* ── Quick Actions ─────────────────────────────────────────────────── */}
         {statusActions.length > 0 && !reasonTarget && (
           <Space wrap>
-            {statusActions.map(action => (
-              <Button
-                key={action.key}
-                type={action.danger ? 'default' : 'primary'}
-                danger={action.danger}
-                icon={action.icon}
-                onClick={() => handleAction(action.key)}
-              >
-                {action.label}
-              </Button>
-            ))}
+            {statusActions.map(action => {
+              // Khi PROCESSING → SHIPPING: thêm nút tạo GHN trước nút manual
+              if (action.key === OrderStatus.SHIPPING && order.status === OrderStatus.PROCESSING) {
+                return (
+                  <Space key="shipping-group">
+                    <Button
+                      type="primary"
+                      icon={<TruckOutlined />}
+                      style={{ background: '#f26522', borderColor: '#f26522' }}
+                      onClick={() => setGhnModalOpen(true)}
+                    >
+                      🚚 Tạo vận đơn GHN
+                    </Button>
+                    <Button
+                      icon={<TruckOutlined />}
+                      onClick={() => handleAction(action.key)}
+                    >
+                      Giao thủ công
+                    </Button>
+                  </Space>
+                );
+              }
+              return (
+                <Button
+                  key={action.key}
+                  type={action.danger ? 'default' : 'primary'}
+                  danger={action.danger}
+                  icon={action.icon}
+                  onClick={() => handleAction(action.key)}
+                >
+                  {action.label}
+                </Button>
+              );
+            })}
           </Space>
         )}
 
@@ -578,7 +651,16 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
 
       </div>
     </Modal>
-  );
+
+    {/* GHN Shipping Modal */}
+    {ghnModalOpen && (
+      <GHNShippingModal
+        open={ghnModalOpen}
+        order={order}
+        onClose={() => setGhnModalOpen(false)}
+      />
+    )}
+  </>);
 };
 
 export default OrderDetailModal;

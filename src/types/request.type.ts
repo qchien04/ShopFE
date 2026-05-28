@@ -62,13 +62,14 @@ export interface UpdateCartItemQuantityRequest {
 export interface CreateCustomerAddressRequest {
   fullName: string;
   phone: string;
-  province: string;
-  district: string;
-  ward: string;
   detailAddress: string;
   isDefault: boolean;
   lat?: number;
   lng?: number;
+  // GHN fields
+  ghnProvinceId?: number;
+  ghnDistrictId?: number;
+  ghnWardCode?: string;
 }
 
 export interface OrderRequestItem {

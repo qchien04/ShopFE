@@ -20,13 +20,14 @@ export interface CustomerAddress {
   id?: number;
   fullName: string;
   phone: string;
-  province: string;
-  district: string;
-  ward: string;
   detailAddress: string;
   isDefault: boolean;
   lat?: number;
   lng?: number;
+  // GHN fields
+  ghnProvinceId?: number;
+  ghnDistrictId?: number;
+  ghnWardCode?: string;
 }
 
 
@@ -77,6 +78,7 @@ export interface Order {
   customerPhone: String;
   shippingAddress: String;
   shippingFee: number;
+  actualShippingFee?: number;
   orderNumber: string;
   items: OrderItem[];
   total: number;
@@ -93,6 +95,9 @@ export interface Order {
   cancelReason?: string;
   internalNote?: string;
   statusHistory?: OrderStatusHistory[];
+  // GHN shipping fields
+  ghnOrderCode?: string;
+  ghnExpectedDeliveryTime?: string;
 }
 
 export interface OrderStatusHistory {
@@ -325,7 +330,7 @@ export interface HomePageConfig {
   navQuickBottomOption: NavSlot[];
   saleEvents: PromoPost[];
   footer?: FooterConfig;
-  
+
   // Sections riêng biệt
   featuredProducts?: FeaturedProductConfig;
   newProducts?: NewProductConfig;
@@ -418,5 +423,15 @@ export interface Promotion {
 
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface ShippingConfig {
+  ghnProvinceId?: number;
+  ghnDistrictId?: number;
+  ghnWardCode?: string;
+  provinceName?: string;
+  districtName?: string;
+  wardName?: string;
+  detailAddress?: string;
 }
 

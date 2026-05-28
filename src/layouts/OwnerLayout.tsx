@@ -115,7 +115,7 @@ const OwnerLayout = () => {
         <div className="admin-sidebar__brand">
           <div className="admin-sidebar__logo">
             <span className="admin-sidebar__logo-icon"><CodeSandboxOutlined /></span>
-            {!collapsed && <span className="admin-sidebar__logo-text">AdminHub</span>}
+            {!collapsed && <span className="admin-sidebar__logo-text">Quản trị</span>}
           </div>
           <button
             className="admin-sidebar__toggle"
@@ -131,9 +131,6 @@ const OwnerLayout = () => {
 
         {/* Nav */}
         <nav className="admin-sidebar__nav">
-          {!collapsed && (
-            <span className="admin-sidebar__nav-section">Quản lý</span>
-          )}
           <ul className="admin-sidebar__list">
             {navItems.map((item) => (
               <li
@@ -199,7 +196,7 @@ const OwnerLayout = () => {
       {/* Main */}
       <div className="admin-main">
         {/* Topbar */}
-        <header className="admin-topbar">
+        {/* <header className="admin-topbar">
           <div className="admin-topbar__breadcrumb">
             <span className="admin-topbar__breadcrumb-root">Admin</span>
             <span className="admin-topbar__breadcrumb-sep">/</span>
@@ -217,7 +214,7 @@ const OwnerLayout = () => {
             </div>
             <div className="admin-topbar__notif"><BellOutlined /></div>
           </div>
-        </header>
+        </header> */}
 
         {/* Page content */}
         <main className="admin-content">
