@@ -180,7 +180,7 @@ const Dashboard = () => {
           </span>
           <div>
             <div className="product-cell__name">{r.name}</div>
-            <div className="product-cell__sku">{r.sku}</div>
+
           </div>
         </div>
       ),

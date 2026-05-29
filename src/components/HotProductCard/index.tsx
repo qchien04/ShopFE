@@ -1,6 +1,8 @@
 import { Button, Card, Tag } from "antd"
 import type { Product } from "../../types/product.type"
 import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import AddToCartModal from "../AddToCartModal";
 import "./HotProduct.scss"
 import { ShoppingCartOutlined, FireOutlined } from '@ant-design/icons';
 
@@ -10,6 +12,7 @@ interface Props {
 
 const HotProduct = ({ product }: Props) => {
   const nav = useNavigate()
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return <>
     <Card
       onClick={() => nav(`/products/${product.id}`)}
@@ -61,11 +64,20 @@ const HotProduct = ({ product }: Props) => {
             icon={<ShoppingCartOutlined />}
             className="add-to-cart-btn"
             block
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsModalOpen(true);
+            }}
           >
             Thêm vào giỏ
           </Button>
         </div>
       </div>
+      <AddToCartModal
+        product={product}
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </Card>
   </>
 }

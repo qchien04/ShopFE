@@ -26,10 +26,9 @@ export default function AddressCard({
       }
       extra={<span>{address.phone}</span>}
     >
-      {/* <p>
-        {address.detailAddress}, {address.wardName}, {address.districtName},{" "}
-        {address.provinceName}
-      </p> */}
+      <p>
+        {address.detailAddress}
+      </p>
 
       <Space>
         <Button size="small" onClick={onEdit}>Sửa</Button>

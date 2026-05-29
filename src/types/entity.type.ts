@@ -37,7 +37,7 @@ export interface OrderItem {
   productId: number;
   productImage: string;
   productName: string;
-  productSku: string;
+  productSlug: string;
   quantity: number;
   price: number;
   subtotal: number;
@@ -176,7 +176,7 @@ export interface OrderStatusCountDTO {
 export interface TopProductDTO {
   id: number;
   name: string;
-  sku: string;
+
   mainImage: string;
   brand: string;
   category: string;
@@ -200,7 +200,7 @@ export interface RecentOrderDTO {
 export interface FeaturedProductDTO {
   id: number;
   name: string;
-  sku: string;
+
   mainImage: string;
   brand: string;
   category: string;

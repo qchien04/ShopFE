@@ -14,6 +14,11 @@ export const authApi = {
 
   changePassword: (payload: ChangePasswordRequest): Promise<ApiResponse> =>
     postData<ApiResponse>("/auth/changePassword", payload),
-  
+    
+  forgotPassword: (email: string): Promise<ApiResponse> =>
+    postData<ApiResponse>("/auth/forgot-password", { email }),
+
+  resetPassword: (payload: any): Promise<ApiResponse> =>
+    postData<ApiResponse>("/auth/reset-password", payload),
 }
 

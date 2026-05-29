@@ -289,9 +289,8 @@ const ProductDetail = () => {
 
             <div className="product-meta">
               <div className="meta-item">
-                <span className="meta-label">Mã sản phẩm:</span>
-                {/*  Hiển thị SKU của variant nếu có */}
-                <span className="meta-value">{selectedVariant?.sku ?? currentProduct.sku}</span>
+                <span className="meta-label">Slug:</span>
+                <span className="meta-value">{currentProduct.slug}</span>
               </div>
               <div className="meta-item">
                 <span className="meta-label">Thương hiệu:</span>

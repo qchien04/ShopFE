@@ -23,7 +23,8 @@ const { TextArea } = Input;
 
 const toFormValues = (p: any): Partial<ProductFormValues> => ({
   name: p.name,
-  sku: p.sku,
+  slug: p.slug,
+
   categoryId: p.category?.id,
   brandId: p.brand?.id,
   price: p.price,
@@ -40,7 +41,7 @@ const toFormValues = (p: any): Partial<ProductFormValues> => ({
   variants: (p.productVariants ?? []).map((v: any) => ({
     id: v.id,
     name: v.name,
-    sku: v.sku,
+
     price: v.price,
     salePrice: v.salePrice,
     stockQuantity: v.stockQuantity,
@@ -103,9 +104,9 @@ const ProductForm = ({ productDetail, onSubmit, loading, submitText = "Lưu" }: 
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="sku" label="Mã SKU"
-                rules={[{ required: true, message: "Vui lòng nhập SKU" }]}>
-                <Input placeholder="VD: ARD-UNO-R3" />
+              <Form.Item name="slug" label="Slug sản phẩm"
+                rules={[{ required: true, message: "Vui lòng nhập Slug" }]}>
+                <Input placeholder="VD: arduino-uno-r3" />
               </Form.Item>
             </Col>
           </Row>
@@ -241,10 +242,7 @@ const ProductForm = ({ productDetail, onSubmit, loading, submitText = "Lưu" }: 
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <Form.Item name={[name, "sku"]} label="SKU"
-                          rules={[{ required: true, message: "Nhập SKU" }]}>
-                          <Input placeholder="VD: SP001-RED-XL" />
-                        </Form.Item>
+
                       </Col>
                     </Row>
 

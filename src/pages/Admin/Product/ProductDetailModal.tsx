@@ -87,7 +87,7 @@ const ProductDetailModal = ({ productId, open, onClose }: Props) => {
             <div>
               <div style={{ fontSize: 18, fontWeight: 500, marginBottom: 6 }}>{p.name}</div>
               <div style={{ fontSize: 13, color: "rgba(0,0,0,0.45)", marginBottom: 10 }}>
-                SKU: {p.sku}
+                Slug: {p.slug}
               </div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {p.brand?.name    && <Tag>{p.brand.name}</Tag>}
@@ -179,13 +179,13 @@ const ProductDetailModal = ({ productId, open, onClose }: Props) => {
                           />
                         )}
 
-                        {/* Tên + SKU + giá */}
+                        {/* Tên + giá */}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 3 }}>
                             {v.name}
                           </div>
                           <div style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", marginBottom: 7 }}>
-                            SKU: {v.sku}
+                            
                           </div>
                           <div style={{ display: "flex", gap: 16, fontSize: 13, flexWrap: "wrap" }}>
                             <span>

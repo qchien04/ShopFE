@@ -251,9 +251,9 @@ const ProductsPage = () => {
                       {product.name}
                     </h3>
                     <div className="product-meta">
-                      {product.sku && (
-                        <span className="sku-badge" title="SKU">
-                          <BarcodeOutlined /> {product.sku}
+                      {product.slug && (
+                        <span className="slug-badge" title="Slug">
+                          <BarcodeOutlined /> {product.slug}
                         </span>
                       )}
                       {product.category?.name && (

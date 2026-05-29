@@ -3,12 +3,15 @@ import { ShoppingCartOutlined } from '@ant-design/icons';
 import './NewProductCard.scss';
 import type { Product } from '../../types/product.type';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import AddToCartModal from '../AddToCartModal';
 
 interface Props{
   product:Product;
 }
 const NewProductCard = ({product}:Props) => {
   const nav=useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <Card
       onClick={()=>nav(`/products/${product.id}`)}
@@ -55,11 +58,20 @@ const NewProductCard = ({product}:Props) => {
             icon={<ShoppingCartOutlined />}
             className="add-to-cart-btn"
             block
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsModalOpen(true);
+            }}
           >
             Thêm vào giỏ
           </Button>
         </div>
       </div>
+      <AddToCartModal
+        product={product}
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </Card>
        
   );

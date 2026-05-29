@@ -3,7 +3,7 @@ import type { PaymentMethod } from "./entity.type";
 export interface VariantFormValue {
   id?: number;
   name: string;
-  sku: string;
+
   price: number;
   salePrice?: number;
   stockQuantity: number;
@@ -13,7 +13,7 @@ export interface VariantFormValue {
 
 export interface ProductFormValues {
   name: string;
-  sku: string;
+
   slug?: string;
   categoryId: number;
   brandId: number;

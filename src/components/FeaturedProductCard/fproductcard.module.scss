@@ -17,10 +17,13 @@
   position: relative;
   padding: 0;
   background: #fafafa;
+  aspect-ratio: 1 / 1;
+  width: 100%;
 
   img {
     width: 100%;
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
   }
 }
 

@@ -6,12 +6,15 @@ import {
 import styles from './fproductcard.module.scss';
 import type { Product } from '../../types/product.type';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import AddToCartModal from '../AddToCartModal';
 
 interface Props {
   product: Product;
 }
 const FeaturedProductCard = ({ product }: Props) => {
   const nav = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <Card key={product.id} hoverable className={styles['product-card']} onClick={() => nav(`/products/${product.id}`)}>
       <div className={styles['image-wrapper']}>
@@ -48,6 +51,15 @@ const FeaturedProductCard = ({ product }: Props) => {
         shape="circle"
         className={styles['cart-btn']}
         icon={<ShoppingCartOutlined />}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsModalOpen(true);
+        }}
+      />
+      <AddToCartModal
+        product={product}
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
       />
     </Card>
   );

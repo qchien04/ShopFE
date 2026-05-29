@@ -10,7 +10,7 @@ export interface ProductVariant{
   id: number;
   productId: number;
   name: string;
-  sku: string;
+
   price: number;
   salePrice: number;
   stockQuantity: number;
@@ -24,7 +24,7 @@ export interface ProductVariant{
 export interface Product {
   id: number;
   name: string;
-  sku: string;
+
   slug: string;
   price: number;
   salePrice: number;

@@ -121,7 +121,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
                 {text}
               </Link>
             </div>
-            <div style={{ fontSize: 12, color: '#999' }}>SKU: {record.productSku}</div>
+            <div style={{ fontSize: 12, color: '#999' }}>Slug: {record.productSlug}</div>
             {record.attributes && Object.keys(record.attributes).length > 0 && (
               <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                 {Object.entries(record.attributes).map(([k, v]) => (

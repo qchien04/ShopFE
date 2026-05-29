@@ -83,7 +83,7 @@ const ProductSelectorModal = ({
       render: (text, record) => (
         <div>
           <div style={{ fontWeight: 500 }}>{text}</div>
-          <small style={{ color: '#999' }}>SKU: {record.sku}</small>
+          <small style={{ color: '#999' }}>Slug: {record.slug}</small>
         </div>
       )
     },

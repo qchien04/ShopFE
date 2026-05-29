@@ -20,7 +20,7 @@ export const buildColumns = (
         />
       ),
     },
-    { title: "SKU", dataIndex: "sku", width: 130 },
+    { title: "Slug", dataIndex: "slug", width: 130 },
     { title: "Tên sản phẩm", dataIndex: "name", width: 200 },
     { title: "Danh mục", dataIndex: ["category", "name"], width: 130 },
     { title: "Thương hiệu", dataIndex: ["brand", "name"], width: 130 },

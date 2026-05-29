@@ -5,12 +5,15 @@ import {
 
 import styles from './productcard.module.scss';
 import type { Product } from '../../types/product.type';
+import { useState } from 'react';
+import AddToCartModal from '../AddToCartModal';
 
 const { Meta } = Card;
 interface Props {
   product: Product;
 }
-const ProductCard = ({ product }:Props) => {
+const ProductCard = ({ product }: Props) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <Card
       hoverable
@@ -19,9 +22,9 @@ const ProductCard = ({ product }:Props) => {
         <div className={styles.imageWrapper}>
           <img src={product.mainImage} alt={product.name} />
 
-            <Tag color="red" className={styles.discountTag}>
-              -{(product.price-product.salePrice)*100/product.price}%
-            </Tag>
+          <Tag color="red" className={styles.discountTag}>
+            -{(product.price - product.salePrice) * 100 / product.price}%
+          </Tag>
         </div>
       }
       actions={[
@@ -30,6 +33,10 @@ const ProductCard = ({ product }:Props) => {
           type="text"
           shape="circle"
           icon={<ShoppingCartOutlined />}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsModalOpen(true);
+          }}
         />
       ]}
     >
@@ -52,6 +59,11 @@ const ProductCard = ({ product }:Props) => {
             )}
           </div>
         }
+      />
+      <AddToCartModal
+        product={product}
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
       />
     </Card>
   );
