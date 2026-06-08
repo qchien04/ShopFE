@@ -1,12 +1,11 @@
 // src/components/AddressCard/AddressCard.tsx
-import { Button, Tag, Tooltip } from "antd";
+import { Button, Tooltip } from "antd";
 import {
   UserOutlined,
   PhoneOutlined,
   EnvironmentOutlined,
   EditOutlined,
   DeleteOutlined,
-  CheckCircleFilled,
   AimOutlined,
 } from "@ant-design/icons";
 import type { CustomerAddress } from "../../types/entity.type";
@@ -23,7 +22,6 @@ export default function AddressCard({
   address,
   onEdit,
   onDelete,
-  onSetDefault,
 }: Props) {
   return (
     <div className={`address-card ${address.isDefault ? "address-card--default" : ""}`}>
