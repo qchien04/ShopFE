@@ -136,13 +136,13 @@ const ProductForm = ({ productDetail, onSubmit, loading, submitText = "Lưu" }: 
             <h3>Thiết lập Giá & Tồn kho</h3>
           </div>
           <Row gutter={16}>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item name="price" label="Giá gốc (₫)"
                 rules={[{ required: true, message: "Nhập giá" }]}>
                 <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item
                 name="salePrice"
                 label="Giá khuyến mãi (₫)"
@@ -160,11 +160,6 @@ const ProductForm = ({ productDetail, onSubmit, loading, submitText = "Lưu" }: 
                 ]}
               >
                 <InputNumber min={0} style={{ width: "100%" }} formatter={moneyFormatter} />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name="stockQuantity" label="Tồn kho" rules={[{ required: true }]}>
-                <InputNumber min={0} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
           </Row>

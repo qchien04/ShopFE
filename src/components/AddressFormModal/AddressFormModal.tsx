@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { TruckOutlined } from "@ant-design/icons";
 import type { CustomerAddress } from "../../types/entity.type";
 import { useCreateCustomerAddress, useUpdateCustomerAddress } from "../../hooks/CustomerAddress/useAddress";
 import { antdMessage } from "../../utils/antdMessage";
@@ -237,7 +238,7 @@ export default function CustomerAddressFormModal({ open, onCancel, initial }: Pr
           label="Số điện thoại"
           rules={[
             { required: true, message: "Vui lòng nhập số điện thoại" },
-            { pattern: /^[0-9]{10}$/, message: "Số điện thoại không hợp lệ (10 số)" }
+            { pattern: /^(0|84)(2|3|5|7|8|9)[0-9]{8}$/, message: "Số điện thoại không đúng định dạng Việt Nam" }
           ]}
         >
           <Input placeholder="0901234567" />
@@ -245,7 +246,7 @@ export default function CustomerAddressFormModal({ open, onCancel, initial }: Pr
 
         {/* GHN Location Section */}
         <Divider orientation="vertical" style={{ fontSize: 13 }}>
-          🚚 Địa chỉ GHN (để tính phí & tạo vận đơn)
+          <TruckOutlined /> Địa chỉ GHN (để tính phí & tạo vận đơn)
         </Divider>
 
         <Alert

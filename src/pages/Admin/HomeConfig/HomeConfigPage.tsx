@@ -277,7 +277,7 @@ const HomeConfigPage = () => {
     <div className="banner-manager">
       <div className="banner-manager__toolbar">
         <div>
-          <Title level={2} style={{ margin: 0 }}>⚙️ Cấu hình Trang Chủ</Title>
+          <Title level={2} style={{ margin: 0 }}> Cài đặt Trang Chủ</Title>
           <Text type="secondary">Quản lý nội dung và các khối hiển thị</Text>
         </div>
         <Space size="middle">
@@ -382,7 +382,7 @@ const HomeConfigPage = () => {
                     </div>
                   </Card>
                   <Card
-                    title="⚡ Sidebar Bottom"
+                    title=" Sidebar Bottom"
                     bordered={false}
                     style={{ marginTop: 24 }}
                     actions={[
@@ -581,7 +581,7 @@ const HomeConfigPage = () => {
                   </div>
                 </div>
 
-                <h3 style={{ borderBottom: "1px solid #f0f0f0", paddingBottom: 8, marginTop: 24, marginBottom: 16, color: "#fa541c" }}>🛍️ Gian hàng trên các Sàn TMĐT</h3>
+                <h3 style={{ borderBottom: "1px solid #f0f0f0", paddingBottom: 8, marginTop: 24, marginBottom: 16, color: "#fa541c" }}><ShopOutlined /> Gian hàng trên các Sàn TMĐT</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
                   <div>
                     <label style={{ display: "block", marginBottom: 6, fontWeight: 500, color: "#595959" }}>Shopee Link</label>
@@ -615,7 +615,7 @@ const HomeConfigPage = () => {
             key: "shipping",
             label: <span><EnvironmentOutlined /> Giao hàng (GHN)</span>,
             children: (
-              <Card bordered={false} title="🚚 Cấu hình Vị trí Cửa hàng">
+              <Card bordered={false} title=" Cấu hình Vị trí Cửa hàng">
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
                   <div>
                     <label style={{ display: "block", marginBottom: 6, fontWeight: 500, color: "#595959" }}>Tỉnh/Thành (GHN)</label>

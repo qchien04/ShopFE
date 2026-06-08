@@ -296,7 +296,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
             </Descriptions.Item>
             {/* GHN Info */}
             {order.ghnOrderCode && (
-              <Descriptions.Item label="🚚 Vận đơn GHN" span={2}>
+              <Descriptions.Item label=" Vận đơn GHN" span={2}>
                 <Space wrap>
                   <Tag color="orange" style={{ fontSize: 13, padding: '2px 10px' }}>
                     {order.ghnOrderCode}

@@ -30,6 +30,7 @@ const CheckoutPage = () => {
   const [addressFormOpen, setAddressFormOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<CustomerAddress | undefined>();
   const [payMethod, setPayMethod] = useState<PaymentMethod>(PaymentMethod.BANK_TRANSFER);
+  const [note, setNote] = useState("");
   const [redirecting, setRedirecting] = useState(false); // fullscreen spin
   const [payData, setPayData] = useState<any>(null);
   const [payModalVisible, setPayModalVisible] = useState(false);
@@ -155,6 +156,7 @@ const CheckoutPage = () => {
         items: state.orderItems,
         paymentMethod: payMethod,
         shippingFee: calculation ? calculation.shippingFee : 20000,
+        note: note.trim() || "ok",
         ...(appliedCouponCode ? { couponCode: appliedCouponCode } : {}),
       };
 
@@ -278,6 +280,19 @@ const CheckoutPage = () => {
                   desc="Trả tiền mặt khi nhận được hàng"
                 />
               </Space>
+            </Card>
+
+            {/* Ghi chú */}
+            <Card
+              title={<Space><EditOutlined style={{ color: "#00b96b" }} /><span>Ghi chú đơn hàng</span></Space>}
+              style={{ borderRadius: 12, marginTop: 16 }}
+            >
+              <Input.TextArea
+                rows={3}
+                placeholder="Lưu ý cho người bán (ví dụ: giao hàng trong giờ hành chính)..."
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+              />
             </Card>
           </Col>
 

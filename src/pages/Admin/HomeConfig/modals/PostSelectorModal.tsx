@@ -62,7 +62,7 @@ const PostSelectorModal = ({
   return (
     <Modal
       open={open}
-      title={`📰 Chọn bài viết cho "${sectionTitle}"`}
+      title={`Chọn bài viết cho "${sectionTitle}"`}
       onCancel={onCancel}
       onOk={handleConfirm}
       width={1000}

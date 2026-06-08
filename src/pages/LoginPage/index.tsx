@@ -83,23 +83,6 @@ const LoginPage: React.FC = () => {
             </div>
           </Spin>
         </div>
-
-        {/* RIGHT - BRANDING */}
-        <div className="login-right">
-          <div className="brand-box">
-            <h1>Anbato Electronic</h1>
-            <p className="tagline">
-              Mua sắm – Chia sẻ – Tiện ích
-            </p>
-
-            <ul className="features">
-              <li>✨ Sử dụng dịch vụ dễ dang</li>
-              <li>🚀 Tốc độ nhanh, trải nghiệm mượt</li>
-              <li>🔐 Bảo mật và an toàn</li>
-              <li>🌎 Giao hàng mọi nơi</li>
-            </ul>
-          </div>
-        </div>
       </div>
     </div>
   );

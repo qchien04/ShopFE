@@ -7,7 +7,9 @@ import {
   PhoneOutlined,
   MailOutlined,
   EnvironmentOutlined,
-  ClockCircleOutlined
+  ClockCircleOutlined,
+  ShopFilled,
+  ShopTwoTone
 } from "@ant-design/icons";
 import logo from '../../assets/logo.png'
 import visa from '../../assets/visa.png'
@@ -79,14 +81,14 @@ const Footer: React.FC = () => {
                   <a href={shopeeLink} target="_blank" rel="noopener noreferrer" className="ecom-badge shopee" style={{
                     background: '#ff5722', color: '#fff', padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 600, display: 'inline-flex', alignItems: 'center', transition: 'transform 0.2s', textDecoration: 'none'
                   }} onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}>
-                    🛍️ Shopee
+                    <ShopFilled /> Shopee
                   </a>
                 )}
                 {lazadaLink && (
                   <a href={lazadaLink} target="_blank" rel="noopener noreferrer" className="ecom-badge lazada" style={{
                     background: '#101566', color: '#fff', padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 600, display: 'inline-flex', alignItems: 'center', transition: 'transform 0.2s', textDecoration: 'none'
                   }} onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}>
-                    🛍️ Lazada
+                    <ShopTwoTone /> Lazada
                   </a>
                 )}
                 {tiktokLink && (
@@ -147,13 +149,13 @@ const Footer: React.FC = () => {
             </ul>
 
             {/* Newsletter */}
-            <div className="newsletter">
+            {/* <div className="newsletter">
               <h4>Đăng ký nhận tin</h4>
               <div className="newsletter-form">
                 <input type="email" placeholder="Email của bạn" />
                 <button type="submit">Đăng ký</button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

@@ -37,6 +37,8 @@ import WishlistPage from "../pages/Client/WishListPage/WishlistPage";
 import CouponPage from "../pages/Admin/Coupon";
 import VoucherPage from "../pages/Client/VoucherPage";
 import PromotionPage from "../pages/Admin/Promotion";
+import FAQPage from "../pages/Client/FAQPage/FAQPage";
+import AdminFAQPage from "../pages/Admin/FAQ/AdminFAQPage";
 
 export const router = createBrowserRouter([
   {
@@ -65,6 +67,10 @@ export const router = createBrowserRouter([
       {
         path: "/about",
         element: <AboutShop />,
+      },
+      {
+        path: "/faq",
+        element: <FAQPage />,
       },
       {
         path: "/category/:slug",
@@ -193,6 +199,10 @@ export const router = createBrowserRouter([
       {
         path: "test",
         element: <Test />,
+      },
+      {
+        path: "faq",
+        element: <AdminFAQPage />,
       }
     ],
   }

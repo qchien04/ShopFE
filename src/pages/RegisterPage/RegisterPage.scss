@@ -6,7 +6,6 @@
   justify-content: center;
   align-items: center;
   padding: 40px 16px;
-  background-color: #f8fafc; // Match clean background theme
 
   // Overriding inline styles of the card container using class selectors
   .ant-spin-nested-loading {
@@ -14,9 +13,9 @@
     max-width: 880px; // Dynamic container accommodates the form
   }
 
-  .ant-spin-nested-loading > .ant-spin-container > div {
-    background: #ffffff !important; 
-    padding: 40px 36px !important; 
+  .ant-spin-nested-loading>.ant-spin-container>div {
+    background: #ffffff !important;
+    padding: 40px 36px !important;
     border-radius: 20px !important; // Perfectly matching login card shape
     box-shadow: 0 15px 35px -10px rgba(15, 23, 42, 0.04) !important; // Soft clean depth
     border: 1px solid #edf2f7 !important;
@@ -42,8 +41,8 @@
   // Ant Design Form Overrides
   .ant-form-item {
     margin-bottom: 18px;
-    
-    .ant-form-item-label > label {
+
+    .ant-form-item-label>label {
       font-weight: 600 !important;
       color: #334155 !important;
       font-size: 13.5px !important;
@@ -172,14 +171,16 @@
 
   // RESPONSIVE grid fallback to prevent overflow on smaller tablets/mobiles
   @media (max-width: 768px) {
-    .ant-col-12, .ant-col-24 {
+
+    .ant-col-12,
+    .ant-col-24 {
       display: block !important;
       flex: 0 0 100% !important;
       max-width: 100% !important;
       width: 100% !important;
     }
-    
-    .ant-spin-nested-loading > .ant-spin-container > div {
+
+    .ant-spin-nested-loading>.ant-spin-container>div {
       padding: 28px 20px !important;
     }
   }

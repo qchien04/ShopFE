@@ -265,7 +265,7 @@ const CreatePostPage: React.FC = () => {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <div>
           <Title level={3} style={{ margin: 0, fontWeight: 800, color: "#262626" }}>
-            📰 Quản lý bài viết & tin tức
+            <FolderOpenOutlined /> Quản lý bài viết & tin tức
           </Title>
         </div>
 

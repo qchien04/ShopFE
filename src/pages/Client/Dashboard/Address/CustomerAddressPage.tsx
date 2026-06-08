@@ -15,8 +15,8 @@ export default function CustomerAddressPage() {
 
   return (
     <div style={{ padding: 24 }}>
-      <Button 
-        type="primary" 
+      <Button
+        type="primary"
         size="large"
         onClick={() => {
           setEditing(undefined);
@@ -26,9 +26,9 @@ export default function CustomerAddressPage() {
         + Thêm địa chỉ mới
       </Button>
 
-      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+      <Row gutter={[16, 16]} style={{ marginTop: 24 }} align="stretch">
         {data?.map(addr => (
-          <Col xs={24} sm={12} lg={8} key={addr.id}>
+          <Col xs={24} sm={12} lg={8} key={addr.id} style={{ display: "flex" }}>
             <AddressCard
               address={addr}
               onEdit={() => {

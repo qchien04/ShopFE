@@ -1,15 +1,14 @@
 .login-wrapper {
-  height: 100vh;
+  height: 80vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f8fafc; // Soft premium gray-blue page background
   padding: 20px;
 }
 
 .login-container {
   width: 100%;
-  max-width: 440px; // Modern compact vertical card shape
+  max-width: 640px; // Modern compact vertical card shape
   height: auto;
   background: #ffffff;
   border-radius: 24px;
@@ -31,7 +30,7 @@
 }
 
 .login-card {
-  width: 100%;
+  width: 600px;
 
   h2 {
     font-size: 26px;
@@ -39,6 +38,7 @@
     color: #0f172a; // Deep slate
     margin-bottom: 6px;
     letter-spacing: -0.5px;
+    text-align: center;
   }
 
   .sub-text {
@@ -145,9 +145,4 @@
       }
     }
   }
-}
-
-/* HIDE RIGHT SIDE ENTIRELY FOR COMPACT CAPSULE STYLE */
-.login-right {
-  display: none !important;
 }

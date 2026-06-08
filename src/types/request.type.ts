@@ -84,6 +84,7 @@ export interface CreateOrderRequest {
   items: OrderRequestItem[];
   couponCode?: string;
   shippingFee?: number;
+  note?: string;
 }
 
 

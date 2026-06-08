@@ -24,7 +24,8 @@ import {
   KeyOutlined,
   LogoutOutlined,
   LockOutlined,
-  FireOutlined
+  FireOutlined,
+  QuestionCircleOutlined
 } from "@ant-design/icons";
 
 interface NavItem {
@@ -46,6 +47,7 @@ const navItems: NavItem[] = [
   { key: "reviews", label: "Bình luận", icon: <CommentOutlined />, path: "/admin/reviews" },
   { key: "chat-manager", label: "Chat", icon: <MessageOutlined />, path: "/admin/chat-manager" },
   { key: "configs", label: "Cài đặt", icon: <SettingOutlined />, path: "/admin/configs" },
+  { key: "faq", label: "Giải đáp FAQ", icon: <QuestionCircleOutlined />, path: "/admin/faq" },
 ];
 
 const OwnerLayout = () => {
