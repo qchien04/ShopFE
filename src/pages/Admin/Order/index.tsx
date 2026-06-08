@@ -17,7 +17,7 @@ import type { Order } from '../../../types/entity.type';
 import { OrderStatus, PaymentStatus } from '../../../types/entity.type';
 import OrderDetailModal from '../../../components/OrderDetailModal';
 import { useUpdateStatusOrders, useUpdatePaymentStatus, useAdminOrdersPaginated } from '../../../hooks/Order/useOrder';
-import { getStatusActions, paymentMethodText, paymentStatusColors, paymentStatusText, statusColors, statusText } from './Mapper';
+import { paymentMethodText, paymentStatusColors, paymentStatusText, statusColors, statusText } from './Mapper';
 import { Stat } from './Stat';
 import { Filter } from './Filter';
 import { antdModal } from '../../../utils/antdModal';
