@@ -3,7 +3,6 @@ import {
   EditOutlined,
   CheckOutlined,
   ShoppingCartOutlined,
-  DollarOutlined,
   ClockCircleOutlined,
   TruckOutlined
 } from '@ant-design/icons';
@@ -44,7 +43,7 @@ export const Stat = ({ stats }: Props) => {
           />
         </Card>
       </Col>
-      <Col span={8}>
+      <Col span={12}>
         <Card>
           <Statistic
             title="Đang giao"
@@ -54,24 +53,13 @@ export const Stat = ({ stats }: Props) => {
           />
         </Card>
       </Col>
-      <Col span={8}>
+      <Col span={12}>
         <Card>
           <Statistic
             title="Đã giao"
             value={stats.delivered}
             prefix={<CheckOutlined />}
             styles={{ content: { color: '#52c41a' } }}
-          />
-        </Card>
-      </Col>
-      <Col span={8}>
-        <Card>
-          <Statistic
-            title="Doanh thu"
-            value={stats.revenue}
-            prefix={<DollarOutlined />}
-            styles={{ content: { color: '#f5222d' } }}
-            suffix="₫"
           />
         </Card>
       </Col>

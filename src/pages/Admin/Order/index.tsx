@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
   Tag,
   Button,
-  Dropdown,
   Card,
   Image,
   Spin,
@@ -10,7 +9,6 @@ import {
 } from 'antd';
 import {
   EyeOutlined,
-  MoreOutlined,
   CalendarOutlined,
   ShoppingOutlined,
   SolutionOutlined
@@ -113,9 +111,6 @@ const OrdersPage = () => {
     processing: counts['PROCESSING'] ?? 0,
     shipping: counts['SHIPPING'] ?? 0,
     delivered: counts['DELIVERED'] ?? 0,
-    revenue: orders
-      .filter(o => o.status === OrderStatus.DELIVERED)
-      .reduce((sum, o) => sum + o.total, 0),
   };
 
   return (
@@ -137,7 +132,6 @@ const OrdersPage = () => {
           <div className="order-list-container">
             {orders.length > 0 ? (
               orders.map(order => {
-                const statusActions = getStatusActions(order);
                 return (
                   <div key={order.id} className="order-row-card">
                     {/* Card Header */}
@@ -259,7 +253,7 @@ const OrdersPage = () => {
                         </Button>
                       )}
 
-                      {statusActions.length > 0 && (
+                      {/* {statusActions.length > 0 && (
                         <Dropdown
                           menu={{
                             items: statusActions.map(action => ({
@@ -274,7 +268,7 @@ const OrdersPage = () => {
                             Cập nhật trạng thái
                           </Button>
                         </Dropdown>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 );

@@ -4,8 +4,7 @@ import {
   Typography, Tag, Alert, Button, Descriptions, Space
 } from 'antd';
 import {
-  TruckOutlined, DollarOutlined, PrinterOutlined,
-  InfoCircleOutlined, ThunderboltOutlined
+  TruckOutlined, DollarOutlined, PrinterOutlined, ThunderboltOutlined
 } from '@ant-design/icons';
 import type { Order } from '../../../types/entity.type';
 import { PaymentStatus, PaymentMethod } from '../../../types/entity.type';
@@ -161,16 +160,6 @@ const GHNShippingModal = ({ open, order, onClose }: Props) => {
           style={{ marginBottom: 16 }}
         />
       )}
-
-      <Alert
-        type="info"
-        showIcon
-        icon={<InfoCircleOutlined />}
-        message="Yêu cầu địa chỉ có mã GHN"
-        description="Chức năng này yêu cầu khách hàng đã lưu địa chỉ với thông tin quận/phường GHN. Nếu chưa có, hệ thống sẽ báo lỗi."
-        style={{ marginBottom: 16 }}
-      />
-
       <Form
         form={form}
         layout="vertical"
@@ -232,11 +221,11 @@ const GHNShippingModal = ({ open, order, onClose }: Props) => {
             allowClear
             placeholder="Chọn ghi chú hoặc để trống"
             options={[
-              { value: 'Hàng dễ vỡ, vui lòng nhẹ tay', label: '⚠️ Hàng dễ vỡ, nhẹ tay' },
-              { value: 'Gọi trước khi giao 30 phút', label: '📞 Gọi trước khi giao 30 phút' },
-              { value: 'Giao giờ hành chính', label: '🕘 Giao giờ hành chính' },
-              { value: 'Giao buổi sáng', label: '🌅 Giao buổi sáng' },
-              { value: 'Giao buổi chiều tối', label: '🌆 Giao buổi chiều tối' },
+              { value: 'Hàng dễ vỡ, vui lòng nhẹ tay', label: ' Hàng dễ vỡ, nhẹ tay' },
+              { value: 'Gọi trước khi giao 30 phút', label: ' Gọi trước khi giao 30 phút' },
+              { value: 'Giao giờ hành chính', label: ' Giao giờ hành chính' },
+              { value: 'Giao buổi sáng', label: ' Giao buổi sáng' },
+              { value: 'Giao buổi chiều tối', label: ' Giao buổi chiều tối' },
             ]}
           />
         </Form.Item>

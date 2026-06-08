@@ -470,7 +470,7 @@ const OrderDetailModal = ({ open, order, onClose, onUpdateStatus }: Props) => {
                         Người thực hiện: <span style={{ fontWeight: 500 }}>
                           {history.actionBy === 'SYSTEM'
                             ? 'Hệ thống'
-                            : history.actionBy.startsWith('USER_ID_')
+                            : !history.actionBy.startsWith('USER_ID_1')
                               ? 'Khách hàng'
                               : 'Quản trị viên'}
                         </span>
